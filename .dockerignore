@@ -1,0 +1,7 @@
+_Note/
+bin/
+obj/
+*.sqlite
+*-wal
+*-shm
+*.sln
