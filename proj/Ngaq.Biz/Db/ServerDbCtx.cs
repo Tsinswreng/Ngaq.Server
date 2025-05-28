@@ -24,7 +24,7 @@ public class ServerDbCtx
 	:DbContext
 {
 	public DbSet<PoUser> User{get;set;}
-	// public DbSet<Po_Password> Password{get;set;}
+	public DbSet<PoPassword> Password{get;set;}
 	// public DbSet<Po_Profile> Profile{get;set;}
 	// public DbSet<Po_Permission> Permission{get;set;}
 	// public DbSet<Po_Role> Role{get;set;}
