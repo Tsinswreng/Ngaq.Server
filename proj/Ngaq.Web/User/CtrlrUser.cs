@@ -27,4 +27,5 @@ Using member 'Microsoft.AspNetCore.Builder.EndpointRouteBuilderExtensions.MapPos
 	public async Task<IResult> Login(ReqLogin Req, HttpContext Ctx){
 		return await Task.FromResult(Results.Ok());
 	}
+
 }

@@ -4,7 +4,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="../../../Tsinswreng.SqlHelper/Tsinswreng.SqlHelper.csproj"/>
+		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/Tsinswreng.CsSqlHelper.csproj"/>
 		<ProjectReference Include="../../../Ngaq.Local/Ngaq.Local.csproj"/>
 	</ItemGroup>
 

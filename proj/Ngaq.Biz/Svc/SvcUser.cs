@@ -60,12 +60,12 @@ public class SvcUser(
 		var Fn = async(ReqLogin Req)=>{
 			//TODO 校驗Req
 			PoUser? PoUser = null;
-			if(Req.UserIdentity == (i64)ReqLogin.EUserIdentityMode.UniqueName){
+			if(Req.UserIdentityMode == (i64)ReqLogin.EUserIdentityMode.UniqueName){
 				if(str.IsNullOrEmpty(Req.UniqueName)){
 					throw new ErrArg("str.IsNullOrEmpty(Req.UniqueName)"); //TODO 優化異常處理 錯誤碼, 前端多語言
 				}
 				PoUser = await SelectUserByUniqueName(Req.UniqueName,ct);
-			}else if(Req.UserIdentity == (i64)ReqLogin.EUserIdentityMode.Email){
+			}else if(Req.UserIdentityMode == (i64)ReqLogin.EUserIdentityMode.Email){
 				if(str.IsNullOrEmpty(Req.Email)){
 					throw new ErrArg("str.IsNullOrEmpty(Req.Email)"); //TODO 優化異常處理 錯誤碼, 前端多語言
 				}

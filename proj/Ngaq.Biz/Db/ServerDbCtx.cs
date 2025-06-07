@@ -65,7 +65,7 @@ public class ServerDbCtx
 	protected nil _ConvIdU128<TPo, TId>(
 		EntityTypeBuilder<TPo> e
 	)
-		where TPo:class, IHasId<TId>
+		where TPo:class, I_Id<TId>
 		where TId: IIdUInt128, new()
 	{
 		e.Property(e=>e.Id).HasConversion(
@@ -78,7 +78,7 @@ public class ServerDbCtx
 	protected nil _CfgIdU128<TPo, TId>(
 		EntityTypeBuilder<TPo> e
 	)
-		where TPo:class, IHasId<TId>
+		where TPo:class, I_Id<TId>
 		where TId: IIdUInt128, new()
 	{
 		e.HasKey(e=>e.Id);
