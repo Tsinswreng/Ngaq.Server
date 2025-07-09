@@ -8,42 +8,46 @@ using Ngaq.Core.Model.Sys.Req;
 using Ngaq.Core.Model.Sys.Resp;
 using Ngaq.Core.Tools;
 using Ngaq.Local.Db;
-
+using Tsinswreng.CsSqlHelper;
 namespace Ngaq.Biz.Svc;
 
 public class SvcUser(
 	DaoUser DaoUser
-	,RepoEf<PoUser, IdUser> RepoUser
-	,RepoEf<PoPassword, IdPassword> RepoPassword
+	,Repo<PoUser, IdUser> RepoUser
+	,Repo<PoPassword, IdPassword> RepoPassword
+	,DbFnCtxMkr DbFnCtxMkr
+	,ITxnRunner TxnRunner
 ){
 	public async Task<Func<
 		ReqAddUser
+		,CT
 		,Task<nil>
 	>> FnAddUser(
-		IDbFnCtx DbFnCtx
-		,CancellationToken ct
+		IDbFnCtx? DbFnCtx
+		,CT Ct
 	){
-		var AddUsers = await RepoUser.FnInsertManyAsy(DbFnCtx, ct);
-		var AddPasswords = await RepoPassword.FnInsertManyAsy(DbFnCtx, ct);
-		var Ans = async(ReqAddUser ReqAddUser)=>{
+		var AddUsers = await RepoUser.FnInsertMany(DbFnCtx, Ct);
+		var AddPasswords = await RepoPassword.FnInsertMany(DbFnCtx, Ct);
+		var Fn = async(ReqAddUser ReqAddUser, CT Ct)=>{
 			//TODO校驗
+			var Id = new IdUser();
 			var User = new PoUser{
-				Id = new()
-				,UniqueName = ReqAddUser.UniqueName
+				Id = Id
+				,UniqueName = ReqAddUser.UniqueName??Id.ToString()
 				,Email = ReqAddUser.Email
 			};
-			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(ReqAddUser.Password, ct);
+			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(ReqAddUser.Password, Ct);
 			var Password = new PoPassword{
 				Id = new()
 				,UserId = User.Id
 				,Algo = (i64)PoPassword.EAlgo.Argon2id
 				,Text = PasswordHash
 			};
-			await AddUsers([User], ct);
-			await AddPasswords([Password], ct);
-			return Nil;
+			await AddUsers([User], Ct);
+			await AddPasswords([Password], Ct);
+			return NIL;
 		};
-		return Ans;
+		return Fn;
 	}
 
 	public async Task<Func<
@@ -51,12 +55,12 @@ public class SvcUser(
 		,Task<RespLogin>
 	>> FnLogin(
 		IDbFnCtx DbFnCtx
-		,CancellationToken ct
+		,CT Ct
 	){
 		//var SelectUserById = await RepoUser.FnSelectByIdAsy(DbFnCtx, ct);
-		var SelectUserByUniqueName = await DaoUser.FnSelectByUniqueName(DbFnCtx, ct);
-		var SelectUserByEmail = await DaoUser.FnSelectByEmail(DbFnCtx, ct);
-		var SelectPasswordById = await DaoUser.FnSelectPasswordById(DbFnCtx, ct);
+		var SelectUserByUniqueName = await DaoUser.FnSelectByUniqueName(DbFnCtx, Ct);
+		var SelectUserByEmail = await DaoUser.FnSelectByEmail(DbFnCtx, Ct);
+		var SelectPasswordById = await DaoUser.FnSelectPasswordById(DbFnCtx, Ct);
 		var Fn = async(ReqLogin Req)=>{
 			//TODO 校驗Req
 			PoUser? PoUser = null;
@@ -64,19 +68,19 @@ public class SvcUser(
 				if(str.IsNullOrEmpty(Req.UniqueName)){
 					throw new ErrArg("str.IsNullOrEmpty(Req.UniqueName)"); //TODO 優化異常處理 錯誤碼, 前端多語言
 				}
-				PoUser = await SelectUserByUniqueName(Req.UniqueName,ct);
+				PoUser = await SelectUserByUniqueName(Req.UniqueName,Ct);
 			}else if(Req.UserIdentityMode == (i64)ReqLogin.EUserIdentityMode.Email){
 				if(str.IsNullOrEmpty(Req.Email)){
 					throw new ErrArg("str.IsNullOrEmpty(Req.Email)"); //TODO 優化異常處理 錯誤碼, 前端多語言
 				}
-				PoUser = await SelectUserByEmail(Req.Email,ct);
+				PoUser = await SelectUserByEmail(Req.Email,Ct);
 			}
 			if(PoUser == null){
 				throw new ErrBase("User not exsists");
 			}
 
-			var PoPassword = await SelectPasswordById(PoUser.Id, ct);
-			if(!(	await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, ct)	)){
+			var PoPassword = await SelectPasswordById(PoUser.Id, Ct);
+			if(!(	await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct)	)){
 				throw new ErrBase("Password not correct");
 			};
 
@@ -88,4 +92,18 @@ public class SvcUser(
 		};
 		return Fn;
 	}
+
+	public async Task<nil> AddUser(
+		ReqAddUser ReqAddUser
+		,CT Ct
+	){
+		var Ctx = await DbFnCtxMkr.MkTxnDbFnCtxAsy(Ct);
+		var AddUser = await FnAddUser(Ctx, Ct);
+		await TxnRunner.RunTxn(Ctx.Txn!, async(Ct)=>{
+			return AddUser(ReqAddUser, Ct);
+		}, Ct);
+		return NIL;
+	}
+
+
 }

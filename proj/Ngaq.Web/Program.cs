@@ -1,6 +1,40 @@
 using System.Text.Json.Serialization;
+using Ngaq.Biz.Infra.Cfg;
+using Tsinswreng.CsCfg;
+
+
+static str GetCfgFilePath(string[] args){
+	var CfgFilePath = "";
+	if(args.Length > 0){
+		CfgFilePath = args[0];
+	}else{
+#if DEBUG
+		CfgFilePath = "Ngaq.dev.json";
+#else
+		CfgFilePath = "Ngaq.json";
+#endif
+	}
+	return CfgFilePath;
+}
+
+try{
+	var CfgPath = GetCfgFilePath(args);
+	var CfgText = File.ReadAllText(CfgPath);
+	ServerCfg.Inst.FromJson(CfgText);
+	//AppCfg.Inst = AppCfgParser.Inst.FromYaml(GetCfgFilePath(args));
+}
+catch (System.Exception e){
+	System.Console.Error.WriteLine("Failed to load config file: "+e);
+}
+
 
 var builder = WebApplication.CreateSlimBuilder(args);
+
+builder.WebHost.UseKestrel(options =>{
+	var Port = ServerCfgItems.Inst.Port.GetFrom(ServerCfg.Inst);
+	options.ListenLocalhost(Port);  // 监听本地端口
+	// 或者用 options.ListenAnyIP(5001); 监听所有IP地址
+});
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {

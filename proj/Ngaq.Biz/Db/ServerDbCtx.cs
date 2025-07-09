@@ -7,6 +7,7 @@ dotnet ef database update --context ServerDbCtx
 // using Ngaq.Core.Model.Auth;
 // using Ngaq.Core.Model.IF;
 //using Ngaq.Core.Model.Po.Auth;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ngaq.Core.Infra.IF;
@@ -15,6 +16,7 @@ using Ngaq.Core.Model.Po.Role;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Core.Tools;
+using Tsinswreng.CsUlid;
 //using Ngaq.Core.Model.PoRole;
 
 
@@ -43,7 +45,6 @@ public class ServerDbCtx
 			"..", "Ngaq_Server.sqlite"
 		);
 		opt.UseSqlite($"Data Source={dbPath}");
-
 	}
 
 	protected (
@@ -53,10 +54,10 @@ public class ServerDbCtx
 		where T: IIdUInt128, new()
 	{
 		var CodeToDb = (T id)=>{
-			return ToolId.ToByteArr(id.Value);
+			return IdTool.ToByteArr(id.Value);
 		};
 		var DbToCode = (u8[] id)=>{
-			var UInt128 = ToolId.ByteArrToUInt128(id);
+			var UInt128 = IdTool.ByteArrToUInt128(id);
 			return new T{Value = UInt128};
 		};
 		return (CodeToDb, DbToCode);
@@ -69,10 +70,10 @@ public class ServerDbCtx
 		where TId: IIdUInt128, new()
 	{
 		e.Property(e=>e.Id).HasConversion(
-			code => ToolId.ToByteArr(code.Value)
-			,db => new TId{Value = ToolId.ByteArrToUInt128(db)}
+			code => IdTool.ToByteArr(code.Value)
+			,db => new TId{Value = IdTool.ByteArrToUInt128(db)}
 		);
-		return Nil;
+		return NIL;
 	}
 
 	protected nil _CfgIdU128<TPo, TId>(
@@ -83,7 +84,7 @@ public class ServerDbCtx
 	{
 		e.HasKey(e=>e.Id);
 		_ConvIdU128<TPo, TId>(e);
-		return Nil;
+		return NIL;
 	}
 
 	protected override void OnModelCreating(ModelBuilder mb) {
@@ -103,8 +104,8 @@ public class ServerDbCtx
 			//var (fn1, fn2) = _ConvU128EtU8Arr<IdRole>();
 			e.Property(e=>e.RoleId)
 				.HasConversion(
-					id => id==null?null:ToolId.ToByteArr(id.Value.Value)
-					,val => val==null?null:new IdRole(ToolId.ByteArrToUInt128(val))
+					id => id==null?null:IdTool.ToByteArr(id.Value.Value)
+					,val => val==null?null:new IdRole(IdTool.ByteArrToUInt128(val))
 				)
 			;
 		});

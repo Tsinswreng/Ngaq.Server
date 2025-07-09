@@ -4,7 +4,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/Tsinswreng.CsSqlHelper.csproj"/>
+		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper/Tsinswreng.CsSqlHelper.csproj"/>
+		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.Sqlite/Tsinswreng.CsSqlHelper.Sqlite.csproj"/>
+		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.PostgreSql/Tsinswreng.CsSqlHelper.PostgreSql.csproj"/>
+		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.EFCore/Tsinswreng.CsSqlHelper.EFCore.csproj"/>
 		<ProjectReference Include="../../../Ngaq.Local/Ngaq.Local.csproj"/>
 	</ItemGroup>
 

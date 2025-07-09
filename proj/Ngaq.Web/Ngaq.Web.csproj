@@ -1,11 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>true</InvariantGlobalization>
-    <PublishAot>true</PublishAot>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<!-- <PublishAot>true</PublishAot> -->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="../Ngaq.Biz/Ngaq.Biz.csproj" />
+	</ItemGroup>
 
 </Project>
