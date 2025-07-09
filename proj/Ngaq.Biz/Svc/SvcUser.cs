@@ -13,8 +13,8 @@ namespace Ngaq.Biz.Svc;
 
 public class SvcUser(
 	DaoUser DaoUser
-	,Repo<PoUser, IdUser> RepoUser
-	,Repo<PoPassword, IdPassword> RepoPassword
+	,IRepo<PoUser, IdUser> RepoUser
+	,IRepo<PoPassword, IdPassword> RepoPassword
 	,DbFnCtxMkr DbFnCtxMkr
 	,ITxnRunner TxnRunner
 ){

@@ -7,14 +7,18 @@ dotnet ef database update --context ServerDbCtx
 // using Ngaq.Core.Model.Auth;
 // using Ngaq.Core.Model.IF;
 //using Ngaq.Core.Model.Po.Auth;
+using Microsoft.CodeAnalysis;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Ngaq.Core.Infra;
 using Ngaq.Core.Infra.IF;
 using Ngaq.Core.Model.Po;
 using Ngaq.Core.Model.Po.Role;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
+using Ngaq.Core.Models.Po;
 using Ngaq.Core.Tools;
 using Tsinswreng.CsUlid;
 //using Ngaq.Core.Model.PoRole;
@@ -87,9 +91,29 @@ public class ServerDbCtx
 		return NIL;
 	}
 
+	protected nil CfgPoBase<TEntity>(EntityTypeBuilder<TEntity> e)
+		where TEntity: class, IPoBase
+	{
+		e.Property(e=>e.DbCreatedAt).HasConversion<TempusConverter>();
+		e.Property(e=>e.CreatedAt).HasConversion<TempusConverter>();
+		e.Property(e=>e.DbUpdatedAt).HasConversion<TempusConverter>();
+		e.Property(e=>e.UpdatedAt).HasConversion<TempusConverter>();
+
+		e.Property(e=>e.CreatedBy).HasConversion<IdUserConverter>();
+		e.Property(e=>e.LastUpdatedBy).HasConversion<IdUserConverter>();
+
+		e.Property(e=>e.Status).HasConversion<i32>(
+			PoStatus => PoStatus.Value
+			,Raw => PoStatus.Parse(Raw)
+		);
+
+		return NIL;
+	}
+
 	protected override void OnModelCreating(ModelBuilder mb) {
 		base.OnModelCreating(mb);
 		mb.Entity<PoUser>(e=>{
+			CfgPoBase(e);
 			//e.HasKey(e=>e.Id);
 			// e.Property(e=>e.Id).HasConversion(
 			// 	id=>id.Value
@@ -111,6 +135,7 @@ public class ServerDbCtx
 		});
 
 		mb.Entity<PoPassword>(e=>{
+			CfgPoBase(e);
 			// e.HasKey(e=>e.Id);
 			// e.Property(e=>e.Id).HasConversion(
 			// 	id=>id.Value
@@ -152,6 +177,7 @@ public class ServerDbCtx
 		// });
 
 		mb.Entity<PoRole>(e=>{
+			CfgPoBase(e);
 			// e.HasKey(e=>e.Id);
 			// e.Property(e=>e.Id).HasConversion(
 			// 	id=>id.Value
@@ -210,5 +236,41 @@ public class ServerDbCtx
 		// 	;
 		// });
 
+//Tempus類型映射(不效)
+		// foreach (var entityType in mb.Model.GetEntityTypes()){
+		// 	foreach (var property in entityType.GetProperties()){
+		// 		if (property.ClrType == typeof(Tempus)
+		// 			|| property.ClrType == typeof(Tempus?)
+		// 		){
+		// 			property.SetValueConverter(
+		// 				new ValueConverter<Tempus, i64>(
+		// 					v => v,   // Tempus 转 long
+		// 					v => v // long 转 Tempus
+		// 				)
+		// 			);
+		// 		}
+		// 	}
+		// }
+
 	}
 }
+
+
+public class TempusConverter : ValueConverter<Tempus, i64>{
+	public TempusConverter(): base(
+			v => v
+			,v => v
+		)
+	{}
+}
+
+public class IdUserConverter : ValueConverter<IdUser, u8[]>{
+	public IdUserConverter(): base(
+			v => v.Value.ToByteArr()
+			,v => IdUser.FromByteArr(v)
+		)
+	{}
+}
+
+
+

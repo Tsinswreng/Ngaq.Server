@@ -1,5 +1,8 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using Ngaq.Biz.Infra.Cfg;
+using Ngaq.Biz;
+using Ngaq.Web;
 using Tsinswreng.CsCfg;
 
 
@@ -25,6 +28,8 @@ try{
 }
 catch (System.Exception e){
 	System.Console.Error.WriteLine("Failed to load config file: "+e);
+	System.Console.WriteLine("----");
+	System.Console.WriteLine();
 }
 
 
@@ -41,8 +46,14 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 	options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
 });
 
+
+builder.Services.SetUpBiz()
+.SetupWeb();
+//AppRouterIniter.Inst.RegisterCtrlr();
+var AppRouterIniter = new AppRouterIniter(builder.Services);
 var app = builder.Build();
 
+#region Example
 var sampleTodos = new Todo[] {
 	new(1, "Walk the dog"),
 	new(2, "Do the dishes", DateOnly.FromDateTime(DateTime.Now)),
@@ -57,6 +68,13 @@ todosApi.MapGet("/{id}", (int id) =>
 	sampleTodos.FirstOrDefault(a => a.Id == id) is { } todo
 		? Results.Ok(todo)
 		: Results.NotFound());
+#endregion Example
+
+var BaseRoute = app.MapGroup("/"); //RouteGroupBuilder
+var Svc = app.Services;
+
+AppRouterIniter.Init(Svc, BaseRoute);
+
 
 app.Run();
 

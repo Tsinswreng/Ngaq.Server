@@ -5,29 +5,32 @@ using Ngaq.Biz.Svc;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Infra.Core;
 using Ngaq.Core.Model.Sys.Req;
+using Tsinswreng.CsCore;
 
 namespace Ngaq.Web.User;
 
 public class CtrlrUser(
-	RouteGroupBuilder R
-	,SvcUser SvcUser
+	SvcUser SvcUser
 )
-	:BaseCtrlr
+	:ICtrlr
 {
+	public str BaseUrl{get;set;} = "/User";
 
-	public nil Init(){
-
+	[Impl]
+	public nil InitRouter(
+		RouteGroupBuilder R
+	){
 		var U = ApiUrl_User.Inst;
 		R.MapPost(U.Login, Login);
-/*
-Using member 'Microsoft.AspNetCore.Builder.EndpointRouteBuilderExtensions.MapPost(IEndpointRouteBuilder, String, Delegate)' which has 'RequiresUnreferencedCodeAttribute' can break functionality when trimming application code. This API may perform reflection on the supplied delegate and its parameters. These types may be trimmed if not directly referenced.(IL2026)
-Using member 'Microsoft.AspNetCore.Builder.EndpointRouteBuilderExtensions.MapPost(IEndpointRouteBuilder, String, Delegate)' which has 'RequiresDynamicCodeAttribute' can break functionality when AOT compiling. This API may perform reflection on the supplied delegate and its parameters. These types may require generated code and aren't compatible with native AOT applications.(IL3050)
- */
+
+		R.MapGet("/Time", async(HttpContext Ctx, CT Ct)=>{
+			return await Task.FromResult(Results.Ok(DateTime.Now));
+		});
+
 		return NIL;
 	}
 
 	public async Task<IResult> Login(ReqLogin Req, HttpContext Ctx){
-
 		return await Task.FromResult(Results.Ok());
 	}
 
