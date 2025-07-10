@@ -15,8 +15,9 @@ public class SvcUser(
 	DaoUser DaoUser
 	,IRepo<PoUser, IdUser> RepoUser
 	,IRepo<PoPassword, IdPassword> RepoPassword
-	,DbFnCtxMkr DbFnCtxMkr
-	,ITxnRunner TxnRunner
+	// ,DbFnCtxMkr DbFnCtxMkr
+	// ,ITxnRunner TxnRunner
+	,TxnWrapper<DbFnCtx> TxnWrapper
 ){
 	public async Task<Func<
 		ReqAddUser
@@ -52,6 +53,7 @@ public class SvcUser(
 
 	public async Task<Func<
 		ReqLogin
+		,CT
 		,Task<RespLogin>
 	>> FnLogin(
 		IDbFnCtx DbFnCtx
@@ -61,7 +63,7 @@ public class SvcUser(
 		var SelectUserByUniqueName = await DaoUser.FnSelectByUniqueName(DbFnCtx, Ct);
 		var SelectUserByEmail = await DaoUser.FnSelectByEmail(DbFnCtx, Ct);
 		var SelectPasswordById = await DaoUser.FnSelectPasswordById(DbFnCtx, Ct);
-		var Fn = async(ReqLogin Req)=>{
+		var Fn = async(ReqLogin Req, CT Ct)=>{
 			//TODO 校驗Req
 			PoUser? PoUser = null;
 			if(Req.UserIdentityMode == (i64)ReqLogin.EUserIdentityMode.UniqueName){
@@ -97,13 +99,43 @@ public class SvcUser(
 		ReqAddUser ReqAddUser
 		,CT Ct
 	){
-		var Ctx = await DbFnCtxMkr.MkTxnDbFnCtxAsy(Ct);
-		var AddUser = await FnAddUser(Ctx, Ct);
-		await TxnRunner.RunTxn(Ctx.Txn!, async(Ct)=>{
-			return AddUser(ReqAddUser, Ct);
-		}, Ct);
-		return NIL;
+		return await TxnWrapper.Wrap(FnAddUser, ReqAddUser, Ct);
 	}
+
+	public async Task<nil> Login(
+		ReqLogin ReqLogin
+		,CT Ct
+	){
+		return await TxnWrapper.Wrap(FnLogin, ReqLogin, Ct);
+	}
+
+	// public async Task<nil> AddUser(
+	// 	ReqAddUser ReqAddUser
+	// 	,CT Ct
+	// ){
+	// 	var Ctx = await DbFnCtxMkr.MkTxnDbFnCtxAsy(Ct);
+	// 	var AddUser = await FnAddUser(Ctx, Ct);
+	// 	await TxnRunner.RunTxn(Ctx.Txn, async(Ct)=>{
+	// 		return await AddUser(ReqAddUser, Ct);
+	// 	}, Ct);
+	// 	return NIL;
+	// }
+
+	// public async Task<nil> Login(
+	// 	ReqLogin ReqLogin
+	// 	,CT Ct
+	// ){
+	// 	var Ctx = await DbFnCtxMkr.MkTxnDbFnCtxAsy(Ct);
+	// 	var Login = await FnLogin(Ctx, Ct);
+	// 	await TxnRunner.RunTxn(Ctx.Txn, async(Ct)=>{
+	// 		return await Login(ReqLogin, Ct);
+	// 	}, Ct);
+	// 	return NIL;
+	// }
+
+
+
+
 
 
 }

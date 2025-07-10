@@ -1,5 +1,5 @@
 /*
-pwd=Ngaq.Infra
+pwd=Ngaq.Biz
 dotnet ef migrations add Init --context ServerDbCtx
 dotnet ef database update --context ServerDbCtx
  */
@@ -271,6 +271,7 @@ public class IdUserConverter : ValueConverter<IdUser, u8[]>{
 		)
 	{}
 }
+
 
 
 

@@ -1,3 +1,5 @@
+using Ngaq.Web.AspNetTools;
+
 namespace Ngaq.Web;
 
 public class CtrlrRegisterer{
@@ -6,7 +8,7 @@ public class CtrlrRegisterer{
 		this.SvcColct = SvcColct;
 	}
 	public IServiceProvider SvcPrvdr = null!;
-	public RouteGroupBuilder BaseRoute = null!;
+	public IRouteGroup BaseRoute = null!;
 
 	IList<Func<nil>> InitFns = new List<Func<nil>>();
 
@@ -23,7 +25,7 @@ public class CtrlrRegisterer{
 
 	public nil InitRouters(
 		IServiceProvider SvcPrvdr
-		,RouteGroupBuilder BaseRoute
+		,IRouteGroup BaseRoute
 	){
 		this.SvcPrvdr = SvcPrvdr;
 		this.BaseRoute = BaseRoute;

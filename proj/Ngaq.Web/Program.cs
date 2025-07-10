@@ -4,6 +4,7 @@ using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz;
 using Ngaq.Web;
 using Tsinswreng.CsCfg;
+using Ngaq.Web.AspNetTools;
 
 
 static str GetCfgFilePath(string[] args){
@@ -47,39 +48,26 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 
-builder.Services.SetUpBiz()
-.SetupWeb();
+builder.Services
+	.SetUpBiz()
+	.SetupWeb()
+;
 //AppRouterIniter.Inst.RegisterCtrlr();
 var AppRouterIniter = new AppRouterIniter(builder.Services);
 var app = builder.Build();
 
-#region Example
-var sampleTodos = new Todo[] {
-	new(1, "Walk the dog"),
-	new(2, "Do the dishes", DateOnly.FromDateTime(DateTime.Now)),
-	new(3, "Do the laundry", DateOnly.FromDateTime(DateTime.Now.AddDays(1))),
-	new(4, "Clean the bathroom"),
-	new(5, "Clean the car", DateOnly.FromDateTime(DateTime.Now.AddDays(2)))
-};
 
-var todosApi = app.MapGroup("/todos");
-todosApi.MapGet("/", () => sampleTodos);
-todosApi.MapGet("/{id}", (int id) =>
-	sampleTodos.FirstOrDefault(a => a.Id == id) is { } todo
-		? Results.Ok(todo)
-		: Results.NotFound());
-#endregion Example
 
 var BaseRoute = app.MapGroup("/"); //RouteGroupBuilder
 var Svc = app.Services;
 
-AppRouterIniter.Init(Svc, BaseRoute);
+AppRouterIniter.Init(Svc, new RouteGroup(BaseRoute));
 
 
 app.Run();
 
-public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
 
+public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
 [JsonSerializable(typeof(Todo[]))]
 internal partial class AppJsonSerializerContext : JsonSerializerContext{
 
