@@ -34,9 +34,8 @@ public static class DiBiz{
 			return R;
 		});
 
-
 		z.AddDbContext<ServerDbCtx>();
-		z.AddScoped<DbFnCtxMkr<DbFnCtx>>();
+		z.AddScoped<IDbFnCtxMkr<DbFnCtx>, DbFnCtxMkr<DbFnCtx>>();
 		z.AddScoped<ITxnRunner, EfTxnRunner>();
 		z.AddScoped<TxnWrapper<DbFnCtx>>();
 		z.AddRepoScoped<PoUser, IdUser>();
