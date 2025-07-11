@@ -24,6 +24,7 @@
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
 		<PackageReference Include="SQLite" />
 		<PackageReference Include="Konscious.Security.Cryptography.Argon2" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
 	</ItemGroup>
 
 	<ItemGroup>

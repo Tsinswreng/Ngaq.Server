@@ -12,6 +12,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Infra.IF;
 using Ngaq.Core.Model.Po;
@@ -20,7 +21,9 @@ using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Core.Models.Po;
 using Ngaq.Core.Tools;
-using Tsinswreng.CsUlid;
+using Tsinswreng.CsCfg;
+using Tsinswreng.CsTools;
+using IdTool = Tsinswreng.CsTools.ToolUInt128;
 //using Ngaq.Core.Model.PoRole;
 
 
@@ -44,10 +47,11 @@ public class ServerDbCtx
 
 	protected override void OnConfiguring(DbContextOptionsBuilder opt) {
 		base.OnConfiguring(opt);
-		var dbPath = Path.Combine(
-			Directory.GetCurrentDirectory(),//TODO 用配置文件
-			"..", "Ngaq_Server.sqlite"
-		);
+		// var dbPath = Path.Combine(
+		// 	Directory.GetCurrentDirectory(),
+		// 	"..", "Ngaq_Server.sqlite"
+		// );
+		var dbPath = ServerCfgItems.Inst.SqliteDbPath.GetFrom(ServerCfg.Inst);
 		opt.UseSqlite($"Data Source={dbPath}");
 	}
 

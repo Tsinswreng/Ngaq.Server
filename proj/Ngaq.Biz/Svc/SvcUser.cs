@@ -1,5 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using Ngaq.Biz.Db;
 using Ngaq.Biz.Db.User;
+using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz.Tools;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Model.Sys.Po.Password;
@@ -10,6 +15,7 @@ using Ngaq.Core.Models.Sys.Resp;
 using Ngaq.Core.Sys.Svc;
 using Ngaq.Core.Tools;
 using Ngaq.Local.Db;
+using Tsinswreng.CsCfg;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsSqlHelper;
 namespace Ngaq.Biz.Svc;
@@ -56,6 +62,42 @@ public class SvcUser(
 		return Fn;
 	}
 
+	public str GeneAccessToken(
+		str UserIdStr
+	){
+		var JwtSecret = ServerCfgItems.Inst.JwtSecret.GetFrom(ServerCfg.Inst);
+		var securityKey = new SymmetricSecurityKey(
+			//注意: 小於256字節則報錯
+			//Encoding.UTF8.GetBytes("2025-04-16T21:00:39.328+08:00_W16-3=2025-04-16T21:00:50.706+08:00_W16-3")
+			Encoding.UTF8.GetBytes(JwtSecret??"")
+		);
+		var credentials = new SigningCredentials(
+			securityKey, SecurityAlgorithms.HmacSha256Signature
+		);
+		var claims = new[]{
+			//subject, 标识令牌的归属实体（如用户、服务或设备）
+			new Claim(JwtRegisteredClaimNames.Sub, UserIdStr)
+			//Jwt Id 为令牌提供全局唯一标识符，防范重放攻击（Replay Attack）
+			,new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()??"")
+			//issuedAt
+			,new Claim(
+				JwtRegisteredClaimNames.Iat
+				,DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
+				,ClaimValueTypes.Integer64
+			)
+			//,new Claim("role", "admin")//custom
+		};
+		var token = new JwtSecurityToken(
+			issuer: "service-alpha-dev"
+			,audience: "client-app-dev"
+			,claims: claims
+			,expires: DateTime.UtcNow.AddMinutes(30)
+			,signingCredentials: credentials
+		);
+		var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+		return accessToken;
+	}
+
 	public async Task<Func<
 		ReqLogin
 		,CT
@@ -92,8 +134,9 @@ public class SvcUser(
 			};
 
 			var RespLogin = new RespLogin{
-				Token = "TODO" //TODO 生成Token
+				AccessToken = GeneAccessToken(PoUser.Id.ToString())
 				,PoUser = PoUser
+				,UserIdStr = PoUser.Id.ToString()
 			};
 			return RespLogin;
 		};

@@ -13,15 +13,18 @@ static str GetCfgFilePath(string[] args){
 		CfgFilePath = args[0];
 	}else{
 #if DEBUG
-		CfgFilePath = "Ngaq.dev.json";
+		CfgFilePath = "Ngaq.Server.dev.json";
 #else
-		CfgFilePath = "Ngaq.json";
+		CfgFilePath = "Ngaq.Server.json";
 #endif
 	}
 	return CfgFilePath;
 }
 
 try{
+	System.Console.WriteLine(
+		"pwd: "+Directory.GetCurrentDirectory()
+	);
 	var CfgPath = GetCfgFilePath(args);
 	var CfgText = File.ReadAllText(CfgPath);
 	ServerCfg.Inst.FromJson(CfgText);
@@ -42,9 +45,12 @@ builder.WebHost.UseKestrel(options =>{
 	// 或者用 options.ListenAnyIP(5001); 监听所有IP地址
 });
 
-builder.Services.ConfigureHttpJsonOptions(options =>
+builder.Services.ConfigureHttpJsonOptions(opt =>
 {
-	options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+	opt.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+	opt.SerializerOptions.PropertyNamingPolicy = null;
+	opt.SerializerOptions.WriteIndented = true;
+	opt.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 
 

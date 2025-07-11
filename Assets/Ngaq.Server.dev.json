@@ -1,5 +1,14 @@
 {
-	"PostgreSql":{
-		"ConnectionString": ""
+	"Db":{
+		"PostgreSql":{
+			"ConnectionString": ""
+		},
+		"Sqlite": {
+			"Path": "Ngaq_Server.sqlite"
+		}
+	},
+	"User":{
+		//注意: 小於256字節則報錯
+		"JwtSecret": "TsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswreng"
 	}
 }

@@ -2,3 +2,6 @@ obj/
 bin/
 *.sln
 _Ngaq.Web/
+*.sqlite
+*-wal
+*-shm

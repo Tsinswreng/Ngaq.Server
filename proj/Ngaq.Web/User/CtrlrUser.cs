@@ -37,7 +37,8 @@ public class CtrlrUser(
 
 	public async Task<IResult> Login(ReqLogin Req, HttpContext Ctx, CT Ct){
 		var R = await SvcUser.Login(Req, Ct);
-		return Results.Ok(JSON.stringify(R));
+		//return Results.Ok(JSON.stringify(R));
+		return Results.Ok(R);
 	}
 
 	public async Task<IResult> AddUser(ReqAddUser ReqAddUser, HttpContext Ctx, CT Ct){
@@ -47,3 +48,4 @@ public class CtrlrUser(
 
 
 }
+
