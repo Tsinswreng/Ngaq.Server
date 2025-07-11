@@ -11,11 +11,8 @@ namespace Ngaq.Biz.Db;
 // }
 
 public class DbFnCtxMkr<TDbFnCtx>
-	:IDbFnCtxMkr<TDbFnCtx>
-	where TDbFnCtx: IDbFnCtx, new()
+	:BaseDbFnCtxMkr<TDbFnCtx>
+	where TDbFnCtx: IBaseDbFnCtx, new()
 {
-	public I_GetTxnAsy TxnGetter{get;set;}
-	public DbFnCtxMkr(I_GetTxnAsy GetTxn){
-		this.TxnGetter = GetTxn;
-	}
+	public DbFnCtxMkr(I_GetTxnAsy GetTxn):base(GetTxn){}
 }

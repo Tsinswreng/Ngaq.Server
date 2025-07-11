@@ -5,6 +5,8 @@ using Ngaq.Biz.Svc;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Infra.Core;
 using Ngaq.Core.Model.Sys.Req;
+using Ngaq.Core.Models.Sys.Req;
+using Ngaq.Core.Tools;
 using Ngaq.Web.AspNetTools;
 using Tsinswreng.CsCore;
 
@@ -15,7 +17,7 @@ public class CtrlrUser(
 )
 	:ICtrlr
 {
-	public str BaseUrl{get;set;} = "/User";
+	public str BaseUrl{get;set;} = ConstApiUrl.Inst.ApiV1SysUser;
 
 	[Impl]
 	public nil InitRouter(
@@ -26,23 +28,22 @@ public class CtrlrUser(
 		R.MapPost(U.Login, Login);
 
 		R.MapGet("/Time", async(HttpContext Ctx, CT Ct)=>{
-			//throw new Exception("abc");//t
 			return await Task.FromResult(Results.Ok(DateTime.Now));
 		});
 
-		R.MapPost(U.Register, Register);
+		R.MapPost(U.AddUser, AddUser);
 		return NIL;
 	}
 
-	public async Task<IResult> Login(ReqLogin Req, HttpContext Ctx){
-		return await Task.FromResult(Results.Ok());
+	public async Task<IResult> Login(ReqLogin Req, HttpContext Ctx, CT Ct){
+		var R = await SvcUser.Login(Req, Ct);
+		return Results.Ok(JSON.stringify(R));
 	}
 
-	public async Task<IResult> Register(ReqAddUser ReqAddUser, HttpContext Ctx, CT Ct){
+	public async Task<IResult> AddUser(ReqAddUser ReqAddUser, HttpContext Ctx, CT Ct){
 		await SvcUser.AddUser(ReqAddUser, Ct);
 		return Results.Ok();
 	}
-
 
 
 }

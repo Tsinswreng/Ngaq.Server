@@ -5,9 +5,12 @@ using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Core.Model.Sys.Req;
-using Ngaq.Core.Model.Sys.Resp;
+using Ngaq.Core.Models.Sys.Req;
+using Ngaq.Core.Models.Sys.Resp;
+using Ngaq.Core.Sys.Svc;
 using Ngaq.Core.Tools;
 using Ngaq.Local.Db;
+using Tsinswreng.CsCore;
 using Tsinswreng.CsSqlHelper;
 namespace Ngaq.Biz.Svc;
 
@@ -18,7 +21,9 @@ public class SvcUser(
 	// ,DbFnCtxMkr DbFnCtxMkr
 	// ,ITxnRunner TxnRunner
 	,TxnWrapper<DbFnCtx> TxnWrapper
-){
+)
+	: ISvcUser
+{
 	public async Task<Func<
 		ReqAddUser
 		,CT
@@ -95,6 +100,7 @@ public class SvcUser(
 		return Fn;
 	}
 
+	[Impl]
 	public async Task<nil> AddUser(
 		ReqAddUser ReqAddUser
 		,CT Ct
@@ -102,40 +108,12 @@ public class SvcUser(
 		return await TxnWrapper.Wrap(FnAddUser, ReqAddUser, Ct);
 	}
 
-	public async Task<nil> Login(
+	[Impl]
+	public async Task<RespLogin> Login(
 		ReqLogin ReqLogin
 		,CT Ct
 	){
 		return await TxnWrapper.Wrap(FnLogin, ReqLogin, Ct);
 	}
-
-	// public async Task<nil> AddUser(
-	// 	ReqAddUser ReqAddUser
-	// 	,CT Ct
-	// ){
-	// 	var Ctx = await DbFnCtxMkr.MkTxnDbFnCtxAsy(Ct);
-	// 	var AddUser = await FnAddUser(Ctx, Ct);
-	// 	await TxnRunner.RunTxn(Ctx.Txn, async(Ct)=>{
-	// 		return await AddUser(ReqAddUser, Ct);
-	// 	}, Ct);
-	// 	return NIL;
-	// }
-
-	// public async Task<nil> Login(
-	// 	ReqLogin ReqLogin
-	// 	,CT Ct
-	// ){
-	// 	var Ctx = await DbFnCtxMkr.MkTxnDbFnCtxAsy(Ct);
-	// 	var Login = await FnLogin(Ctx, Ct);
-	// 	await TxnRunner.RunTxn(Ctx.Txn, async(Ct)=>{
-	// 		return await Login(ReqLogin, Ct);
-	// 	}, Ct);
-	// 	return NIL;
-	// }
-
-
-
-
-
 
 }
