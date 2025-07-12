@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz;
@@ -13,13 +12,16 @@ static str GetCfgFilePath(string[] args){
 		CfgFilePath = args[0];
 	}else{
 #if DEBUG
-		CfgFilePath = "Ngaq.Server.dev.json";
+		CfgFilePath = "Ngaq.Server.dev.jsonc";
 #else
-		CfgFilePath = "Ngaq.Server.json";
+		CfgFilePath = "Ngaq.Server.jsonc";
 #endif
 	}
 	return CfgFilePath;
 }
+
+var Cfg = ServerCfg.Inst;
+var CfgItems = ServerCfgItems.Inst;
 
 try{
 	System.Console.WriteLine(
@@ -27,7 +29,7 @@ try{
 	);
 	var CfgPath = GetCfgFilePath(args);
 	var CfgText = File.ReadAllText(CfgPath);
-	ServerCfg.Inst.FromJson(CfgText);
+	Cfg.FromJson(CfgText);
 	//AppCfg.Inst = AppCfgParser.Inst.FromYaml(GetCfgFilePath(args));
 }
 catch (System.Exception e){
@@ -35,6 +37,17 @@ catch (System.Exception e){
 	System.Console.WriteLine("----");
 	System.Console.WriteLine();
 }
+
+
+
+// ... other code ...
+
+// var host = CfgItems.RedisHost.GetFrom(Cfg);
+// var port = CfgItems.RedisPort.GetFrom(Cfg);
+// string redisConnectionString = CfgItems.RedisHost.GetFrom(Cfg)+":"+CfgItems.RedisPort.GetFrom(Cfg);
+// IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisConnectionString);
+// IDatabase db = redis.GetDatabase();
+// ... 在你的 Minimal API 中使用 db 进行 Redis 操作 ...
 
 
 var builder = WebApplication.CreateSlimBuilder(args);

@@ -15,6 +15,7 @@ using Ngaq.Core.Models.Sys.Resp;
 using Ngaq.Core.Sys.Svc;
 using Ngaq.Core.Tools;
 using Ngaq.Local.Db;
+using StackExchange.Redis;
 using Tsinswreng.CsCfg;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsSqlHelper;
@@ -27,6 +28,7 @@ public class SvcUser(
 	// ,DbFnCtxMkr DbFnCtxMkr
 	// ,ITxnRunner TxnRunner
 	,TxnWrapper<DbFnCtx> TxnWrapper
+	,IConnectionMultiplexer Redis
 )
 	: ISvcUser
 {

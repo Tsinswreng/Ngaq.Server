@@ -10,6 +10,10 @@ using Ngaq.Biz.Svc;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Local.Db;
+using StackExchange.Redis;
+using Ngaq.Biz.Infra.Cfg;
+using Tsinswreng.CsCfg;
+
 
 namespace Ngaq.Biz;
 
@@ -43,7 +47,15 @@ public static class DiBiz{
 		z.AddScoped<DaoUser>();
 		z.AddScoped<SvcUser>();
 
-
+		// 配置 Redis 连接
+		var CfgItems = ServerCfgItems.Inst;
+		var Cfg = ServerCfg.Inst;
+		string redisConnectionString = CfgItems.RedisHost.GetFrom(Cfg)+":"+CfgItems.RedisPort.GetFrom(Cfg);
+		var configurationOptions = ConfigurationOptions.Parse(redisConnectionString);
+		// 可选：根据需要配置其他选项，例如：
+		configurationOptions.AbortOnConnectFail = false; // 防止连接失败时立即中止
+		configurationOptions.Ssl = true; // 如果需要 SSL 连接
+		z.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(configurationOptions));
 		return z;
 	}
 }

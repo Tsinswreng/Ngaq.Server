@@ -15,6 +15,11 @@ public partial class ServerCfgItems{
 		[nameof(ConnectionString)],"",PostgreSql
 	);
 
+	public ICfgItem Redis => Mk([nameof(Redis)], null, Db);
+		public ICfgItem<str> RedisHost => Mk(["Host"], "localhost", Redis);
+		public ICfgItem<i32> RedisPort => Mk(["Port"], 6379, Redis);
+	//
+
 	public ICfgItem Sqlite => Mk([nameof(Sqlite)], null, Db);
 	public ICfgItem<str> SqliteDbPath => Mk(["Path"], "ErrDb.sqlite", Sqlite);
 
