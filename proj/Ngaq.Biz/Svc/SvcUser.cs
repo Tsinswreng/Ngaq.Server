@@ -30,39 +30,8 @@ public class SvcUser(
 )
 	: ISvcUser
 {
-	public async Task<Func<
-		ReqAddUser
-		,CT
-		,Task<nil>
-	>> FnAddUser(
-		IDbFnCtx? DbFnCtx
-		,CT Ct
-	){
-		var AddUsers = await RepoUser.FnInsertMany(DbFnCtx, Ct);
-		var AddPasswords = await RepoPassword.FnInsertMany(DbFnCtx, Ct);
-		var Fn = async(ReqAddUser ReqAddUser, CT Ct)=>{
-			//TODO校驗
-			var Id = new IdUser();
-			var User = new PoUser{
-				Id = Id
-				,UniqueName = ReqAddUser.UniqueName??Id.ToString()
-				,Email = ReqAddUser.Email
-			};
-			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(ReqAddUser.Password, Ct);
-			var Password = new PoPassword{
-				Id = new()
-				,UserId = User.Id
-				,Algo = (i64)PoPassword.EAlgo.Argon2id
-				,Text = PasswordHash
-			};
-			await AddUsers([User], Ct);
-			await AddPasswords([Password], Ct);
-			return NIL;
-		};
-		return Fn;
-	}
 
-	public str GeneAccessToken(
+public str GeneAccessToken(
 		str UserIdStr
 	){
 		var JwtSecret = ServerCfgItems.Inst.JwtSecret.GetFrom(ServerCfg.Inst);
@@ -97,6 +66,41 @@ public class SvcUser(
 		var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
 		return accessToken;
 	}
+
+
+
+	public async Task<Func<
+		ReqAddUser
+		,CT
+		,Task<nil>
+	>> FnAddUser(
+		IDbFnCtx? DbFnCtx
+		,CT Ct
+	){
+		var AddUsers = await RepoUser.FnInsertMany(DbFnCtx, Ct);
+		var AddPasswords = await RepoPassword.FnInsertMany(DbFnCtx, Ct);
+		var Fn = async(ReqAddUser ReqAddUser, CT Ct)=>{
+			//TODO校驗
+			var Id = new IdUser();
+			var User = new PoUser{
+				Id = Id
+				,UniqueName = ReqAddUser.UniqueName??Id.ToString()
+				,Email = ReqAddUser.Email
+			};
+			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(ReqAddUser.Password, Ct);
+			var Password = new PoPassword{
+				Id = new()
+				,UserId = User.Id
+				,Algo = (i64)PoPassword.EAlgo.Argon2id
+				,Text = PasswordHash
+			};
+			await AddUsers([User], Ct);
+			await AddPasswords([Password], Ct);
+			return NIL;
+		};
+		return Fn;
+	}
+
 
 	public async Task<Func<
 		ReqLogin
@@ -144,18 +148,12 @@ public class SvcUser(
 	}
 
 	[Impl]
-	public async Task<nil> AddUser(
-		ReqAddUser ReqAddUser
-		,CT Ct
-	){
+	public async Task<nil> AddUser(ReqAddUser ReqAddUser ,CT Ct){
 		return await TxnWrapper.Wrap(FnAddUser, ReqAddUser, Ct);
 	}
 
 	[Impl]
-	public async Task<RespLogin> Login(
-		ReqLogin ReqLogin
-		,CT Ct
-	){
+	public async Task<RespLogin> Login(ReqLogin ReqLogin ,CT Ct){
 		return await TxnWrapper.Wrap(FnLogin, ReqLogin, Ct);
 	}
 

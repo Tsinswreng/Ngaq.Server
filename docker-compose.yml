@@ -1,20 +1,53 @@
-# docker-compose up -d ?
-version: '3'
+# cd /mnt/e/_code/CsNgaq/Ngaq.Server
+# docker compose up -d
+version: '3.9'
+
 services:
-  db:
-    image: postgres
-    restart: always
+  postgres:
+    image: postgres:latest
     environment:
-      POSTGRES_PASSWORD: mysecretpassword
-    #~environment
-    ports:
-      - "5432:5432"
-    #~ports
+      POSTGRES_PASSWORD: Tsinswreng
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    #~volumes
-  #~db
-#~services
+      - ngaq-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"   # 映射到宿主机 5432 端口
+  redis:
+    image: redis:latest
+    volumes:
+      - ngaq-redis-data:/data
+    ports:
+      - "6379:6379"   # 映射到宿主机 6379 端口
+    #
+  #
+#
 
 volumes:
-  pgdata:
+  ngaq-postgres-data:
+  ngaq-redis-data:
+
+
+#=
+#[2025-07-09T15:04:11.549+08:00_W28-3]
+#```bash
+#docker volume create ngaq-postgres-data
+#docker run \
+#	--name ngaq-postgres \
+#	-e POSTGRES_PASSWORD=Tsinswreng \
+#	-p 5432:5432 \
+#	-v ngaq-postgres-data:/var/lib/postgresql/data \
+#	-d postgres
+#
+#```
+#
+#=
+#[2025-07-12T10:40:20.107+08:00_W28-6]
+#//docker pull redis
+#```bash
+#docker volume create ngaq-redis-data
+#docker run \
+#	--name ngaq-redis \
+#	-p 6379:6379 \
+#	# Redis 默认数据目录是 /data \
+#	-v ngaq-redis-data:/data \
+#	-d redis
+#```

@@ -4,11 +4,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper/Tsinswreng.CsSqlHelper.csproj"/>
-		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.Sqlite/Tsinswreng.CsSqlHelper.Sqlite.csproj"/>
-		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.PostgreSql/Tsinswreng.CsSqlHelper.PostgreSql.csproj"/>
-		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.EFCore/Tsinswreng.CsSqlHelper.EFCore.csproj"/>
-		<ProjectReference Include="../../../Ngaq.Local/Ngaq.Local.csproj"/>
+		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper/Tsinswreng.CsSqlHelper.csproj" />
+		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.Sqlite/Tsinswreng.CsSqlHelper.Sqlite.csproj" />
+		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.PostgreSql/Tsinswreng.CsSqlHelper.PostgreSql.csproj" />
+		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.EFCore/Tsinswreng.CsSqlHelper.EFCore.csproj" />
+		<ProjectReference Include="../../../Ngaq.Local/Ngaq.Local.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -24,6 +24,7 @@
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
 		<PackageReference Include="SQLite" />
 		<PackageReference Include="Konscious.Security.Cryptography.Argon2" />
+		<PackageReference Include="StackExchange.Redis" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
 	</ItemGroup>
 
