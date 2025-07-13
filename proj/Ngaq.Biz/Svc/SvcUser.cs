@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using Ngaq.Biz.Db;
 using Ngaq.Biz.Db.User;
@@ -28,7 +29,8 @@ public class SvcUser(
 	// ,DbFnCtxMkr DbFnCtxMkr
 	// ,ITxnRunner TxnRunner
 	,TxnWrapper<DbFnCtx> TxnWrapper
-	,IConnectionMultiplexer Redis
+	,IDistributedCache Cache
+
 )
 	: ISvcUser
 {

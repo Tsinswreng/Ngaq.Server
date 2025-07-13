@@ -9,6 +9,7 @@
 		"Redis": {
 			"Host": "localhost"
 			,"Port": 6379 // 須與docker-compose.yml中之設定一致
+			,"InstanceName": "CsNgaq"
 		}
 	},
 	"User":{

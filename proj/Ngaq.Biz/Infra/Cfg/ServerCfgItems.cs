@@ -8,21 +8,23 @@ public partial class ServerCfgItems{
 	public static ServerCfgItems Inst => _Inst??= new ServerCfgItems();
 	protected str ConnectionString = nameof(ConnectionString);
 
-	public ICfgItem<i32> Port => Mk([nameof(Port)], 5000);
-	public ICfgItem Db => Mk([nameof(Db)]);
-	public ICfgItem PostgreSql => Mk([nameof(PostgreSql)], null, Db);
-	public ICfgItem<str> PgDbConnStr => Mk(
-		[nameof(ConnectionString)],"",PostgreSql
-	);
+	public ICfgItem<i32> Port => Mk(null, [nameof(Port)], 5000);
+	public ICfgItem Db => Mk(null, [nameof(Db)]);
+		public ICfgItem PostgreSql => Mk(Db, [nameof(PostgreSql)], null);
+			public ICfgItem<str> PgDbConnStr => Mk(
+				PostgreSql,[nameof(ConnectionString)],""
+			);
+		//~PostgreSql
+		public ICfgItem Redis => Mk(Db, [nameof(Redis)], null);
+			public ICfgItem<str> RedisHost => Mk(Redis, ["Host"], "localhost");
+			public ICfgItem<i32> RedisPort => Mk(Redis, ["Port"], 6379);
+			public ICfgItem<str> RedisInstanceName => Mk(Redis, ["InstanceName"], "");
+		//~Redis
+		public ICfgItem Sqlite => Mk(Db, [nameof(Sqlite)], null);
+			public ICfgItem<str> SqliteDbPath => Mk(Sqlite, ["Path"], "ErrDb.sqlite");
+		//~Sqlite
+	//~Db
 
-	public ICfgItem Redis => Mk([nameof(Redis)], null, Db);
-		public ICfgItem<str> RedisHost => Mk(["Host"], "localhost", Redis);
-		public ICfgItem<i32> RedisPort => Mk(["Port"], 6379, Redis);
-	//
-
-	public ICfgItem Sqlite => Mk([nameof(Sqlite)], null, Db);
-	public ICfgItem<str> SqliteDbPath => Mk(["Path"], "ErrDb.sqlite", Sqlite);
-
-	public ICfgItem User => Mk([nameof(User)]);
-	public ICfgItem<str> JwtSecret => Mk([nameof(JwtSecret)], "", User);
+	public ICfgItem User => Mk(null, [nameof(User)]);
+		public ICfgItem<str> JwtSecret => Mk(User, [nameof(JwtSecret)], "");
 }

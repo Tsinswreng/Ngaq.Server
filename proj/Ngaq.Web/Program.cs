@@ -66,10 +66,14 @@ builder.Services.ConfigureHttpJsonOptions(opt =>
 	opt.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 
-
 builder.Services
 	.SetUpBiz()
 	.SetupWeb()
+	.AddStackExchangeRedisCache(opt=>{
+		var RedisConnStr = CfgItems.RedisHost.GetFrom(Cfg)+":"+CfgItems.RedisPort.GetFrom(Cfg);
+		opt.Configuration = RedisConnStr;
+		opt.InstanceName = CfgItems.RedisInstanceName.GetFrom(Cfg);
+	})
 ;
 //AppRouterIniter.Inst.RegisterCtrlr();
 var AppRouterIniter = new AppRouterIniter(builder.Services);
