@@ -29,7 +29,7 @@ using IdTool = Tsinswreng.CsTools.ToolUInt128;
 
 namespace Ngaq.Biz.Db;
 
-public class ServerDbCtx
+public  partial class ServerDbCtx
 	:DbContext
 {
 	public DbSet<PoUser> User{get;set;}
@@ -51,7 +51,7 @@ public class ServerDbCtx
 		// 	Directory.GetCurrentDirectory(),
 		// 	"..", "Ngaq_Server.sqlite"
 		// );
-		var dbPath = ServerCfgItems.Inst.SqliteDbPath.GetFrom(ServerCfg.Inst);
+		var dbPath = ServerCfgItems.SqliteDbPath.GetFrom(ServerCfg.Inst);
 		opt.UseSqlite($"Data Source={dbPath}");
 	}
 
@@ -260,7 +260,7 @@ public class ServerDbCtx
 }
 
 
-public class TempusConverter : ValueConverter<Tempus, i64>{
+public  partial class TempusConverter : ValueConverter<Tempus, i64>{
 	public TempusConverter(): base(
 			v => v
 			,v => v
@@ -268,7 +268,7 @@ public class TempusConverter : ValueConverter<Tempus, i64>{
 	{}
 }
 
-public class IdUserConverter : ValueConverter<IdUser, u8[]>{
+public  partial class IdUserConverter : ValueConverter<IdUser, u8[]>{
 	public IdUserConverter(): base(
 			v => v.Value.ToByteArr()
 			,v => IdUser.FromByteArr(v)
@@ -308,7 +308,7 @@ using ToolId = Tsinswreng.CsUlid.IdTool;
 
  */
 
-public class LocalDbCtx : DbContext{
+public  partial class LocalDbCtx : DbContext{
 
 	public DbSet<PoWord> PoWord{get;set;}
 	public DbSet<PoWordProp> PoKv{get;set;}

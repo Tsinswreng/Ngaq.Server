@@ -1,5 +1,6 @@
 {
-	"Db":{
+	"Port": 5000
+	,"Db":{
 		"PostgreSql":{
 			"ConnectionString": ""
 		},

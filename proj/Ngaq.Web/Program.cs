@@ -4,7 +4,7 @@ using Ngaq.Biz;
 using Ngaq.Web;
 using Tsinswreng.CsCfg;
 using Ngaq.Web.AspNetTools;
-
+using CfgItems = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
 
 static str GetCfgFilePath(string[] args){
 	var CfgFilePath = "";
@@ -21,7 +21,7 @@ static str GetCfgFilePath(string[] args){
 }
 
 var Cfg = ServerCfg.Inst;
-var CfgItems = ServerCfgItems.Inst;
+//var CfgItems = ServerCfgItems.Inst;
 
 try{
 	System.Console.WriteLine(
@@ -51,9 +51,17 @@ catch (System.Exception e){
 
 
 var builder = WebApplication.CreateSlimBuilder(args);
+// 为所有请求启用 CORS (不推荐用于生产环境):
+builder.Services.AddCors(opt=>{
+	opt.AddDefaultPolicy(plc=>{
+		plc.AllowAnyOrigin()
+		.AllowAnyHeader()
+		.AllowAnyMethod();
+	});
+});
 
 builder.WebHost.UseKestrel(options =>{
-	var Port = ServerCfgItems.Inst.Port.GetFrom(ServerCfg.Inst);
+	var Port = ServerCfgItems.Port.GetFrom(ServerCfg.Inst);
 	options.ListenLocalhost(Port);  // 监听本地端口
 	// 或者用 options.ListenAnyIP(5001); 监听所有IP地址
 });
@@ -75,10 +83,14 @@ builder.Services
 		opt.InstanceName = CfgItems.RedisInstanceName.GetFrom(Cfg);
 	})
 ;
+
+
 //AppRouterIniter.Inst.RegisterCtrlr();
 var AppRouterIniter = new AppRouterIniter(builder.Services);
 var app = builder.Build();
 
+//cors
+app.UseCors();
 
 
 var BaseRoute = app.MapGroup("/"); //RouteGroupBuilder
@@ -95,3 +107,6 @@ public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplet
 internal partial class AppJsonSerializerContext : JsonSerializerContext{
 
 }
+
+
+

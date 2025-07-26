@@ -2,7 +2,7 @@ using Ngaq.Web.AspNetTools;
 
 namespace Ngaq.Web;
 
-public interface ICtrlr{
+public  partial interface ICtrlr{
 	public nil InitRouter(
 		IRouteGroup R
 	);

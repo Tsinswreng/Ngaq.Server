@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Castle.Core.Logging;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Ngaq.Biz.Db;
 using Ngaq.Biz.Db.User;
@@ -22,7 +24,7 @@ using Tsinswreng.CsCore;
 using Tsinswreng.CsSqlHelper;
 namespace Ngaq.Biz.Svc;
 
-public class SvcUser(
+public  partial class SvcUser(
 	DaoUser DaoUser
 	,IRepo<PoUser, IdUser> RepoUser
 	,IRepo<PoPassword, IdPassword> RepoPassword
@@ -30,7 +32,7 @@ public class SvcUser(
 	// ,ITxnRunner TxnRunner
 	,TxnWrapper<DbFnCtx> TxnWrapper
 	,IDistributedCache Cache
-
+	,ILogger<SvcUser> Log
 )
 	: ISvcUser
 {
@@ -38,7 +40,7 @@ public class SvcUser(
 public str GeneAccessToken(
 		str UserIdStr
 	){
-		var JwtSecret = ServerCfgItems.Inst.JwtSecret.GetFrom(ServerCfg.Inst);
+		var JwtSecret = ServerCfgItems.JwtSecret.GetFrom(ServerCfg.Inst);
 		var securityKey = new SymmetricSecurityKey(
 			//注意: 小於256字節則報錯
 			//Encoding.UTF8.GetBytes("2025-04-16T21:00:39.328+08:00_W16-3=2025-04-16T21:00:50.706+08:00_W16-3")
@@ -100,6 +102,14 @@ public str GeneAccessToken(
 			};
 			await AddUsers([User], Ct);
 			await AddPasswords([Password], Ct);
+			//TODO
+			try{
+				await Cache.SetStringAsync($"user:register:{User.Id}", JSON.stringify(User), new DistributedCacheEntryOptions {
+					AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+				}, Ct);
+			}catch(Exception e){
+				Log.LogError(e, "Failed to cache user registration info.");
+			}
 			return NIL;
 		};
 		return Fn;
@@ -137,12 +147,18 @@ public str GeneAccessToken(
 			}
 
 			var PoPassword = await SelectPasswordById(PoUser.Id, Ct);
-			if(!(	await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct)	)){
+			if(!( await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) )){
 				throw new ErrBase("Password not correct");
 			};
 
+			var accessToken = GeneAccessToken(PoUser.Id.ToString());
+			//TODO
+			await Cache.SetStringAsync($"user:token:{PoUser.Id}", accessToken, new DistributedCacheEntryOptions {
+				AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+			}, Ct);
+
 			var RespLogin = new RespLogin{
-				AccessToken = GeneAccessToken(PoUser.Id.ToString())
+				AccessToken = accessToken
 				,PoUser = PoUser
 				,UserIdStr = PoUser.Id.ToString()
 			};

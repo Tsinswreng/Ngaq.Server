@@ -14,6 +14,7 @@ using StackExchange.Redis;
 using Ngaq.Biz.Infra.Cfg;
 using Tsinswreng.CsCfg;
 using Microsoft.Extensions.Caching.Distributed;
+using Ngaq.Biz.Db.TswG;
 
 
 namespace Ngaq.Biz;
@@ -38,7 +39,6 @@ public static class DiBiz{
 			R.Open();
 			return R;
 		});
-
 		z.AddDbContext<ServerDbCtx>();
 		z.AddScoped<IDbFnCtxMkr<DbFnCtx>, DbFnCtxMkr<DbFnCtx>>();
 		z.AddScoped<ITxnRunner, EfTxnRunner>();
@@ -49,7 +49,6 @@ public static class DiBiz{
 		z.AddScoped<SvcUser>();
 
 		// 配置 Redis 连接
-		var CfgItems = ServerCfgItems.Inst;
 		var Cfg = ServerCfg.Inst;
 		// var configurationOptions = ConfigurationOptions.Parse(redisConnectionString);
 		// // 可选：根据需要配置其他选项，例如：

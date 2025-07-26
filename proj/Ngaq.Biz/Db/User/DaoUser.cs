@@ -6,7 +6,7 @@ using Ngaq.Local.Db;
 
 namespace Ngaq.Biz.Db.User;
 
-public class DaoUser(
+public  partial class DaoUser(
 	ServerDbCtx DbCtx
 ){
 

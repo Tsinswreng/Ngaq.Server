@@ -4,7 +4,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using Konscious.Security.Cryptography;
-public class ToolArgon{
+public  partial class ToolArgon{
 
 	protected static ToolArgon? _inst = null;
 	public static ToolArgon Inst => _inst??= new ToolArgon();

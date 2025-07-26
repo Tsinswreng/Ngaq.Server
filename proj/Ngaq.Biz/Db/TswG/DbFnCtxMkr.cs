@@ -1,16 +1,16 @@
 using Ngaq.Local.Db;
 using Tsinswreng.CsSqlHelper;
 
-namespace Ngaq.Biz.Db;
+namespace Ngaq.Biz.Db.TswG;
 
-// public interface DbFnCtxMkr<TDbFnCtx>
+// public  partial interface DbFnCtxMkr<TDbFnCtx>
 // 	:IDbFnCtxMkr<TDbFnCtx>
 // 	where TDbFnCtx: IDbFnCtx, new()
 // {
 
 // }
 
-public class DbFnCtxMkr<TDbFnCtx>
+public  partial class DbFnCtxMkr<TDbFnCtx>
 	:BaseDbFnCtxMkr<TDbFnCtx>
 	where TDbFnCtx: IBaseDbFnCtx, new()
 {

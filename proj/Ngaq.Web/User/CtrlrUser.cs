@@ -12,7 +12,7 @@ using Tsinswreng.CsCore;
 
 namespace Ngaq.Web.User;
 
-public class CtrlrUser(
+public  partial class CtrlrUser(
 	SvcUser SvcUser
 )
 	:ICtrlr
