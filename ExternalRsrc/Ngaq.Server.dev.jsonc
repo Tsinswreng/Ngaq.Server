@@ -1,8 +1,13 @@
 {
 	"Port": 5000
 	,"Db":{
-		"PostgreSql":{
-			"ConnectionString": ""
+		"Postgres":{
+			"ConnectionString": ""//若有值則優先用此
+			,"Server":"localhost"
+			,"Port":5432
+			,"Database":"postgres"
+			,"UserId":"postgres"
+			,"Password":"Tsinswreng"
 		},
 		"Sqlite": {
 			"Path": "Ngaq_Server.sqlite"

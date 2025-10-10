@@ -1,14 +1,21 @@
-using Microsoft.EntityFrameworkCore;
-using Ngaq.Core.Model.Sys.Po.Password;
-using Ngaq.Core.Model.Sys.Po.User;
-using Ngaq.Core.Models.Po;
-using Ngaq.Local.Db;
-
 namespace Ngaq.Biz.Db.User;
 
-public  partial class DaoUser(
-	ServerDbCtx DbCtx
+using Microsoft.EntityFrameworkCore;
+using Ngaq.Core.Infra.Core;
+using Ngaq.Core.Model.Sys.Po.User;
+using Ngaq.Core.Models.Po;
+using Ngaq.Core.Models.Sys.Po.Password;
+using Ngaq.Core.Models.Sys.Po.Role;
+using Ngaq.Core.Models.Sys.Po.User;
+using Ngaq.Local.Db;
+using Tsinswreng.CsSqlHelper;
+
+public partial class DaoUser(
+	ISqlCmdMkr SqlCmdMkr
+	,ITblMgr TblMgr
+	//,IAppRepo<PoWordLearn, IdWordLearn> RepoLearn
 ){
+
 
 	public async Task<Func<
 		str
@@ -18,10 +25,11 @@ public  partial class DaoUser(
 		IDbFnCtx DbFnCtx
 		,CT Ct
 	){
-		var Fn = async(str UniqueName, CT ct)=>{
-			return await DbCtx.User.Where(u => u.UniqueName == UniqueName).FirstOrDefaultAsync(ct);
-		};
-		return Fn;
+		throw new NotImplementedException();
+		// var Fn = async(str UniqueName, CT Ct)=>{
+		// 	return await DbCtx.User.Where(u => u.UniqueName == UniqueName).FirstOrDefaultAsync(Ct);
+		// };
+		// return Fn;
 	}
 
 	public async Task<Func<
@@ -29,13 +37,28 @@ public  partial class DaoUser(
 		,CT
 		,Task<PoUser?>
 	>> FnSelectByEmail(
-		IDbFnCtx DbFnCtx
+		IDbFnCtx? Ctx
 		,CT Ct
 	){
-		var Fn = async(str Email, CT Ct)=>{
-			return await DbCtx.User.Where(u => u.Email == Email).FirstOrDefaultAsync(Ct);
+var T = TblMgr.GetTbl<PoUser>();
+var NEmail = nameof(PoUser.Email); var PEmail = T.Prm(NEmail);
+var Sql =
+$"""
+SELECT * FROM {T.Qt(T.DbTblName)}
+WHERE {T.Fld(NEmail)} = {PEmail}
+""";
+var Cmd = await SqlCmdMkr.MkCmd(Ctx, Sql, Ct);
+Ctx?.AddToDispose(Cmd);
+		return async(Email, Ct)=>{
+			var Args = ArgDict.Mk().Add(PEmail, T.UpperToRaw(Email));
+			var Dicts = await Cmd.WithCtx(Ctx).All(Ct);
+			if(Dicts.Count > 1){
+				throw new FatalLogicErr("Dicts.Count > 1");
+			}
+			var Dict = Dicts.SingleOrDefault();
+			var R = T.DbDictToEntity<PoUser>(Dict);
+			return R;
 		};
-		return Fn;
 	}
 
 	public async Task<Func<
@@ -49,7 +72,6 @@ public  partial class DaoUser(
 		var Fn = async(IdUser UserId, CT Ct)=>{
 			return await DbCtx.Password.Where(
 				p => p.UserId == UserId
-				&& p.Status == PoStatus.Normal
 			).FirstOrDefaultAsync(Ct);
 		};
 		return Fn;

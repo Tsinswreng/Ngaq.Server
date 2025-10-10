@@ -2,7 +2,7 @@ using Ngaq.Web.AspNetTools;
 
 namespace Ngaq.Web;
 
-public  partial class CtrlrRegisterer{
+public partial class CtrlrRegisterer{
 	public IServiceCollection SvcColct;
 	public CtrlrRegisterer(IServiceCollection SvcColct){
 		this.SvcColct = SvcColct;

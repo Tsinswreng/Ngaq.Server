@@ -5,6 +5,7 @@ using Ngaq.Web;
 using Tsinswreng.CsCfg;
 using Ngaq.Web.AspNetTools;
 using CfgItems = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
+using System.Runtime.InteropServices;
 
 static str GetCfgFilePath(string[] args){
 	var CfgFilePath = "";
@@ -75,7 +76,7 @@ builder.Services.ConfigureHttpJsonOptions(opt =>
 });
 
 builder.Services
-	.SetUpBiz()
+	.SetupBiz()
 	.SetupWeb()
 	.AddStackExchangeRedisCache(opt=>{
 		var RedisConnStr = CfgItems.RedisHost.GetFrom(Cfg)+":"+CfgItems.RedisPort.GetFrom(Cfg);
@@ -107,6 +108,4 @@ public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplet
 internal partial class AppJsonSerializerContext : JsonSerializerContext{
 
 }
-
-
 

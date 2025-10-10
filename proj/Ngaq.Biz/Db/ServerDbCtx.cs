@@ -20,6 +20,9 @@ using Ngaq.Core.Model.Po.Role;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Core.Models.Po;
+using Ngaq.Core.Models.Sys.Po.Password;
+using Ngaq.Core.Models.Sys.Po.Role;
+using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Core.Tools;
 using Tsinswreng.CsCfg;
 using Tsinswreng.CsTools;
@@ -106,10 +109,10 @@ public  partial class ServerDbCtx
 		e.Property(e=>e.CreatedBy).HasConversion<IdUserConverter>();
 		e.Property(e=>e.LastUpdatedBy).HasConversion<IdUserConverter>();
 
-		e.Property(e=>e.Status).HasConversion<i32>(
-			PoStatus => PoStatus.Value
-			,Raw => PoStatus.Parse(Raw)
-		);
+		// e.Property(e=>e.Status).HasConversion<i32>(
+		// 	PoStatus => PoStatus.Value
+		// 	,Raw => PoStatus.Parse(Raw)
+		// );
 
 		return NIL;
 	}
@@ -130,12 +133,7 @@ public  partial class ServerDbCtx
 			//e.HasIndex(e=>e.PhoneNumber).IsUnique(); //PhoneNumber未填則不好辦
 
 			//var (fn1, fn2) = _ConvU128EtU8Arr<IdRole>();
-			e.Property(e=>e.RoleId)
-				.HasConversion(
-					id => id==null?null:IdTool.ToByteArr(id.Value.Value)
-					,val => val==null?null:new IdRole(IdTool.ByteArrToUInt128(val))
-				)
-			;
+
 		});
 
 		mb.Entity<PoPassword>(e=>{
@@ -188,7 +186,7 @@ public  partial class ServerDbCtx
 			// 	,val => new Id_Role(val)
 			// );
 			_CfgIdU128<PoRole, IdRole>(e);
-			e.HasIndex(e=>e.Key).IsUnique();
+			e.HasIndex(e=>e.Code).IsUnique();
 		});
 
 		// mb.Entity<Po_Permission>(e=>{
@@ -260,7 +258,7 @@ public  partial class ServerDbCtx
 }
 
 
-public  partial class TempusConverter : ValueConverter<Tempus, i64>{
+public partial class TempusConverter : ValueConverter<Tempus, i64>{
 	public TempusConverter(): base(
 			v => v
 			,v => v
@@ -268,7 +266,7 @@ public  partial class TempusConverter : ValueConverter<Tempus, i64>{
 	{}
 }
 
-public  partial class IdUserConverter : ValueConverter<IdUser, u8[]>{
+public partial class IdUserConverter : ValueConverter<IdUser, u8[]>{
 	public IdUserConverter(): base(
 			v => v.Value.ToByteArr()
 			,v => IdUser.FromByteArr(v)

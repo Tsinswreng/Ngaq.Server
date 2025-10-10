@@ -1,30 +1,30 @@
+namespace Ngaq.Biz.Svc;
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Castle.Core.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Ngaq.Biz.Db;
 using Ngaq.Biz.Db.User;
 using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz.Tools;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
-using Ngaq.Core.Model.Sys.Req;
+using Ngaq.Core.Models.Sys.Po.Password;
+using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Core.Models.Sys.Req;
 using Ngaq.Core.Models.Sys.Resp;
 using Ngaq.Core.Sys.Svc;
 using Ngaq.Core.Tools;
 using Ngaq.Local.Db;
-using StackExchange.Redis;
 using Tsinswreng.CsCfg;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsSqlHelper;
-namespace Ngaq.Biz.Svc;
 
-public  partial class SvcUser(
+
+public partial class SvcUser(
 	DaoUser DaoUser
 	,IRepo<PoUser, IdUser> RepoUser
 	,IRepo<PoPassword, IdPassword> RepoPassword
@@ -34,10 +34,10 @@ public  partial class SvcUser(
 	,IDistributedCache Cache
 	,ILogger<SvcUser> Log
 )
-	: ISvcUser
+	:ISvcUser
 {
 
-public str GeneAccessToken(
+	public str GeneAccessToken(
 		str UserIdStr
 	){
 		var JwtSecret = ServerCfgItems.JwtSecret.GetFrom(ServerCfg.Inst);
@@ -72,7 +72,6 @@ public str GeneAccessToken(
 		var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
 		return accessToken;
 	}
-
 
 
 	public async Task<Func<
@@ -175,6 +174,11 @@ public str GeneAccessToken(
 	[Impl]
 	public async Task<RespLogin> Login(ReqLogin ReqLogin ,CT Ct){
 		return await TxnWrapper.Wrap(FnLogin, ReqLogin, Ct);
+	}
+
+	[Impl]
+	public async Task<nil> Logout(ReqLogout ReqLogout, CT Ct){
+		return NIL;
 	}
 
 }

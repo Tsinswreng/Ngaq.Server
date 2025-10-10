@@ -10,11 +10,26 @@ public partial class ServerCfgItems{
 
 	public static ICfgItem<i32> Port => Mk(null, [nameof(Port)], 5000);
 	public static ICfgItem Db => Mk(null, [nameof(Db)]);
-		public static ICfgItem PostgreSql => Mk(Db, [nameof(PostgreSql)], null);
+		public static ICfgItem Postgres => Mk(Db, [nameof(Postgres)], null);
 			public static ICfgItem<str> PgDbConnStr => Mk(
-				PostgreSql,[nameof(ConnectionString)],""
+				Postgres,[nameof(ConnectionString)],""
 			);
-		//~PostgreSql
+			public static ICfgItem<str> PgServer = Mk(
+				Postgres, ["Server"], "localhost"
+			);
+			public static ICfgItem<i32> PgPort = Mk(
+				Postgres, ["Port"], 5432
+			);
+			public static ICfgItem<str> PgDatabase = Mk(
+				Postgres, ["Database"], "postgres"
+			);
+			public static ICfgItem<str> PgUserId = Mk(
+				Postgres, ["UserId"], "postgres"
+			);
+			public static ICfgItem<str> PgPassword = Mk(
+				Postgres, ["Password"], ""
+			);
+		//~Postgres
 		public static ICfgItem Redis => Mk(Db, [nameof(Redis)], null);
 			public static ICfgItem<str> RedisHost => Mk(Redis, ["Host"], "localhost");
 			public static ICfgItem<i32> RedisPort => Mk(Redis, ["Port"], 6379);

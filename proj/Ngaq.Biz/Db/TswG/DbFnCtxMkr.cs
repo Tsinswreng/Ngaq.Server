@@ -10,7 +10,7 @@ namespace Ngaq.Biz.Db.TswG;
 
 // }
 
-public  partial class DbFnCtxMkr<TDbFnCtx>
+public partial class DbFnCtxMkr<TDbFnCtx>
 	:BaseDbFnCtxMkr<TDbFnCtx>
 	where TDbFnCtx: IBaseDbFnCtx, new()
 {

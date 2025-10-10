@@ -1,18 +1,19 @@
+namespace Ngaq.Web.User;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Ngaq.Biz.Svc;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Infra.Core;
-using Ngaq.Core.Model.Sys.Req;
 using Ngaq.Core.Models.Sys.Req;
 using Ngaq.Core.Tools;
 using Ngaq.Web.AspNetTools;
 using Tsinswreng.CsCore;
 
-namespace Ngaq.Web.User;
 
-public  partial class CtrlrUser(
+
+public partial class CtrlrUser(
 	SvcUser SvcUser
 )
 	:ICtrlr
