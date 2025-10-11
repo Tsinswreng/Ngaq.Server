@@ -6,6 +6,7 @@ using Tsinswreng.CsCfg;
 using Ngaq.Web.AspNetTools;
 using CfgItems = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
 using System.Runtime.InteropServices;
+using Ngaq.Core.Infra;
 
 static str GetCfgFilePath(string[] args){
 	var CfgFilePath = "";
@@ -69,7 +70,7 @@ builder.WebHost.UseKestrel(options =>{
 
 builder.Services.ConfigureHttpJsonOptions(opt =>
 {
-	opt.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+	opt.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonCtx.Default);
 	opt.SerializerOptions.PropertyNamingPolicy = null;
 	opt.SerializerOptions.WriteIndented = true;
 	opt.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -93,10 +94,14 @@ var app = builder.Build();
 //cors
 app.UseCors();
 
+app.MapGet("/", async()=>{
+	return new Tempus().ToString();
+});
+
 
 var BaseRoute = app.MapGroup("/"); //RouteGroupBuilder
-var Svc = app.Services;
 
+var Svc = app.Services;
 AppRouterIniter.Init(Svc, new RouteGroup(BaseRoute));
 
 

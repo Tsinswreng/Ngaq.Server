@@ -12,24 +12,23 @@ using Ngaq.Web.AspNetTools;
 using Tsinswreng.CsCore;
 
 
-
+using U = Ngaq.Core.Infra.ConstUrl.UrlUser;
 public partial class CtrlrUser(
 	SvcUser SvcUser
 )
 	:ICtrlr
 {
-	public str BaseUrl{get;set;} = ConstApiUrl.Inst.ApiV1SysUser;
+	public str BaseUrl{get;set;} =  ConstUrl.User;  //ConstApiUrlOld.Inst.ApiV1SysUser;
 
 	[Impl]
 	public nil InitRouter(
 		IRouteGroup R
 	){
-		var U = ApiUrl_User.Inst;
 		R = R.MapGroup(BaseUrl);
 		R.MapPost(U.Login, Login);
 
 		R.MapGet("/Time", async(HttpContext Ctx, CT Ct)=>{
-			return await Task.FromResult(Results.Ok(DateTime.Now));
+			return await Task.FromResult(Results.Ok(new Tempus()));
 		});
 
 		R.MapPost(U.AddUser, AddUser);
