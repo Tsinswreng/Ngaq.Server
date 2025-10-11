@@ -1,10 +1,8 @@
-using Ngaq.Web.AspNetTools;
-
 namespace Ngaq.Web;
 
 public  partial interface ICtrlr{
 	public nil InitRouter(
-		IRouteGroup R
+		RouteGroupBuilder R
 	);
 }
 

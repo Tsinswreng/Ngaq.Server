@@ -1,7 +1,6 @@
-using Ngaq.Web.AspNetTools;
+namespace Ngaq.Web;
 using Ngaq.Web.User;
 
-namespace Ngaq.Web;
 
 public partial class AppRouterIniter{
 	public CtrlrRegisterer CtrlrRegisterer;
@@ -17,7 +16,7 @@ public partial class AppRouterIniter{
 
 	public nil Init(
 		IServiceProvider SvcPrvdr
-		,IRouteGroup BaseRoute
+		,RouteGroupBuilder BaseRoute
 	){
 		CtrlrRegisterer.InitRouters(SvcPrvdr, BaseRoute);
 		return NIL;

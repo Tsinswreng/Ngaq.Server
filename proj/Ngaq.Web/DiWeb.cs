@@ -1,5 +1,3 @@
-using Ngaq.Web.AspNetTools;
-
 namespace Ngaq.Web;
 
 public static class DiWeb{

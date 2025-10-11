@@ -5,10 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Ngaq.Biz.Svc;
 using Ngaq.Core.Infra;
-using Ngaq.Core.Infra.Core;
 using Ngaq.Core.Models.Sys.Req;
-using Ngaq.Core.Tools;
-using Ngaq.Web.AspNetTools;
 using Tsinswreng.CsCore;
 
 
@@ -22,7 +19,7 @@ public partial class CtrlrUser(
 
 	[Impl]
 	public nil InitRouter(
-		IRouteGroup R
+		RouteGroupBuilder R
 	){
 		R = R.MapGroup(BaseUrl);
 		R.MapPost(U.Login, Login);

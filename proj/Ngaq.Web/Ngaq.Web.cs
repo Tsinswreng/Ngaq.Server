@@ -3,9 +3,7 @@ using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz;
 using Ngaq.Web;
 using Tsinswreng.CsCfg;
-using Ngaq.Web.AspNetTools;
 using CfgItems = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
-using System.Runtime.InteropServices;
 using Ngaq.Core.Infra;
 
 static str GetCfgFilePath(string[] args){
@@ -102,7 +100,7 @@ app.MapGet("/", async()=>{
 var BaseRoute = app.MapGroup("/"); //RouteGroupBuilder
 
 var Svc = app.Services;
-AppRouterIniter.Init(Svc, new RouteGroup(BaseRoute));
+AppRouterIniter.Init(Svc, BaseRoute);
 
 
 app.Run();
