@@ -1,7 +1,7 @@
 namespace Ngaq.Web.AspNetTools;
 
 using Rtn = object;
-public  partial class RouteGroup(RouteGroupBuilder R):IRouteGroup{
+public partial class RouteGroup(RouteGroupBuilder R):IRouteGroup{
 	public IRouteGroup MapGroup(string Url){
 		var Raw = R.MapGroup(Url);
 		return new RouteGroup(Raw);

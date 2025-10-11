@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Ngaq.Web.AspNetTools;
 
 namespace Ngaq.Web;
@@ -12,7 +13,11 @@ public partial class CtrlrRegisterer{
 
 	IList<Func<nil>> InitFns = new List<Func<nil>>();
 
-	public nil RegisterCtrlr<T>()
+	public nil RegisterCtrlr<
+//'TService' generic argument does not satisfy 'DynamicallyAccessedMemberTypes.PublicConstructors' in 'Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddScoped<TService>(IServiceCollection)'. The generic parameter 'T' of 'Ngaq.Web.CtrlrRegisterer.RegisterCtrlr<T>()' does not have matching annotations. The source value must declare at least the same requirements as those declared on the target location it is assigned to.
+		[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+		T
+	>()
 		where T:class, ICtrlr
 	{
 		SvcColct.AddScoped<T>();

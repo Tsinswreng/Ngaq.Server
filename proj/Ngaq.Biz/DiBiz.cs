@@ -16,6 +16,8 @@ using Ngaq.Biz.Db.TswG;
 using Ngaq.Core.Models.Sys.Po.User;
 using Npgsql;
 using Ngaq.Core.Models.Sys.Po.Password;
+using Tsinswreng.CsDictMapper;
+using Ngaq.Core.Infra;
 
 public static class DiBiz{
 	static IServiceCollection SetupEfCore(this IServiceCollection z){
@@ -43,30 +45,35 @@ public static class DiBiz{
 	static IServiceCollection SetupTswGSqlAdo(this IServiceCollection z){
 		//事務執行器
 		z.AddTransient<ITxnRunner, AdoTxnRunner>();
-		//
-		z.AddTransient<DbFnCtxMkr<DbFnCtx>>();
 
+		z.AddTransient<DbFnCtxMkr<DbFnCtx>>();
+		z.AddTransient<ISqlCmdMkr, PostgresCmdMkr>();
 		z.AddScoped<I_GetTxnAsy, PostgresCmdMkr>();
 		z.AddScoped<IDbFnCtxMkr<DbFnCtx>, DbFnCtxMkr<DbFnCtx>>();
 		//事務函數包裝器
 		z.AddScoped<TxnWrapper<DbFnCtx>>();
-		//z.AddScoped<IDbConnection>();
 		z.AddSingleton<NpgsqlDataSource>(ServerDb.Inst.DataSource);
-		z.AddSingleton<IDbConnPool, PostgresConnPool>();
+		//z.AddSingleton<I_GetDbConnAsy, PostgresConnPool>();
+		z.AddSingleton<I_GetDbConnAsy>(ServerDb.Inst.DbConnPool);
+		z.AddSingleton<ITblMgr>(ServerTblMgr.Inst);
 		return z;
 	}
 
 	static IServiceCollection AddRepoScoped<TEntity, TId>(
 		this IServiceCollection z
-	)where TEntity:class
+	)where TEntity:class, new()
 	{
-		z.AddScoped<IRepo<TEntity, TId>, EfRepo<TEntity, TId>>();
+		//z.AddScoped<IRepo<TEntity, TId>, EfRepo<TEntity, TId>>();
+		z.AddScoped<IRepo<TEntity, TId>, SqlRepo<TEntity, TId>>();
 		return z;
 	}
 	public static IServiceCollection SetupBiz(this IServiceCollection z){
 		z.SetupTswGSqlAdo();
+		z.AddSingleton<IDictMapperShallow>(CoreDictMapper.Inst);
+
 		z.AddRepoScoped<PoUser, IdUser>();
 		z.AddRepoScoped<PoPassword, IdPassword>();
+
 		z.AddScoped<DaoUser>();
 		z.AddScoped<SvcUser>();
 

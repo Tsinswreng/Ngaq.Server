@@ -1,11 +1,7 @@
 namespace Ngaq.Biz.Db.User;
 
-using Microsoft.EntityFrameworkCore;
-using Ngaq.Core.Infra.Core;
 using Ngaq.Core.Model.Sys.Po.User;
-using Ngaq.Core.Models.Po;
 using Ngaq.Core.Models.Sys.Po.Password;
-using Ngaq.Core.Models.Sys.Po.Role;
 using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Local.Db;
 using Tsinswreng.CsSqlHelper;
@@ -40,23 +36,18 @@ public partial class DaoUser(
 		IDbFnCtx? Ctx
 		,CT Ct
 	){
-var T = TblMgr.GetTbl<PoUser>();
-var NEmail = nameof(PoUser.Email); var PEmail = T.Prm(NEmail);
+var T = TblMgr.GetTbl<PoUser>(); var N = new PoUser.N();
+var PEmail = T.Prm(N.Email);
 var Sql =
 $"""
 SELECT * FROM {T.Qt(T.DbTblName)}
-WHERE {T.Fld(NEmail)} = {PEmail}
+WHERE {T.Fld(PEmail)} = {PEmail}
 """;
-var Cmd = await SqlCmdMkr.MkCmd(Ctx, Sql, Ct);
+var Cmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct);
 Ctx?.AddToDispose(Cmd);
 		return async(Email, Ct)=>{
-			var Args = ArgDict.Mk().Add(PEmail, T.UpperToRaw(Email));
-			var Dicts = await Cmd.WithCtx(Ctx).All(Ct);
-			if(Dicts.Count > 1){
-				throw new FatalLogicErr("Dicts.Count > 1");
-			}
-			var Dict = Dicts.SingleOrDefault();
-			var R = T.DbDictToEntity<PoUser>(Dict);
+			var Args = ArgDict.Mk(T).AddConv(PEmail, Email);
+			var R = await Cmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoUser>(T, Ct);
 			return R;
 		};
 	}
@@ -64,16 +55,23 @@ Ctx?.AddToDispose(Cmd);
 	public async Task<Func<
 		IdUser
 		,CT
-		,Task<PoPassword>
-	>> FnSelectPasswordById(
-		IDbFnCtx DbFnCtx
+		,Task<PoPassword?>
+	>> FnSlctPasswordByUserId(
+		IDbFnCtx? Ctx
 		,CT Ct
 	){
-		var Fn = async(IdUser UserId, CT Ct)=>{
-			return await DbCtx.Password.Where(
-				p => p.UserId == UserId
-			).FirstOrDefaultAsync(Ct);
+var T = TblMgr.GetTbl<PoPassword>(); var PUserId = T.Prm(nameof(PoPassword.UserId));
+var Sql =
+$"""
+SELECT * FROM {T.Qt(T.DbTblName)}
+WHERE 1=1
+AND {T.Fld(nameof(PoPassword.DelId))} IS NULL
+AND {T.Fld(PUserId)} = {PUserId}
+"""; var SqlCmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct); Ctx?.AddToDispose(SqlCmd);
+		return async(UserId, Ct)=>{
+			var Args = ArgDict.Mk(T).AddConv(PUserId, UserId);
+			var R = await SqlCmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoPassword>(T, Ct);
+			return R;
 		};
-		return Fn;
 	}
 }

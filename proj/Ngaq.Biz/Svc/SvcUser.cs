@@ -96,7 +96,7 @@ public partial class SvcUser(
 			var Password = new PoPassword{
 				Id = new()
 				,UserId = User.Id
-				,Algo = (i64)PoPassword.EAlgo.Argon2id
+				,Algo = PoPassword.EAlgo.Argon2id
 				,Text = PasswordHash
 			};
 			await AddUsers([User], Ct);
@@ -126,7 +126,7 @@ public partial class SvcUser(
 		//var SelectUserById = await RepoUser.FnSelectByIdAsy(DbFnCtx, ct);
 		var SelectUserByUniqueName = await DaoUser.FnSelectByUniqueName(DbFnCtx, Ct);
 		var SelectUserByEmail = await DaoUser.FnSelectByEmail(DbFnCtx, Ct);
-		var SelectPasswordById = await DaoUser.FnSelectPasswordById(DbFnCtx, Ct);
+		var SelectPasswordById = await DaoUser.FnSlctPasswordByUserId(DbFnCtx, Ct);
 		var Fn = async(ReqLogin Req, CT Ct)=>{
 			//TODO 校驗Req
 			PoUser? PoUser = null;

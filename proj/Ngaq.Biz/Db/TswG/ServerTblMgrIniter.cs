@@ -1,4 +1,5 @@
 namespace Ngaq.Biz.Db.TswG;
+
 using Ngaq.Core.Model.Po.Role;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
@@ -97,11 +98,7 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 """
 			]);
 		}
-
-
 		_Inited = true;
 		return NIL;
 	}
-
-
 }

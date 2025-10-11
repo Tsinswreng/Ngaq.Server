@@ -2,9 +2,11 @@
 namespace Ngaq.Biz.Db.TswG;
 
 using System.Data;
+using System.Data.Common;
 using Ngaq.Biz.Infra.Cfg;
 using Npgsql;
 using Tsinswreng.CsCfg;
+using Tsinswreng.CsSqlHelper.Postgres;
 using CFG = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
 
 
@@ -16,6 +18,7 @@ public static ServerDb Inst => _Inst??= new ServerDb();
 
 	//public IDbConnection DbConnection{get;set;}
 	public NpgsqlDataSource DataSource{get;set;}
+	public PostgresConnPool DbConnPool{get;set;}
 
 	public ServerDb(){
 		var Ca = CfgAccessor;
@@ -28,6 +31,7 @@ public static ServerDb Inst => _Inst??= new ServerDb();
 		//DbConnection = new NpgsqlConnection(ConnStr);
 		var DataSrcBuilder = new NpgsqlDataSourceBuilder(ConnStr);
 		DataSource = DataSrcBuilder.Build();
+		DbConnPool = new PostgresConnPool(DataSource);
 		//dsBuilder.UseLoggerFactory(loggerFactory); // 接入 Microsoft.Extensions.Logging
 		// 2-B AOT / 源生成器（可选）
 		//dsBuilder.EnableDynamicJson();         // System.Text.Json 源生成
