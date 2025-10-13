@@ -1,16 +1,18 @@
-namespace Ngaq.Biz.Svc;
+namespace Ngaq.Biz.Domains.User.Svc;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Ngaq.Biz.Infra.Cfg;
+using Ngaq.Core.Sys.Svc;
 using Tsinswreng.CsCfg;
 
 
 
-public class SvcToken{
-
+public class SvcToken
+	:ISvcToken
+{
 	public str GenAccessToken(
 		str UserIdStr
 	){

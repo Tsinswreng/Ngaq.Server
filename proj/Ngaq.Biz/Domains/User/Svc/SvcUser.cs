@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Svc;
+namespace Ngaq.Biz.Domains.User.Svc;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Ngaq.Biz.Db.User;
 using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz.Tools;
+using Ngaq.Core.Domains.User.Models.Req;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
@@ -22,6 +23,7 @@ using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsCfg;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsSqlHelper;
+using Ngaq.Core.Domains.Base.Models.Req;
 
 
 public partial class SvcUser(
@@ -33,44 +35,13 @@ public partial class SvcUser(
 	,TxnWrapper<DbFnCtx> TxnWrapper
 	,IDistributedCache Cache
 	,ILogger<SvcUser> Log
+	,ISvcToken SvcToken
 )
 	:ISvcUser
 {
 
-	public str GeneAccessToken(
-		str UserIdStr
-	){
-		var JwtSecret = ServerCfgItems.JwtSecret.GetFrom(ServerCfg.Inst);
-		var securityKey = new SymmetricSecurityKey(
-			//注意: 小於256字節則報錯
-			//Encoding.UTF8.GetBytes("2025-04-16T21:00:39.328+08:00_W16-3=2025-04-16T21:00:50.706+08:00_W16-3")
-			Encoding.UTF8.GetBytes(JwtSecret??"")
-		);
-		var credentials = new SigningCredentials(
-			securityKey, SecurityAlgorithms.HmacSha256Signature
-		);
-		var claims = new[]{
-			//subject, 标识令牌的归属实体（如用户、服务或设备）
-			new Claim(JwtRegisteredClaimNames.Sub, UserIdStr)
-			//Jwt Id 为令牌提供全局唯一标识符，防范重放攻击（Replay Attack）
-			,new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()??"")
-			//issuedAt
-			,new Claim(
-				JwtRegisteredClaimNames.Iat
-				,DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()
-				,ClaimValueTypes.Integer64
-			)
-			//,new Claim("role", "admin")//custom
-		};
-		var token = new JwtSecurityToken(
-			issuer: "service-alpha-dev"
-			,audience: "client-app-dev"
-			,claims: claims
-			,expires: DateTime.UtcNow.AddMinutes(30)
-			,signingCredentials: credentials
-		);
-		var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-		return accessToken;
+	public str GeneAccessToken(str UserIdStr){
+		return SvcToken.GenAccessToken(UserIdStr);
 	}
 
 
@@ -84,15 +55,15 @@ public partial class SvcUser(
 	){
 		var AddUsers = await RepoUser.FnInsertMany(DbFnCtx, Ct);
 		var AddPasswords = await RepoPassword.FnInsertMany(DbFnCtx, Ct);
-		return async(ReqAddUser, Ct)=>{
-			//TODO校驗
+		return async(reqAddUser, Ct)=>{
+			reqAddUser.Validate();
 			var Id = new IdUser();
 			var User = new PoUser{
 				Id = Id
-				,UniqueName = ReqAddUser.UniqueName??Id.ToString()
-				,Email = ReqAddUser.Email
+				,UniqueName = reqAddUser.UniqueName??Id.ToString()
+				,Email = reqAddUser.Email
 			};
-			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(ReqAddUser.Password, Ct);
+			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(reqAddUser.Password, Ct);
 			var Password = new PoPassword{
 				Id = new()
 				,UserId = User.Id
@@ -148,7 +119,7 @@ public partial class SvcUser(
 			if(PoPassword is null){
 				throw new ErrBase("Password not exsists");
 			}
-			if(!( await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) )){
+			if(! await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) ){
 				throw new ErrBase("Password not correct");
 			};
 

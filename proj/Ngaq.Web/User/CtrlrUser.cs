@@ -1,15 +1,18 @@
+using Ngaq.Core.Infra.Url;
+
 namespace Ngaq.Web.User;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Ngaq.Biz.Svc;
+using Ngaq.Biz.Domains.User.Svc;
+using Ngaq.Core.Domains.User.Models.Req;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Models.Sys.Req;
 using Tsinswreng.CsCore;
 
 
-using U = Ngaq.Core.Infra.ConstUrl.UrlUser;
+using U = ConstUrl.UrlUser;
 public partial class CtrlrUser(
 	SvcUser SvcUser
 )
