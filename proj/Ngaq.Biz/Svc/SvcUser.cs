@@ -126,15 +126,15 @@ public partial class SvcUser(
 		var SelectUserByUniqueName = await DaoUser.FnSelectByUniqueName(DbFnCtx, Ct);
 		var SelectUserByEmail = await DaoUser.FnSelectByEmail(DbFnCtx, Ct);
 		var SelectPasswordById = await DaoUser.FnSlctPasswordByUserId(DbFnCtx, Ct);
-		var Fn = async(ReqLogin Req, CT Ct)=>{
+		return async(Req, Ct)=>{
 			//TODO 校驗Req
 			PoUser? PoUser = null;
-			if(Req.UserIdentityMode == (i64)ReqLogin.EUserIdentityMode.UniqueName){
+			if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.UniqueName){
 				if(str.IsNullOrEmpty(Req.UniqueName)){
 					throw new ErrArg("str.IsNullOrEmpty(Req.UniqueName)"); //TODO 優化異常處理 錯誤碼, 前端多語言
 				}
 				PoUser = await SelectUserByUniqueName(Req.UniqueName,Ct);
-			}else if(Req.UserIdentityMode == (i64)ReqLogin.EUserIdentityMode.Email){
+			}else if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.Email){
 				if(str.IsNullOrEmpty(Req.Email)){
 					throw new ErrArg("str.IsNullOrEmpty(Req.Email)"); //TODO 優化異常處理 錯誤碼, 前端多語言
 				}
@@ -165,7 +165,6 @@ public partial class SvcUser(
 			};
 			return RespLogin;
 		};
-		return Fn;
 	}
 
 	[Impl]

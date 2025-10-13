@@ -126,6 +126,7 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			o.SetCol(nameof(PoRefreshToken.ExpireAt)).MapType(MapTempus());
 			o.SetCol(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempusN());
 			o.SetCol(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempusN());
+			o.SetCol(nameof(PoRefreshToken.Type)).MapEnumTypeInt32<PoRefreshToken.EType>();
 		}
 
 		_Inited = true;
