@@ -1,9 +1,10 @@
+// wsl -e sh -c "ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'"
 {
 	"Port": 5000
 	,"Db":{
 		"Postgres":{
 			"ConnectionString": ""//若有值則優先用此
-			,"Server":"localhost"
+			,"Server":"172.22.21.187"
 			,"Port":5432
 			,"Database":"postgres"
 			,"UserId":"postgres"
@@ -13,7 +14,7 @@
 			"Path": "Ngaq_Server.sqlite"
 		},
 		"Redis": {
-			"Host": "localhost"
+			"Host": "172.22.21.187"
 			,"Port": 6379 // 須與docker-compose.yml中之設定一致
 			,"InstanceName": "CsNgaq"
 		}

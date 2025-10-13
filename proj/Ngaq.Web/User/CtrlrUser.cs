@@ -15,13 +15,13 @@ public partial class CtrlrUser(
 )
 	:ICtrlr
 {
-	public str BaseUrl{get;set;} =  ConstUrl.User;  //ConstApiUrlOld.Inst.ApiV1SysUser;
+	//public str BaseUrl{get;set;} =  ConstUrl.User;  //ConstApiUrlOld.Inst.ApiV1SysUser;
 
 	[Impl]
 	public nil InitRouter(
 		RouteGroupBuilder R
 	){
-		R = R.MapGroup(BaseUrl);
+		//R = R.MapGroup(BaseUrl);
 		R.MapPost(U.Login, Login);
 
 		R.MapGet("/Time", async(HttpContext Ctx, CT Ct)=>{

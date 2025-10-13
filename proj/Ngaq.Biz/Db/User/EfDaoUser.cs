@@ -5,9 +5,7 @@ using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Core.Models.Po;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.User;
-using Ngaq.Local.Db;
-
-
+using Ngaq.Local.Db.TswG;
 
 public partial class DaoEfUser(
 	ServerDbCtx DbCtx

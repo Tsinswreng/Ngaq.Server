@@ -1,10 +1,13 @@
 namespace Ngaq.Biz.Db.TswG;
 
+using Ngaq.Core.Infra;
 using Ngaq.Core.Model.Po.Role;
 using Ngaq.Core.Model.Sys.Po.Password;
+using Ngaq.Core.Model.Sys.Po.RefreshToken;
 using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.Permission;
+using Ngaq.Core.Models.Sys.Po.RefreshToken;
 using Ngaq.Core.Models.Sys.Po.Role;
 using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Local.Db.TswG;
@@ -22,6 +25,20 @@ public partial class ServerTblMgrIniter{
 	){
 		this.Mgr = Mgr;
 		this.LocalTblMgrIniter = LocalTblMgrIniter;
+	}
+
+	public static IUpperTypeMapFnT<i64,Tempus> MapTempus(){
+		return UpperTypeMapFnT<i64, Tempus>.Mk(
+			raw=>new Tempus(raw)
+			,tempus=>tempus.Value
+		);
+	}
+
+	public static IUpperTypeMapFnT<i64?,Tempus?> MapTempusN(){
+		return UpperTypeMapFnT<i64?, Tempus?>.Mk(
+			val=>val==null?null:new Tempus(val.Value)
+			,tempus=>tempus?.Value
+		);
 	}
 
 	public ITable Mk<T>(str DbTblName){
@@ -76,7 +93,7 @@ WHERE {o.Fld(nameof(PoUser.DelId))} IS NULL
 			var o = TblRole;
 			CfgPoBase(o);
 			o.SetCol(nameof(PoRole.Id)).MapType(IdRole.MkTypeMapFn());
-			o.SetCol(nameof(PoRole.Id)).MapEnumTypeInt32<PoRole.ERoleStatus>();
+			o.SetCol(nameof(PoRole.Status)).MapEnumTypeInt32<PoRole.ERoleStatus>();
 			o.OuterAdditionalSqls.AddRange([
 $"""
 CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_Code")}
@@ -98,6 +115,19 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 """
 			]);
 		}
+
+		var TblRefreshToken = Mk<PoRefreshToken>("RefreshToken");
+		Mgr.AddTbl(TblRefreshToken);
+		{
+			var o = TblRefreshToken;
+			CfgPoBase(o);
+			o.SetCol(nameof(PoRefreshToken.Id)).MapType(IdRefreshToken.MkTypeMapFn());
+			o.SetCol(nameof(PoRefreshToken.UserId)).MapType(IdUser.MkTypeMapFn());
+			o.SetCol(nameof(PoRefreshToken.ExpireAt)).MapType(MapTempus());
+			o.SetCol(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempusN());
+			o.SetCol(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempusN());
+		}
+
 		_Inited = true;
 		return NIL;
 	}

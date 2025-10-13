@@ -10,7 +10,6 @@ using Ngaq.Biz.Db.User;
 using Ngaq.Biz.Svc;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.User;
-using Ngaq.Local.Db;
 using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz.Db.TswG;
 using Ngaq.Core.Models.Sys.Po.User;
@@ -18,6 +17,8 @@ using Npgsql;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Tsinswreng.CsDictMapper;
 using Ngaq.Core.Infra;
+using Ngaq.Biz.Db.TswG.Migrations;
+using Ngaq.Local.Db.TswG;
 
 public static class DiBiz{
 	static IServiceCollection SetupEfCore(this IServiceCollection z){
@@ -42,7 +43,7 @@ public static class DiBiz{
 		return z;
 	}
 
-	static IServiceCollection SetupTswGSqlAdo(this IServiceCollection z){
+	static IServiceCollection SetupTswgSqlAdo(this IServiceCollection z){
 		//事務執行器
 		z.AddTransient<ITxnRunner, AdoTxnRunner>();
 
@@ -56,6 +57,11 @@ public static class DiBiz{
 		//z.AddSingleton<I_GetDbConnAsy, PostgresConnPool>();
 		z.AddSingleton<I_GetDbConnAsy>(ServerDb.Inst.DbConnPool);
 		z.AddSingleton<ITblMgr>(ServerTblMgr.Inst);
+
+		z.AddRepoScoped<SchemaHistory, i64>();
+
+		z.AddTransient<FullInit>();
+
 		return z;
 	}
 
@@ -68,11 +74,13 @@ public static class DiBiz{
 		return z;
 	}
 	public static IServiceCollection SetupBiz(this IServiceCollection z){
-		z.SetupTswGSqlAdo();
+		z.SetupTswgSqlAdo();
 		z.AddSingleton<IDictMapperShallow>(CoreDictMapper.Inst);
+
 
 		z.AddRepoScoped<PoUser, IdUser>();
 		z.AddRepoScoped<PoPassword, IdPassword>();
+
 
 		z.AddScoped<DaoUser>();
 		z.AddScoped<SvcUser>();

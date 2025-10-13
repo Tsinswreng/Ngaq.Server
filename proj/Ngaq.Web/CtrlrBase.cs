@@ -1,6 +1,6 @@
 namespace Ngaq.Web;
 
-public  partial interface ICtrlr{
+public partial interface ICtrlr{
 	public nil InitRouter(
 		RouteGroupBuilder R
 	);

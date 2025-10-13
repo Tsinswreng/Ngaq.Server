@@ -18,7 +18,7 @@ using Ngaq.Core.Models.Sys.Req;
 using Ngaq.Core.Models.Sys.Resp;
 using Ngaq.Core.Sys.Svc;
 using Ngaq.Core.Tools;
-using Ngaq.Local.Db;
+using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsCfg;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsSqlHelper;
@@ -84,7 +84,7 @@ public partial class SvcUser(
 	){
 		var AddUsers = await RepoUser.FnInsertMany(DbFnCtx, Ct);
 		var AddPasswords = await RepoPassword.FnInsertMany(DbFnCtx, Ct);
-		var Fn = async(ReqAddUser ReqAddUser, CT Ct)=>{
+		return async(ReqAddUser, Ct)=>{
 			//TODO校驗
 			var Id = new IdUser();
 			var User = new PoUser{
@@ -111,7 +111,6 @@ public partial class SvcUser(
 			}
 			return NIL;
 		};
-		return Fn;
 	}
 
 
@@ -146,6 +145,9 @@ public partial class SvcUser(
 			}
 
 			var PoPassword = await SelectPasswordById(PoUser.Id, Ct);
+			if(PoPassword is null){
+				throw new ErrBase("Password not exsists");
+			}
 			if(!( await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) )){
 				throw new ErrBase("Password not correct");
 			};

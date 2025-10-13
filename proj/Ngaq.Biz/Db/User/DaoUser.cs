@@ -3,7 +3,7 @@ namespace Ngaq.Biz.Db.User;
 using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.User;
-using Ngaq.Local.Db;
+using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsSqlHelper;
 
 public partial class DaoUser(
@@ -46,7 +46,7 @@ WHERE {T.Fld(PEmail)} = {PEmail}
 var Cmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct);
 Ctx?.AddToDispose(Cmd);
 		return async(Email, Ct)=>{
-			var Args = ArgDict.Mk(T).AddConv(PEmail, Email);
+			var Args = ArgDict.Mk(T).AddT(PEmail, Email);
 			var R = await Cmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoUser>(T, Ct);
 			return R;
 		};
@@ -69,7 +69,7 @@ AND {T.Fld(nameof(PoPassword.DelId))} IS NULL
 AND {T.Fld(PUserId)} = {PUserId}
 """; var SqlCmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct); Ctx?.AddToDispose(SqlCmd);
 		return async(UserId, Ct)=>{
-			var Args = ArgDict.Mk(T).AddConv(PUserId, UserId);
+			var Args = ArgDict.Mk(T).AddT(PUserId, UserId);
 			var R = await SqlCmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoPassword>(T, Ct);
 			return R;
 		};

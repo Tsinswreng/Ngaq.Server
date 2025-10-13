@@ -4,8 +4,10 @@ namespace Ngaq.Biz.Db.TswG;
 using System.Data;
 using System.Data.Common;
 using Ngaq.Biz.Infra.Cfg;
+using Ngaq.Local.Db.TswG;
 using Npgsql;
 using Tsinswreng.CsCfg;
+using Tsinswreng.CsSqlHelper;
 using Tsinswreng.CsSqlHelper.Postgres;
 using CFG = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
 
@@ -13,6 +15,10 @@ using CFG = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
 public partial class ServerDb{
 protected static ServerDb? _Inst = null;
 public static ServerDb Inst => _Inst??= new ServerDb();
+
+	static ServerDb(){
+		Inst.Init();
+	}
 
 	public ICfgAccessor CfgAccessor{ get; set; } = ServerCfg.Inst;
 
@@ -36,6 +42,21 @@ public static ServerDb Inst => _Inst??= new ServerDb();
 		// 2-B AOT / 源生成器（可选）
 		//dsBuilder.EnableDynamicJson();         // System.Text.Json 源生成
 		// dsBuilder.EnableNativeAot();        // 如果项目开 AOT
+	}
+
+	protected bool _Inited{get;set;} = false;
+
+	public ServerDb Init(){
+		if(_Inited){
+			return this;
+		}
+		var TblMgr = ServerTblMgr.Inst;
+		TblMgr.DbSrcType = ConstDbSrcType.Postgres;
+		var LocalTblMgrIniter = new LocalTblMgrIniter(TblMgr);
+		new ServerTblMgrIniter(
+			Mgr: TblMgr, LocalTblMgrIniter: LocalTblMgrIniter
+		).Init();
+		return this;
 	}
 
 }

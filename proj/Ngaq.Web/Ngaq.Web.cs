@@ -6,49 +6,18 @@ using Tsinswreng.CsCfg;
 using CfgItems = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
 using Ngaq.Core.Infra;
 
-static str GetCfgFilePath(string[] args){
-	var CfgFilePath = "";
-	if(args.Length > 0){
-		CfgFilePath = args[0];
-	}else{
-#if DEBUG
-		CfgFilePath = "Ngaq.Server.dev.jsonc";
-#else
-		CfgFilePath = "Ngaq.Server.jsonc";
-#endif
-	}
-	return CfgFilePath;
-}
 
+var app = NgaqWeb.InitApp(args);
+app.Run();
+
+
+public class NgaqWeb{
+	public static WebApplication InitApp(str[] args){
 var Cfg = ServerCfg.Inst;
-//var CfgItems = ServerCfgItems.Inst;
-
-try{
-	System.Console.WriteLine(
-		"pwd: "+Directory.GetCurrentDirectory()
-	);
-	var CfgPath = GetCfgFilePath(args);
-	var CfgText = File.ReadAllText(CfgPath);
-	Cfg.FromJson(CfgText);
-	//AppCfg.Inst = AppCfgParser.Inst.FromYaml(GetCfgFilePath(args));
-}
-catch (System.Exception e){
-	System.Console.Error.WriteLine("Failed to load config file: "+e);
-	System.Console.WriteLine("----");
-	System.Console.WriteLine();
-}
-
-
-
-// ... other code ...
-
-// var host = CfgItems.RedisHost.GetFrom(Cfg);
-// var port = CfgItems.RedisPort.GetFrom(Cfg);
-// string redisConnectionString = CfgItems.RedisHost.GetFrom(Cfg)+":"+CfgItems.RedisPort.GetFrom(Cfg);
-// IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(redisConnectionString);
-// IDatabase db = redis.GetDatabase();
-// ... 在你的 Minimal API 中使用 db 进行 Redis 操作 ...
-
+System.Console.WriteLine(
+	"pwd: "+Directory.GetCurrentDirectory()
+);
+Cfg.LoadFromArgs(args);
 
 var builder = WebApplication.CreateSlimBuilder(args);
 // 为所有请求启用 CORS (不推荐用于生产环境):
@@ -75,13 +44,7 @@ builder.Services.ConfigureHttpJsonOptions(opt =>
 });
 
 builder.Services
-	.SetupBiz()
-	.SetupWeb()
-	.AddStackExchangeRedisCache(opt=>{
-		var RedisConnStr = CfgItems.RedisHost.GetFrom(Cfg)+":"+CfgItems.RedisPort.GetFrom(Cfg);
-		opt.Configuration = RedisConnStr;
-		opt.InstanceName = CfgItems.RedisInstanceName.GetFrom(Cfg);
-	})
+	.Setup(Cfg)
 ;
 
 
@@ -101,14 +64,7 @@ var BaseRoute = app.MapGroup("/"); //RouteGroupBuilder
 
 var Svc = app.Services;
 AppRouterIniter.Init(Svc, BaseRoute);
-
-
-app.Run();
-
-
-public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
-[JsonSerializable(typeof(Todo[]))]
-internal partial class AppJsonSerializerContext : JsonSerializerContext{
-
+return app;
+	}
 }
 
