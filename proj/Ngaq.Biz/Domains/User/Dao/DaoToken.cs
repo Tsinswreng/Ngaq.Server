@@ -1,7 +1,7 @@
 namespace Ngaq.Biz.Domains.User.Dao;
 
+using Ngaq.Core.Domains.User.Models.Po.RefreshToken;
 using Ngaq.Core.Model.Sys.Po.RefreshToken;
-using Ngaq.Core.Models.Sys.Po.RefreshToken;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsPage;
 using Tsinswreng.CsSqlHelper;
@@ -9,12 +9,12 @@ using Tsinswreng.CsSqlHelper;
 public class DaoToken(
 	ISqlCmdMkr SqlCmdMkr
 	,ITblMgr TblMgr
-	,IAppRepo<PoRefreshToken, IdRefreshToken> RepoToken
+	,IAppRepo<PoSession, IdSession> RepoToken
 ){
 
 
 	public async Task<Func<
-		IEnumerable<PoRefreshToken>
+		IEnumerable<PoSession>
 		,CT, Task<nil>
 	>> FnAddTokens(IDbFnCtx? Ctx, CT Ct){
 		var Add = await RepoToken.FnInsertMany(Ctx, Ct);

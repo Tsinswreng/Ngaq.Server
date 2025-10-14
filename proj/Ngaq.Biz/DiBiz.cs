@@ -8,7 +8,6 @@ using Tsinswreng.CsSqlHelper.EFCore;
 using Tsinswreng.CsSqlHelper.Postgres;
 using Ngaq.Biz.Db.User;
 using Ngaq.Core.Model.Sys.Po.Password;
-using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz.Db.TswG;
 using Ngaq.Core.Models.Sys.Po.User;
@@ -19,6 +18,7 @@ using Ngaq.Core.Infra;
 using Ngaq.Biz.Db.TswG.Migrations;
 using Ngaq.Local.Db.TswG;
 using Ngaq.Biz.Domains.User.Svc;
+using Ngaq.Core.Domains.User.Models.Po.User;
 
 public static class DiBiz{
 	static IServiceCollection SetupEfCore(this IServiceCollection z){

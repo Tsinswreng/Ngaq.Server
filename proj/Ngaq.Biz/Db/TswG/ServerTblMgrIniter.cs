@@ -1,15 +1,19 @@
 namespace Ngaq.Biz.Db.TswG;
 
+using Ngaq.Core.Domains.User.Models.Bo.Device;
+using Ngaq.Core.Domains.User.Models.Bo.Jwt;
+using Ngaq.Core.Domains.User.Models.Po.Device;
+using Ngaq.Core.Domains.User.Models.Po.RefreshToken;
+using Ngaq.Core.Domains.User.Models.Po.User;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Model.Po.Role;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.RefreshToken;
-using Ngaq.Core.Model.Sys.Po.User;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.Permission;
-using Ngaq.Core.Models.Sys.Po.RefreshToken;
 using Ngaq.Core.Models.Sys.Po.Role;
 using Ngaq.Core.Models.Sys.Po.User;
+using Ngaq.Core.Service.Parser;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsSqlHelper;
 using Tsinswreng.CsTools;
@@ -116,17 +120,33 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			]);
 		}
 
-		var TblRefreshToken = Mk<PoRefreshToken>("RefreshToken");
+		var TblRefreshToken = Mk<PoSession>("Session");
 		Mgr.AddTbl(TblRefreshToken);
 		{
 			var o = TblRefreshToken;
 			CfgPoBase(o);
-			o.SetCol(nameof(PoRefreshToken.Id)).MapType(IdRefreshToken.MkTypeMapFn());
-			o.SetCol(nameof(PoRefreshToken.UserId)).MapType(IdUser.MkTypeMapFn());
-			o.SetCol(nameof(PoRefreshToken.ExpireAt)).MapType(MapTempus());
-			o.SetCol(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempusN());
-			o.SetCol(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempusN());
-			o.SetCol(nameof(PoRefreshToken.Type)).MapEnumTypeInt32<PoRefreshToken.EType>();
+			o.SetCol(nameof(PoSession.Id)).MapType(IdSession.MkTypeMapFn());
+			o.SetCol(nameof(PoSession.UserId)).MapType(IdUser.MkTypeMapFn());
+			o.SetCol(nameof(PoSession.Jti)).MapType(Jti.MkTypeMapFn());
+			o.SetCol(nameof(PoSession.DeviceId)).MapType(IdDevice.MkTypeMapFn());
+			o.SetCol(nameof(PoSession.ExpireAt)).MapType(MapTempus());
+			o.SetCol(nameof(PoSession.RevokeAt)).MapType(MapTempusN());
+			o.SetCol(nameof(PoSession.LastUsedAt)).MapType(MapTempusN());
+			o.SetCol(nameof(PoSession.TokenValueType)).MapEnumTypeInt32<PoSession.ETokenValueType>();
+			o.SetCol(nameof(PoSession.DeviceType)).MapEnumTypeInt32<EDeviceType>();
+
+			o.OuterAdditionalSqls.AddRange([
+/// JTI 唯一约束（仅存活数据）
+$"""
+CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_{nameof(PoSession.Jti)}")}
+ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoSession.Jti))})
+WHERE {o.Fld(nameof(PoSession.DelId))} IS NULL
+""",
+$"""
+
+"""
+			]);
+
 		}
 
 		_Inited = true;

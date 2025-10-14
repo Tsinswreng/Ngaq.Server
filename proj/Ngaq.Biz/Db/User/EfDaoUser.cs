@@ -1,7 +1,7 @@
 namespace Ngaq.Biz.Db.User;
 
 using Microsoft.EntityFrameworkCore;
-using Ngaq.Core.Model.Sys.Po.User;
+using Ngaq.Core.Domains.User.Models.Po.User;
 using Ngaq.Core.Models.Po;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.User;

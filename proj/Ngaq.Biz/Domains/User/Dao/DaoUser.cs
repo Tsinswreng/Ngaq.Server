@@ -1,6 +1,6 @@
 namespace Ngaq.Biz.Db.User;
 
-using Ngaq.Core.Model.Sys.Po.User;
+using Ngaq.Core.Domains.User.Models.Po.User;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Local.Db.TswG;
