@@ -1,6 +1,6 @@
-using Ngaq.Core.Infra.Url;
-
 namespace Ngaq.Web.User;
+
+using Ngaq.Core.Infra.Url;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +11,9 @@ using Ngaq.Core.Infra;
 using Tsinswreng.CsCore;
 
 
-using U = ConstUrl.UrlUser;
+using U = Ngaq.Core.Infra.Url.ConstUrl.UrlUser;
+using Ngaq.Biz.Domains.User;
+
 public partial class CtrlrUser(
 	SvcUser SvcUser
 )
@@ -35,13 +37,16 @@ public partial class CtrlrUser(
 	}
 
 	public async Task<IResult> Login(ReqLogin Req, HttpContext Ctx, CT Ct){
-		var R = await SvcUser.Login(Req, Ct);
+		var R = await SvcUser.Login(
+			Ctx.ToUserCtx()
+			,Req, Ct
+		);
 		//return Results.Ok(JSON.stringify(R));
 		return Results.Ok(R);
 	}
 
 	public async Task<IResult> AddUser(ReqAddUser ReqAddUser, HttpContext Ctx, CT Ct){
-		await SvcUser.AddUser(ReqAddUser, Ct);
+		await SvcUser.AddUser(Ctx.ToUserCtx(), ReqAddUser, Ct);
 		return Results.Ok();
 	}
 

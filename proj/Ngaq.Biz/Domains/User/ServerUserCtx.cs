@@ -23,6 +23,10 @@ public static class ExtnUseCtx{
 		throw new InvalidCastException();
 	}
 
+	public static IServerUserCtx ToUserCtx(this HttpContext z){
+		return new ServerUserCtx().FromHttpCtx(z);
+	}
+
 	public static TSelf FromHttpCtx<TSelf>(
 		this TSelf z
 		,HttpContext HttpCtx

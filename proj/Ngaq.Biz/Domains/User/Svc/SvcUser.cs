@@ -21,8 +21,8 @@ using Ngaq.Core.Shared.User.UserCtx;
 
 public partial class SvcUser(
 	DaoUser DaoUser
-	,IRepo<PoUser, IdUser> RepoUser
-	,IRepo<PoPassword, IdPassword> RepoPassword
+	,IAppRepo<PoUser, IdUser> RepoUser
+	,IAppRepo<PoPassword, IdPassword> RepoPassword
 	// ,DbFnCtxMkr DbFnCtxMkr
 	// ,ITxnRunner TxnRunner
 	,TxnWrapper<DbFnCtx> TxnWrapper

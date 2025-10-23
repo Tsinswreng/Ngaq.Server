@@ -65,6 +65,7 @@ public partial class ServerTblMgrIniter{
 		{
 			var o = TblUser;
 			CfgPoBase(o);
+			LocalTblMgrIniter.CfgBizCreateUpdateTime(o);
 			o.SetCol(nameof(PoUser.Id)).MapType(IdUser.MkTypeMapFn());
 			o.OuterAdditionalSqls.AddRange([
 $"""
@@ -119,11 +120,12 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			]);
 		}
 
-		var TblRefreshToken = Mk<PoRefreshToken>("Session");
+		var TblRefreshToken = Mk<PoRefreshToken>("RefreshToken");
 		Mgr.AddTbl(TblRefreshToken);
 		{
 			var o = TblRefreshToken;
 			CfgPoBase(o);
+			LocalTblMgrIniter.CfgBizCreateUpdateTime(o);
 			o.SetCol(nameof(PoRefreshToken.Id)).MapType(IdRefreshToken.MkTypeMapFn());
 			o.SetCol(nameof(PoRefreshToken.UserId)).MapType(IdUser.MkTypeMapFn());
 			o.SetCol(nameof(PoRefreshToken.ClientId)).MapType(IdClient.MkTypeMapFn());

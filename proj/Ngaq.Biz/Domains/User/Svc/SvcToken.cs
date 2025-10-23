@@ -47,7 +47,7 @@ public class RespRefreshBothToken:BaseResp{
 }
 
 public class SvcToken
-	//:ISvcToken
+	:ISvcToken
 {
 	ICfgAccessor Cfg;
 	IAppRepo<PoRefreshToken, IdRefreshToken> RepoToken;

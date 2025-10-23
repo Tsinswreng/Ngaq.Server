@@ -18,6 +18,10 @@ using Ngaq.Biz.Db.TswG.Migrations;
 using Ngaq.Local.Db.TswG;
 using Ngaq.Biz.Domains.User.Svc;
 using Ngaq.Core.Shared.User.Models.Po.User;
+using Ngaq.Biz.Domains.User.Dao;
+using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
+using Ngaq.Core.Model.Sys.Po.RefreshToken;
+using Tsinswreng.CsCfg;
 
 public static class DiBiz{
 	#if false
@@ -74,10 +78,11 @@ public static class DiBiz{
 	)where TEntity:class, new()
 	{
 		//z.AddScoped<IRepo<TEntity, TId>, EfRepo<TEntity, TId>>();
-		z.AddScoped<IRepo<TEntity, TId>, SqlRepo<TEntity, TId>>();
+		z.AddScoped<IAppRepo<TEntity, TId>, AppRepo<TEntity, TId>>();
 		return z;
 	}
 	public static IServiceCollection SetupBiz(this IServiceCollection z){
+		z.AddSingleton<ICfgAccessor>(ServerCfg.Inst);
 		z.SetupTswgSqlAdo();
 		z.AddSingleton<IDictMapperShallow>(CoreDictMapper.Inst);
 
@@ -88,6 +93,12 @@ public static class DiBiz{
 
 		z.AddScoped<DaoUser>();
 		z.AddScoped<SvcUser>();
+		z.AddRepoScoped<PoRefreshToken, IdRefreshToken>();
+
+		z.AddScoped<DaoToken>();
+		z.AddScoped<ISvcToken, SvcToken>();
+
+
 
 		// 配置 Redis 连接
 		var Cfg = ServerCfg.Inst;

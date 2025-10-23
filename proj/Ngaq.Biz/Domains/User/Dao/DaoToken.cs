@@ -9,7 +9,6 @@ using Tsinswreng.CsSqlHelper;
 public class DaoToken(
 	ISqlCmdMkr SqlCmdMkr
 	,ITblMgr TblMgr
-	,IAppRepo<PoRefreshToken, IdRefreshToken> RepoSession
 ){
 
 	public async Task<Func<

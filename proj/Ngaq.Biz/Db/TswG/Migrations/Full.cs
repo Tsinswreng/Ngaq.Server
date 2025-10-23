@@ -8,7 +8,7 @@ public class FullInit: IMigration{
 	public ISqlCmdMkr SqlCmdMkr;
 	public ITblMgr TblMgr;
 	public TxnWrapper<DbFnCtx> TxnWrapper;
-	public IRepo<SchemaHistory, i64> RepoSchemaHistory{get;set;}
+	public IAppRepo<SchemaHistory, i64> RepoSchemaHistory{get;set;}
 	[Impl]
 	public IList<str> SqlsUp{get;} = new List<str>();
 	[Impl]
@@ -18,7 +18,7 @@ public class FullInit: IMigration{
 		ISqlCmdMkr SqlCmdMkr
 		,TxnWrapper<DbFnCtx> TxnWrapper
 		,ITblMgr TblMgr
-		,IRepo<SchemaHistory, i64> RepoSchemaHistory
+		,IAppRepo<SchemaHistory, i64> RepoSchemaHistory
 	){
 		if(RepoSchemaHistory is not SqlRepo<SchemaHistory, i64> SqlRepoSchemaHistory){
 			throw new ArgumentException("RepoSchemaHistory must be SqlRepo<SchemaHistory, i64>");
