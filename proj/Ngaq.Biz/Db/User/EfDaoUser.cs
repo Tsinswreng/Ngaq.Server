@@ -1,3 +1,4 @@
+#if false
 namespace Ngaq.Biz.Db.User;
 
 using Microsoft.EntityFrameworkCore;
@@ -54,3 +55,5 @@ public partial class DaoEfUser(
 		return Fn;
 	}
 }
+
+#endif

@@ -20,6 +20,7 @@ using Ngaq.Biz.Domains.User.Svc;
 using Ngaq.Core.Shared.User.Models.Po.User;
 
 public static class DiBiz{
+	#if false
 	static IServiceCollection SetupEfCore(this IServiceCollection z){
 		z.AddDbContext<ServerDbCtx>();
 		z.AddScoped<DbContext>(provider => provider.GetRequiredService<ServerDbCtx>());//EfRepo要用
@@ -27,6 +28,8 @@ public static class DiBiz{
 		z.AddDbContext<ServerDbCtx>();
 		return z;
 	}
+
+
 	static IServiceCollection SetupTswGSqlEf(this IServiceCollection z){
 		z.AddTransient<DbFnCtxMkr<DbFnCtx>>();
 		z.AddScoped<I_GetTxnAsy, PostgresCmdMkr>();
@@ -41,6 +44,7 @@ public static class DiBiz{
 		});
 		return z;
 	}
+	#endif
 
 	static IServiceCollection SetupTswgSqlAdo(this IServiceCollection z){
 		//事務執行器

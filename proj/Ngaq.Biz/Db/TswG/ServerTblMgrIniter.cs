@@ -126,7 +126,6 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			CfgPoBase(o);
 			o.SetCol(nameof(PoRefreshToken.Id)).MapType(IdRefreshToken.MkTypeMapFn());
 			o.SetCol(nameof(PoRefreshToken.UserId)).MapType(IdUser.MkTypeMapFn());
-			o.SetCol(nameof(PoRefreshToken.Jti)).MapType(Jti.MkTypeMapFn());
 			o.SetCol(nameof(PoRefreshToken.ClientId)).MapType(IdClient.MkTypeMapFn());
 			o.SetCol(nameof(PoRefreshToken.ExpireAt)).MapType(MapTempus());
 			o.SetCol(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempusN());
@@ -135,12 +134,7 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			o.SetCol(nameof(PoRefreshToken.ClientType)).MapEnumTypeInt32<EClientType>();
 
 			o.OuterAdditionalSqls.AddRange([
-/// JTI 唯一约束（仅存活数据）
-$"""
-CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_{nameof(PoRefreshToken.Jti)}")}
-ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoRefreshToken.Jti))})
-WHERE {o.SqlIsNonDel()}
-""",
+
 //UserId索引
 $"""
 CREATE INDEX {o.Qt($"Idx_{o.DbTblName}_{nameof(PoRefreshToken.UserId)}")}

@@ -1,3 +1,4 @@
+#if false
 /*
 pwd=Ngaq.Biz
 dotnet ef migrations add Init --context ServerDbCtx
@@ -453,5 +454,7 @@ public  partial class LocalDbCtx : DbContext{
 	}
 }
 
+
+#endif
 
 #endif
