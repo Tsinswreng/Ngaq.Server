@@ -3,7 +3,7 @@ using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz;
 using Ngaq.Web;
 using Tsinswreng.CsCfg;
-using CfgItems = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
+using CfgItems = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
 using Ngaq.Core.Infra;
 
 
@@ -30,7 +30,7 @@ builder.Services.AddCors(opt=>{
 });
 
 builder.WebHost.UseKestrel(options =>{
-	var Port = ServerCfgItems.Port.GetFrom(ServerCfg.Inst);
+	var Port = ItemsServerCfg.Port.GetFrom(ServerCfg.Inst);
 	options.ListenLocalhost(Port);  // 监听本地端口
 	// 或者用 options.ListenAnyIP(5001); 监听所有IP地址
 });

@@ -1,10 +1,9 @@
 namespace Ngaq.Biz.Db.User;
 
 using Microsoft.EntityFrameworkCore;
-using Ngaq.Core.Domains.User.Models.Po.User;
+using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Models.Po;
 using Ngaq.Core.Models.Sys.Po.Password;
-using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Local.Db.TswG;
 
 public partial class DaoEfUser(

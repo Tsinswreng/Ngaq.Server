@@ -1,10 +1,10 @@
 namespace Ngaq.Biz.Db.TswG;
 
-using Ngaq.Core.Domains.User.Models.Bo.Device;
-using Ngaq.Core.Domains.User.Models.Bo.Jwt;
-using Ngaq.Core.Domains.User.Models.Po.Device;
-using Ngaq.Core.Domains.User.Models.Po.RefreshToken;
-using Ngaq.Core.Domains.User.Models.Po.User;
+using Ngaq.Core.Shared.User.Models.Bo.Device;
+using Ngaq.Core.Shared.User.Models.Bo.Jwt;
+using Ngaq.Core.Shared.User.Models.Po.Device;
+using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
+using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Model.Po.Role;
 using Ngaq.Core.Model.Sys.Po.Password;
@@ -12,7 +12,6 @@ using Ngaq.Core.Model.Sys.Po.RefreshToken;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.Permission;
 using Ngaq.Core.Models.Sys.Po.Role;
-using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Core.Service.Parser;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsSqlHelper;
@@ -71,12 +70,12 @@ public partial class ServerTblMgrIniter{
 $"""
 CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_UniqueName")}
 ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoUser.UniqueName))})
-WHERE {o.Fld(nameof(PoUser.DelId))} IS NULL
+WHERE {o.SqlIsNonDel()}
 """
 ,$"""
 CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_EMail")}
 ON{o.Qt(o.DbTblName)} ({o.Fld(nameof(PoUser.Email))})
-WHERE {o.Fld(nameof(PoUser.DelId))} IS NULL
+WHERE {o.SqlIsNonDel()}
 """
 			]);
 		}
@@ -120,30 +119,32 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			]);
 		}
 
-		var TblRefreshToken = Mk<PoSession>("Session");
+		var TblRefreshToken = Mk<PoRefreshToken>("Session");
 		Mgr.AddTbl(TblRefreshToken);
 		{
 			var o = TblRefreshToken;
 			CfgPoBase(o);
-			o.SetCol(nameof(PoSession.Id)).MapType(IdSession.MkTypeMapFn());
-			o.SetCol(nameof(PoSession.UserId)).MapType(IdUser.MkTypeMapFn());
-			o.SetCol(nameof(PoSession.Jti)).MapType(Jti.MkTypeMapFn());
-			o.SetCol(nameof(PoSession.DeviceId)).MapType(IdDevice.MkTypeMapFn());
-			o.SetCol(nameof(PoSession.ExpireAt)).MapType(MapTempus());
-			o.SetCol(nameof(PoSession.RevokeAt)).MapType(MapTempusN());
-			o.SetCol(nameof(PoSession.LastUsedAt)).MapType(MapTempusN());
-			o.SetCol(nameof(PoSession.TokenValueType)).MapEnumTypeInt32<PoSession.ETokenValueType>();
-			o.SetCol(nameof(PoSession.DeviceType)).MapEnumTypeInt32<EDeviceType>();
+			o.SetCol(nameof(PoRefreshToken.Id)).MapType(IdRefreshToken.MkTypeMapFn());
+			o.SetCol(nameof(PoRefreshToken.UserId)).MapType(IdUser.MkTypeMapFn());
+			o.SetCol(nameof(PoRefreshToken.Jti)).MapType(Jti.MkTypeMapFn());
+			o.SetCol(nameof(PoRefreshToken.ClientId)).MapType(IdClient.MkTypeMapFn());
+			o.SetCol(nameof(PoRefreshToken.ExpireAt)).MapType(MapTempus());
+			o.SetCol(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempusN());
+			o.SetCol(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempusN());
+			o.SetCol(nameof(PoRefreshToken.TokenValueType)).MapEnumTypeInt32<PoRefreshToken.ETokenValueType>();
+			o.SetCol(nameof(PoRefreshToken.ClientType)).MapEnumTypeInt32<EClientType>();
 
 			o.OuterAdditionalSqls.AddRange([
 /// JTI 唯一约束（仅存活数据）
 $"""
-CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_{nameof(PoSession.Jti)}")}
-ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoSession.Jti))})
-WHERE {o.Fld(nameof(PoSession.DelId))} IS NULL
+CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_{nameof(PoRefreshToken.Jti)}")}
+ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoRefreshToken.Jti))})
+WHERE {o.SqlIsNonDel()}
 """,
+//UserId索引
 $"""
-
+CREATE INDEX {o.Qt($"Idx_{o.DbTblName}_{nameof(PoRefreshToken.UserId)}")}
+ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoRefreshToken.UserId))})
 """
 			]);
 

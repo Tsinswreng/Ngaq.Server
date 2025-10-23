@@ -1,8 +1,7 @@
 namespace Ngaq.Biz.Db.User;
 
-using Ngaq.Core.Domains.User.Models.Po.User;
+using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Models.Sys.Po.Password;
-using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsSqlHelper;
 
@@ -41,7 +40,8 @@ var PEmail = T.Prm(N.Email);
 var Sql =
 $"""
 SELECT * FROM {T.Qt(T.DbTblName)}
-WHERE {T.Fld(PEmail)} = {PEmail}
+WHERE 1=1
+AND {T.Eq(PEmail)}
 """;
 var Cmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct);
 Ctx?.AddToDispose(Cmd);
@@ -65,8 +65,8 @@ var Sql =
 $"""
 SELECT * FROM {T.Qt(T.DbTblName)}
 WHERE 1=1
-AND {T.Fld(nameof(PoPassword.DelId))} IS NULL
-AND {T.Fld(PUserId)} = {PUserId}
+AND {T.SqlIsNonDel()}
+AND {T.Eq(PUserId)}
 """; var SqlCmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct); Ctx?.AddToDispose(SqlCmd);
 		return async(UserId, Ct)=>{
 			var Args = ArgDict.Mk(T).AddT(PUserId, UserId);

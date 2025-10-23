@@ -1,11 +1,12 @@
 namespace Ngaq.Biz.Infra.Cfg;
 
+using Ngaq.Core.Infra;
 using Ngaq.Core.Infra.Cfg;
 using Tsinswreng.CsCfg;
-using static Tsinswreng.CsCfg.ExtnCfgItem;
-public partial class ServerCfgItems{
-	protected static ServerCfgItems? _Inst = null;
-	public static ServerCfgItems Inst => _Inst??= new ServerCfgItems();
+using static Tsinswreng.CsCfg.CfgItem<obj?>;
+public partial class ItemsServerCfg{
+	protected static ItemsServerCfg? _Inst = null;
+	public static ItemsServerCfg Inst => _Inst??= new ItemsServerCfg();
 	protected str ConnectionString = nameof(ConnectionString);
 
 	public static ICfgItem<i32> Port => Mk(null, [nameof(Port)], 5000);
@@ -40,6 +41,24 @@ public partial class ServerCfgItems{
 		//~Sqlite
 	//~Db
 
-	public static ICfgItem User => Mk(null, [nameof(User)]);
-		public static ICfgItem<str> JwtSecret => Mk(User, [nameof(JwtSecret)], "");
+	public static ICfgItem _Auth => Mk(null, [nameof(Auth)]);
+	public class Auth{
+		public static ICfgItem<str> JwtSecret => Mk(_Auth, [nameof(JwtSecret)], "");
+		public static ICfgItem<i64> AccessTokenExpiryMs => Mk(
+			_Auth, [nameof(AccessTokenExpiryMs)]
+			,InMillisecond.Minute * 30
+		);
+		public static ICfgItem<i64> RefreshTokenExpiryMs => Mk(
+			_Auth, [nameof(AccessTokenExpiryMs)]
+			,InMillisecond.Day * 7
+		);
+		public static ICfgItem<str> JwtIssuer => Mk(
+			_Auth, [nameof(JwtIssuer)], "Ngaq.Server"
+		);
+
+		public static ICfgItem<str> JwtAudience => Mk(
+			_Auth, [nameof(JwtAudience)], "Ngaq.Client"
+		);
+	}
+	//public static ICfgItem<str> JwtSecret => Mk(Auth, [nameof(JwtSecret)], "");
 }

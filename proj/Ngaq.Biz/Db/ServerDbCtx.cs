@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ngaq.Biz.Infra.Cfg;
-using Ngaq.Core.Domains.User.Models.Po.User;
+using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Infra.IF;
 using Ngaq.Core.Model.Po;
@@ -22,7 +22,6 @@ using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Models.Po;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.Role;
-using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Core.Tools;
 using Tsinswreng.CsCfg;
 using Tsinswreng.CsTools;
@@ -54,7 +53,7 @@ public  partial class ServerDbCtx
 		// 	Directory.GetCurrentDirectory(),
 		// 	"..", "Ngaq_Server.sqlite"
 		// );
-		var dbPath = ServerCfgItems.SqliteDbPath.GetFrom(ServerCfg.Inst);
+		var dbPath = ItemsServerCfg.SqliteDbPath.GetFrom(ServerCfg.Inst);
 		opt.UseSqlite($"Data Source={dbPath}");
 	}
 

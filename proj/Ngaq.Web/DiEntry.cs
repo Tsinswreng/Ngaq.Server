@@ -1,7 +1,7 @@
 using Ngaq.Biz;
 using Ngaq.Biz.Infra.Cfg;
 using Tsinswreng.CsCfg;
-using CfgItems = Ngaq.Biz.Infra.Cfg.ServerCfgItems;
+using CfgItems = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
 
 namespace Ngaq.Web;
 

@@ -1,29 +1,23 @@
 namespace Ngaq.Biz.Domains.User.Svc;
 
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using Ngaq.Biz.Db.User;
-using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Biz.Tools;
-using Ngaq.Core.Domains.User.Models.Req;
+using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.Password;
-using Ngaq.Core.Models.Sys.Po.User;
 using Ngaq.Core.Models.Sys.Req;
-using Ngaq.Core.Sys.Svc;
 using Ngaq.Core.Tools;
 using Ngaq.Local.Db.TswG;
-using Tsinswreng.CsCfg;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsSqlHelper;
-using Ngaq.Core.Domains.Base.Models.Req;
-using Ngaq.Core.Domains.User.Models.Resp;
-using Ngaq.Core.Domains.User.Models.Po.User;
+using Ngaq.Core.Shared.Base.Models.Req;
+using Ngaq.Core.Shared.User.Models.Resp;
+using Ngaq.Core.Shared.User.Models.Po.User;
+using Ngaq.Core.Shared.User.Svc;
+using Ngaq.Core.Shared.User.UserCtx;
 
 public partial class SvcUser(
 	DaoUser DaoUser
@@ -39,13 +33,9 @@ public partial class SvcUser(
 	:ISvcUser
 {
 
-	public str GeneAccessToken(str UserIdStr){
-		return SvcToken.GenAccessToken(UserIdStr);
-	}
-
-
 	public async Task<Func<
-		ReqAddUser
+		IUserCtx
+		,ReqAddUser
 		,CT
 		,Task<nil>
 	>> FnAddUser(
@@ -54,26 +44,26 @@ public partial class SvcUser(
 	){
 		var AddUsers = await RepoUser.FnInsertMany(DbFnCtx, Ct);
 		var AddPasswords = await RepoPassword.FnInsertMany(DbFnCtx, Ct);
-		return async(reqAddUser, Ct)=>{
-			reqAddUser.Validate();
+		return async(UsrCtx, Req, Ct)=>{
+			Req.Validate();
 			var Id = new IdUser();
-			var User = new PoUser{
+			var PoUser = new PoUser{
 				Id = Id
-				,UniqueName = reqAddUser.UniqueName??Id.ToString()
-				,Email = reqAddUser.Email
+				,UniqueName = Req.UniqueName??Id.ToString()
+				,Email = Req.Email
 			};
-			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(reqAddUser.Password, Ct);
+			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(Req.Password, Ct);
 			var Password = new PoPassword{
 				Id = new()
-				,UserId = User.Id
+				,UserId = PoUser.Id
 				,Algo = PoPassword.EAlgo.Argon2id
 				,Text = PasswordHash
 			};
-			await AddUsers([User], Ct);
+			await AddUsers([PoUser], Ct);
 			await AddPasswords([Password], Ct);
 			//TODO
 			try{
-				await Cache.SetStringAsync($"user:register:{User.Id}", JSON.stringify(User), new DistributedCacheEntryOptions {
+				await Cache.SetStringAsync($"user:register:{PoUser.Id}", JSON.stringify(PoUser), new DistributedCacheEntryOptions {
 					AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
 				}, Ct);
 			}catch(Exception e){
@@ -85,18 +75,21 @@ public partial class SvcUser(
 
 
 	public async Task<Func<
-		ReqLogin
+		IUserCtx
+		,ReqLogin
 		,CT
 		,Task<RespLogin>
 	>> FnLogin(
-		IDbFnCtx DbFnCtx
+		IDbFnCtx Ctx
 		,CT Ct
 	){
 		//var SelectUserById = await RepoUser.FnSelectByIdAsy(DbFnCtx, ct);
-		var SelectUserByUniqueName = await DaoUser.FnSelectByUniqueName(DbFnCtx, Ct);
-		var SelectUserByEmail = await DaoUser.FnSelectByEmail(DbFnCtx, Ct);
-		var SelectPasswordById = await DaoUser.FnSlctPasswordByUserId(DbFnCtx, Ct);
-		return async(Req, Ct)=>{
+		var SelectUserByUniqueName = await DaoUser.FnSelectByUniqueName(Ctx, Ct);
+		var SelectUserByEmail = await DaoUser.FnSelectByEmail(Ctx, Ct);
+		var SelectPasswordById = await DaoUser.FnSlctPasswordByUserId(Ctx, Ct);
+		var GenEtStoreRToken = await SvcToken.FnGenEtStoreRefreshToken(Ctx,Ct);
+		return async(User, Req, Ct)=>{
+
 			//TODO 校驗Req
 			PoUser? PoUser = null;
 			if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.UniqueName){
@@ -121,34 +114,45 @@ public partial class SvcUser(
 			if(! await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) ){
 				throw new ErrBase("Password not correct");
 			};
+			var UserCtx = User.AsServerUserCtx();
+			UserCtx.UserId = PoUser.Id;
 
-			var accessToken = GeneAccessToken(PoUser.Id.ToString());
+			var AToken = SvcToken.GenAccessToken(new ReqGenAccessToken{
+				UserId = PoUser.Id.ToString()
+			});
+			var RTokenResp = await GenEtStoreRToken(UserCtx, Ct);
+
+
+			//SvcToken.GenRefreshToken()
 			//TODO
-			await Cache.SetStringAsync($"user:token:{PoUser.Id}", accessToken, new DistributedCacheEntryOptions {
-				AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
-			}, Ct);
+			// await Cache.SetStringAsync($"user:token:{PoUser.Id}", accessToken, new DistributedCacheEntryOptions {
+			// 	AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+			// }, Ct);
 
 			var RespLogin = new RespLogin{
-				AccessToken = accessToken
+				AccessToken = AToken.AccessToken
+				,AccessTokenExpireAt = AToken.ExpireAt
 				,PoUser = PoUser
-				,UserIdStr = PoUser.Id.ToString()
+				,UserId = PoUser.Id.ToString()
+				,RefreshToken = RTokenResp.RefreshToken
+				,RefreshTokenExpireAt = RTokenResp.ExpireAt
 			};
 			return RespLogin;
 		};
 	}
 
 	[Impl]
-	public async Task<nil> AddUser(ReqAddUser ReqAddUser ,CT Ct){
-		return await TxnWrapper.Wrap(FnAddUser, ReqAddUser, Ct);
+	public async Task<nil> AddUser(IUserCtx User, ReqAddUser ReqAddUser ,CT Ct){
+		return await TxnWrapper.Wrap(FnAddUser, User, ReqAddUser, Ct);
 	}
 
 	[Impl]
-	public async Task<RespLogin> Login(ReqLogin ReqLogin ,CT Ct){
-		return await TxnWrapper.Wrap(FnLogin, ReqLogin, Ct);
+	public async Task<RespLogin> Login(IUserCtx User, ReqLogin ReqLogin ,CT Ct){
+		return await TxnWrapper.Wrap(FnLogin, User, ReqLogin, Ct);
 	}
 
 	[Impl]
-	public async Task<nil> Logout(ReqLogout ReqLogout, CT Ct){
+	public async Task<nil> Logout(IUserCtx User, ReqLogout ReqLogout, CT Ct){
 		return NIL;
 	}
 

@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Ngaq.Biz.Domains.User.Svc;
-using Ngaq.Core.Domains.User.Models.Req;
+using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Infra;
-using Ngaq.Core.Models.Sys.Req;
 using Tsinswreng.CsCore;
 
 
