@@ -5,6 +5,7 @@ using Ngaq.Web;
 using Tsinswreng.CsCfg;
 using CfgItems = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
 using Ngaq.Core.Infra;
+using Ngaq.Core.Tools;
 
 
 var app = NgaqWeb.InitApp(args);
@@ -41,6 +42,7 @@ builder.Services.ConfigureHttpJsonOptions(opt =>
 	opt.SerializerOptions.PropertyNamingPolicy = null;
 	opt.SerializerOptions.WriteIndented = true;
 	opt.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+	opt.SerializerOptions.Converters.Add(new CustomJsonConvtrFctry());
 });
 
 builder.Services

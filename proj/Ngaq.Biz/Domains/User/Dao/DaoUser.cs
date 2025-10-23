@@ -20,11 +20,9 @@ public partial class DaoUser(
 		IDbFnCtx DbFnCtx
 		,CT Ct
 	){
-		throw new NotImplementedException();
-		// var Fn = async(str UniqueName, CT Ct)=>{
-		// 	return await DbCtx.User.Where(u => u.UniqueName == UniqueName).FirstOrDefaultAsync(Ct);
-		// };
-		// return Fn;
+		return async(str, Ct)=>{
+			throw new NotImplementedException();
+		};
 	}
 
 	public async Task<Func<

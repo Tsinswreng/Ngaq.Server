@@ -19,8 +19,12 @@
 			,"InstanceName": "CsNgaq"
 		}
 	},
-	"User":{
+	"Auth":{
 		//注意: 小於256字節則報錯
 		"JwtSecret": "TsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswreng"
+		// "AccessTokenExpiryMs":
+		// ,"RefreshTokenExpiryMs":
+		// ,"JwtIssuer":
+		// ,"JwtAudience":
 	}
 }
