@@ -1,9 +1,11 @@
+namespace Ngaq.Web;
+
 using Ngaq.Biz;
 using Ngaq.Biz.Infra.Cfg;
 using Tsinswreng.CsCfg;
 using CfgItems = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
 
-namespace Ngaq.Web;
+
 
 public static class DiEntry{
 	public static IServiceCollection Setup(
@@ -13,9 +15,9 @@ public static class DiEntry{
 		z.SetupBiz()
 		.SetupWeb()
 		.AddStackExchangeRedisCache(opt=>{
-			var RedisConnStr = CfgItems.RedisHost.GetFrom(Cfg)+":"+CfgItems.RedisPort.GetFrom(Cfg);
+			var RedisConnStr = CfgItems.Redis.Host.GetFrom(Cfg)+":"+CfgItems.Redis.Port.GetFrom(Cfg);
 			opt.Configuration = RedisConnStr;
-			opt.InstanceName = CfgItems.RedisInstanceName.GetFrom(Cfg);
+			opt.InstanceName = CfgItems.Redis.InstanceName.GetFrom(Cfg);
 		});
 		return z;
 	}

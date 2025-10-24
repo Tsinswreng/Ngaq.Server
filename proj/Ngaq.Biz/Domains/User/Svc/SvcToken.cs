@@ -5,7 +5,6 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
-using Ngaq.Core.Shared.User.Svc;
 using Ngaq.Core.Shared.User.UserCtx;
 using Ngaq.Core.Model.Sys.Po.RefreshToken;
 using Ngaq.Local.Db.TswG;
@@ -13,10 +12,12 @@ using Tsinswreng.CsCfg;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Shared.Base.Models.Resp;
 using Ngaq.Core.Shared.Base.Models.Req;
-using NSubstitute;
 using Ngaq.Core.Shared.User.Models.Po.Device;
 using Ngaq.Core.Shared.User.Models.Bo.Jwt;
 using Ngaq.Biz.Domains.User.Dao;
+using Ngaq.Core.Infra.Core;
+using Ngaq.Biz.Domains.User.Dto;
+using Microsoft.Extensions.Caching.Distributed;
 
 public class RespGenJwtToken:BaseResp{
 	public Tempus ExpireAt{get;set;}
@@ -52,14 +53,17 @@ public class SvcToken
 	ICfgAccessor Cfg;
 	IAppRepo<PoRefreshToken, IdRefreshToken> RepoToken;
 	DaoToken DaoToken;
+	IDistributedCache Cache;
 	public SvcToken(
 		ICfgAccessor Cfg
 		,IAppRepo<PoRefreshToken, IdRefreshToken> RepoToken
 		,DaoToken DaoToken
+		,IDistributedCache Cache
 	){
 		this.Cfg = Cfg;
 		this.RepoToken = RepoToken;
 		this.DaoToken = DaoToken;
+		this.Cache = Cache;
 	}
 	public RespGenAccessToken GenAccessToken(
 		ReqGenAccessToken Req
@@ -146,32 +150,85 @@ public class SvcToken
 		return R;
 	}
 
+
+	public async Task<IAnswer<nil>> ValidateAccessTokenAsy(
+		ReqValidateAccessToken Req, CT Ct
+	){
+		var rawAccessToken = Req.AccessToken;
+		var R = new Answer<nil>();
+		R.Ok = true;
+		if (string.IsNullOrWhiteSpace(rawAccessToken)){
+			R.AddErrStr("Access token is empty.");
+			return R;
+		}
+		var jwtSecret = Cfg.Get(ItemsServerCfg.Auth.JwtSecret);
+		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret ?? ""));
+		var handler = new JwtSecurityTokenHandler();
+		try{
+			var validations = new TokenValidationParameters{
+				ValidateIssuer = true,
+				ValidateAudience = true,
+				ValidateLifetime = true,
+				ValidateIssuerSigningKey = true,
+				ValidIssuer = Cfg.Get(ItemsServerCfg.Auth.JwtIssuer),
+				ValidAudience = Cfg.Get(ItemsServerCfg.Auth.JwtAudience),
+				IssuerSigningKey = key,
+				ClockSkew = TimeSpan.FromSeconds(30)//留30s容錯
+			};
+
+			var principal = handler.ValidateToken(rawAccessToken, validations, out var securityToken);
+			//var jwt = handler.ReadJwtToken(rawAccessToken);
+			var jwt = (JwtSecurityToken)securityToken;
+
+			var jtiClaim = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+			var subClaim = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+			if (string.IsNullOrEmpty(jtiClaim) || string.IsNullOrEmpty(subClaim)){
+				R.AddErrStr("Token missing required claims.");
+				return R;
+			}
+		}
+		catch (SecurityTokenExpiredException){
+			return R.AddErrStr("Access token expired.");
+		}
+		catch (SecurityTokenInvalidSignatureException){
+			return R.AddErrStr("Invalid token signature.");
+		}
+		catch (Exception ex){
+			return R.AddErrStr($"Token validation failed: {ex.Message}");
+		}
+		return R;
+	}
+
+
 	public async Task<Func<
 		IUserCtx
 		,str//RawRefreshTokenValue
-		,CT, Task<RespRefreshBothToken>
-	>> FnRefreshBothToken(IDbFnCtx Ctx, CT Ct){
-		var SlctToken = await DaoToken.FnSlctByTokenValue(Ctx, Ct);
+		,CT, Task<IAnswer<RespRefreshBothToken>>
+	>> FnValidateRefreshToken(IDbFnCtx Ctx, CT Ct){
+		var SlctToken = await DaoToken.FnSlctByTokenValue(Ctx, Ct);//TODO 製Svc層之接口、未必從DB讀令牌
 		var GenRTokenEtStore = await FnGenEtStoreRefreshToken(Ctx, Ct);
 		return async(User, RawTokenStr, Ct)=>{
+			var R = new Answer<RespRefreshBothToken>();
 			var PoRefreshToken = new PoRefreshToken();
 			PoRefreshToken.SetTokenValueSha256(RawTokenStr);
 			var OldToken = await SlctToken(PoRefreshToken.TokenValue!, Ct);
 			if(OldToken is null){
-				throw new Exception("token not found");//TODO
+				R.AddErrStr("Invalid refresh token.");
+				return R;
 			}
 			var RespNeoRToken = await GenRTokenEtStore(User, Ct);
 			OldToken.RevokeAt = new Tempus();
 			var RespNeoAToken = GenAccessToken(new ReqGenAccessToken{
 				UserId = User.UserId.ToString()
 			});
-			var R = new RespRefreshBothToken{
+			var Resp = new RespRefreshBothToken{
 				AccessToken = RespNeoAToken.AccessToken
 				,AccessTokenExpireAt = RespNeoAToken.ExpireAt
 				,RefreshToken = RespNeoRToken.RefreshToken
 				,RefreshTokenExpireAt = RespNeoRToken.ExpireAt
 			};
-			return R;
+			return R.OkWith(Resp);
 		};
 	}
 
@@ -200,6 +257,35 @@ public class SvcToken
 			}
 			await Insert(Session, Ct);
 			return Resp;
+		};
+	}
+
+	public async Task<Func<
+		PoRefreshToken
+		,CT, Task<nil>
+	>> FnRevokeRefreshToken(IDbFnCtx Ctx, CT Ct){
+		var SlctById = await RepoToken.FnSlctById(Ctx, Ct);
+		var UpdById = await RepoToken.FnUpdOneById(
+			Ctx,[
+				nameof(PoRefreshToken.RevokeAt)
+				,nameof(PoRefreshToken.BizUpdatedAt)
+				,nameof(PoRefreshToken.RevokeReason)
+			],Ct
+		);
+		return async(Po, Ct)=>{
+			await UpdById(Po, Ct);
+			return NIL;
+		};
+	}
+
+
+	public async Task<Func<
+		IUserCtx, PoRefreshToken
+		,CT, Task<nil>
+	>> FnRevokeUsersAllRefreshToken(IDbFnCtx Ctx, CT Ct){
+		return async(User, Po, Ct)=>{
+			throw new NotImplementedException();
+			//return NIL;
 		};
 	}
 

@@ -102,6 +102,16 @@ public static class DiBiz{
 
 		// 配置 Redis 连接
 		var Cfg = ServerCfg.Inst;
+		var port = Cfg.Get(ItemsServerCfg.Redis.Port);
+		var host = Cfg.Get(ItemsServerCfg.Redis.Host);
+		var password = Cfg.Get(ItemsServerCfg.Redis.Password);
+		var instanceName = Cfg.Get(ItemsServerCfg.Redis.InstanceName);
+
+		z.AddStackExchangeRedisCache(o =>{
+			o.Configuration = $"{host}:{port},password={password}";
+			o.InstanceName = instanceName;
+		});
+
 		// var configurationOptions = ConfigurationOptions.Parse(redisConnectionString);
 		// // 可选：根据需要配置其他选项，例如：
 		// configurationOptions.AbortOnConnectFail = false; // 防止连接失败时立即中止

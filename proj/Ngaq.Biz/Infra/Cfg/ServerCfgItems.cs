@@ -31,10 +31,13 @@ public partial class ItemsServerCfg{
 				Postgres, ["Password"], ""
 			);
 		//~Postgres
-		public static ICfgItem Redis => Mk(Db, [nameof(Redis)], null);
-			public static ICfgItem<str> RedisHost => Mk(Redis, ["Host"], "localhost");
-			public static ICfgItem<i32> RedisPort => Mk(Redis, ["Port"], 6379);
-			public static ICfgItem<str> RedisInstanceName => Mk(Redis, ["InstanceName"], "");
+		public static ICfgItem _Redis => Mk(Db, [nameof(_Redis)], null);
+		public class Redis{
+			public static ICfgItem<str> Host => Mk(_Redis, [nameof(Host)], "localhost");
+			public static ICfgItem<i32> Port => Mk(_Redis, [nameof(Port)], 6379);
+			public static ICfgItem<str> InstanceName => Mk(_Redis, [nameof(InstanceName)], "");
+			public static ICfgItem<str> Password => Mk(_Redis, [nameof(Password)], "");
+		}
 		//~Redis
 		public static ICfgItem Sqlite => Mk(Db, [nameof(Sqlite)], null);
 			public static ICfgItem<str> SqliteDbPath => Mk(Sqlite, ["Path"], "ErrDb.sqlite");
