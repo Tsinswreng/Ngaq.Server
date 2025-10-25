@@ -72,6 +72,8 @@ $"""
 CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_UniqueName")}
 ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoUser.UniqueName))})
 WHERE {o.SqlIsNonDel()}
+AND {o.Fld(nameof(PoUser.UniqueName))} IS NOT NULL
+AND {o.Fld(nameof(PoUser.UniqueName))} <> ''
 """
 ,$"""
 CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_EMail")}

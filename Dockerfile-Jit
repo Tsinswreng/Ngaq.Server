@@ -27,8 +27,9 @@ COPY . .
 
 # 发布项目
 RUN dotnet publish "Ngaq.Server/proj/Ngaq.Web/Ngaq.Web.csproj" -c Release -o /app/publish
+# RUN dotnet publish "Ngaq.Server/proj/Ngaq.Web/Ngaq.Web.csproj" -c Release -r linux-x64 -o /app/publish
 
-# 运行阶段（使用ASP.NET运行时）
+运行阶段（使用ASP.NET运行时）
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /app/publish .
