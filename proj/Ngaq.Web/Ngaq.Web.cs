@@ -6,6 +6,7 @@ using Tsinswreng.CsCfg;
 using CfgItems = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Tools;
+using Tsinswreng.CsTools;
 
 
 var app = NgaqWeb.InitApp(args);
@@ -42,7 +43,14 @@ builder.Services.ConfigureHttpJsonOptions(opt =>
 	opt.SerializerOptions.PropertyNamingPolicy = null;
 	opt.SerializerOptions.WriteIndented = true;
 	opt.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-	opt.SerializerOptions.Converters.Add(new CustomJsonConvtrFctry());
+
+//fucking Asp.net don't use my already defined converters in AppJsonCtx through [JsonSourceGenerationOptions(Converters=[...])]
+	opt.SerializerOptions.Converters.AddRange(
+		AppJsonCtx.JsonConverters
+	);
+	//我已經給AppJsonCtx配過一堆Converters了 能不能在這裏直接調用 而不是讓我再手上配一次
+	//opt.SerializerOptions.Converters.Add();
+	//opt.SerializerOptions.Converters.Add(new CustomJsonConvtrFctry());
 });
 
 builder.Services
