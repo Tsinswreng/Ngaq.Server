@@ -2,6 +2,7 @@ namespace Ngaq.Web;
 
 using Ngaq.Biz;
 using Ngaq.Biz.Infra.Cfg;
+using Ngaq.Core;
 using Tsinswreng.CsCfg;
 using CfgItems = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
 
@@ -10,11 +11,12 @@ using CfgItems = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
 /// 蔿入口之依賴注入
 /// </summary>
 public static class DiEntry{
-	public static IServiceCollection Setup(
+	public static IServiceCollection SetupEntry(
 		this IServiceCollection z
 		,ICfgAccessor Cfg
 	){
-		z.SetupBiz()
+		z.SetupCore()
+		.SetupBiz()
 		.SetupWeb();
 		return z;
 	}

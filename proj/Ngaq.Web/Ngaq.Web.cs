@@ -56,7 +56,7 @@ builder.Services.ConfigureHttpJsonOptions(opt =>
 //builder.Services.AddAuthentication().AddBearerToken();
 
 builder.Services
-	.Setup(Cfg)
+	.SetupEntry(Cfg)
 ;
 
 
@@ -68,7 +68,7 @@ var app = builder.Build();
 
 //cors
 app.UseCors();
-
+app.UseMiddleware<TokenValidationMiddleware>();
 app.MapGet("/", async()=>{
 	return new Tempus().ToString();
 });

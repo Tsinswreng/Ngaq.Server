@@ -1,9 +1,12 @@
 namespace Ngaq.Biz.Domains.User;
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Ngaq.Core.Shared.User.Models.Bo.Device;
 using Ngaq.Core.Shared.User.Models.Po.Device;
+using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Shared.User.UserCtx;
 
 public class ServerUserCtx : UserCtx, IServerUserCtx{
@@ -27,6 +30,13 @@ public static class ExtnUseCtx{
 		return new ServerUserCtx().FromHttpCtx(z);
 	}
 
+	static IdUser GetUserIdFromClaims(ClaimsPrincipal Principal){
+		var sub = Principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+		??throw new Exception("sub is null");//TODO此旹璫返401
+		var UserId = IdUser.FromLow64Base(sub);
+		return UserId;
+	}
+
 	public static TSelf FromHttpCtx<TSelf>(
 		this TSelf z
 		,HttpContext HttpCtx
@@ -48,6 +58,7 @@ public static class ExtnUseCtx{
 
 		// 4. 客户端类型（简单嗅探）
 		z.ClientType = SniffClientType(z.UserAgent);
+		z.UserId = GetUserIdFromClaims(HttpCtx.User);
 		return z;
 	}
 

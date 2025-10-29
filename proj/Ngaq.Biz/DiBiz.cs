@@ -22,6 +22,17 @@ using Ngaq.Biz.Domains.User.Dao;
 using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
 using Ngaq.Core.Model.Sys.Po.RefreshToken;
 using Tsinswreng.CsCfg;
+using Ngaq.Core.Word.Svc;
+using Ngaq.Local.Domains.Word.Svc;
+using Ngaq.Core.Shared.Word.Svc;
+using Ngaq.Local.Word.Dao;
+using Tsinswreng.CsTools;
+using Ngaq.Core.Shared.Word.Models.Po.Word;
+using Ngaq.Core.Model.Po.Word;
+using Ngaq.Core.Shared.Word.Models.Po.Learn;
+using Ngaq.Core.Model.Po.Learn_;
+using Ngaq.Core.Shared.Word.Models.Po.Kv;
+using Ngaq.Core.Model.Po.Kv;
 
 public static class DiBiz{
 	#if false
@@ -86,9 +97,15 @@ public static class DiBiz{
 		z.SetupTswgSqlAdo();
 		z.AddSingleton<IDictMapperShallow>(CoreDictMapper.Inst);
 
+		
+
 
 		z.AddRepoScoped<PoUser, IdUser>();
 		z.AddRepoScoped<PoPassword, IdPassword>();
+
+		z.AddRepoScoped<PoWord, IdWord>();
+		z.AddRepoScoped<PoWordLearn, IdWordLearn>();
+		z.AddRepoScoped<PoWordProp, IdWordProp>();
 
 
 		z.AddScoped<DaoUser>();
@@ -98,6 +115,9 @@ public static class DiBiz{
 		z.AddScoped<DaoToken>();
 		z.AddScoped<ISvcToken, SvcToken>();
 
+		z.AddScoped<ISvcWord, SvcWord>();
+		z.AddScoped<ISvcParseWordList, SvcParseWordList>();
+		z.AddScoped<DaoSqlWord, DaoSqlWord>();
 
 		// 配置 Redis 连接
 		var Cfg = ServerCfg.Inst;

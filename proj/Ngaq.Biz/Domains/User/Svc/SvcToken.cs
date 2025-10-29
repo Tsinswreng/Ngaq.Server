@@ -18,6 +18,7 @@ using Ngaq.Biz.Domains.User.Dao;
 using Ngaq.Core.Infra.Core;
 using Ngaq.Biz.Domains.User.Dto;
 using Microsoft.Extensions.Caching.Distributed;
+using Ngaq.Core.Shared.User.Models.Po.User;
 
 public class RespGenJwtToken:BaseResp{
 	public Tempus ExpireAt{get;set;}
@@ -151,15 +152,14 @@ public class SvcToken
 	}
 
 
-	public async Task<IAnswer<nil>> ValidateAccessTokenAsy(
+	public async Task<IAnswer<RespValidateAccessToken>> ValidateAccessTokenAsy(
 		ReqValidateAccessToken Req, CT Ct
 	){
 		var rawAccessToken = Req.AccessToken;
-		var R = new Answer<nil>();
+		var R = new Answer<RespValidateAccessToken>();
 		R.Ok = true;
 		if (string.IsNullOrWhiteSpace(rawAccessToken)){
-			R.AddErrStr("Access token is empty.");
-			return R;
+			return R.AddErrStr("Access token is empty.");
 		}
 		var jwtSecret = Cfg.Get(ItemsServerCfg.Auth.JwtSecret);
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret ?? ""));
@@ -177,16 +177,10 @@ public class SvcToken
 			};
 
 			var principal = handler.ValidateToken(rawAccessToken, validations, out var securityToken);
-			//var jwt = handler.ReadJwtToken(rawAccessToken);
-			var jwt = (JwtSecurityToken)securityToken;
 
-			var jtiClaim = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
-			var subClaim = jwt.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
-
-			if (string.IsNullOrEmpty(jtiClaim) || string.IsNullOrEmpty(subClaim)){
-				R.AddErrStr("Token missing required claims.");
-				return R;
-			}
+			return R.OkWith(new RespValidateAccessToken{
+				ClaimsPrincipal = principal
+			});
 		}
 		catch (SecurityTokenExpiredException){
 			return R.AddErrStr("Access token expired.");
@@ -197,7 +191,6 @@ public class SvcToken
 		catch (Exception ex){
 			return R.AddErrStr($"Token validation failed: {ex.Message}");
 		}
-		return R;
 	}
 
 	/// <summary>
