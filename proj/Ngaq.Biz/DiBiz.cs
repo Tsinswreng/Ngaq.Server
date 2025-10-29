@@ -97,7 +97,7 @@ public static class DiBiz{
 		z.SetupTswgSqlAdo();
 		z.AddSingleton<IDictMapperShallow>(CoreDictMapper.Inst);
 
-		
+
 
 
 		z.AddRepoScoped<PoUser, IdUser>();
