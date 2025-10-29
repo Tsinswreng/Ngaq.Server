@@ -200,7 +200,12 @@ public class SvcToken
 		return R;
 	}
 
-
+	/// <summary>
+	/// AI曰不用做緩存
+	/// </summary>
+	/// <param name="Ctx"></param>
+	/// <param name="Ct"></param>
+	/// <returns></returns>
 	public async Task<Func<
 		IUserCtx
 		,str//RawRefreshTokenValue

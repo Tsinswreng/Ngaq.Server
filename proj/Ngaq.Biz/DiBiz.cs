@@ -99,7 +99,6 @@ public static class DiBiz{
 		z.AddScoped<ISvcToken, SvcToken>();
 
 
-
 		// 配置 Redis 连接
 		var Cfg = ServerCfg.Inst;
 		var port = Cfg.Get(ItemsServerCfg.Redis.Port);
@@ -117,7 +116,14 @@ public static class DiBiz{
 		// configurationOptions.AbortOnConnectFail = false; // 防止连接失败时立即中止
 		// configurationOptions.Ssl = true; // 如果需要 SSL 连接
 		// z.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(configurationOptions));
-
 		return z;
 	}
+
+/*
+.AddStackExchangeRedisCache(opt=>{
+			var RedisConnStr = CfgItems.Redis.Host.GetFrom(Cfg)+":"+CfgItems.Redis.Port.GetFrom(Cfg);
+			opt.Configuration = RedisConnStr;
+			opt.InstanceName = CfgItems.Redis.InstanceName.GetFrom(Cfg);
+		});
+ */
 }

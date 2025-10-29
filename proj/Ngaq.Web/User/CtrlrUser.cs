@@ -10,11 +10,11 @@ using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Infra;
 using Tsinswreng.CsCore;
 
-
-using U = Ngaq.Core.Infra.Url.ConstUrl.UrlUser;
+using U = Ngaq.Core.Infra.Url.ConstUrl.UrlOpenUser;
 using Ngaq.Biz.Domains.User;
+using Microsoft.Extensions.Caching.Distributed;
 
-public partial class CtrlrUser(
+public partial class CtrlrOpenUser(
 	SvcUser SvcUser
 )
 	:ICtrlr
@@ -30,6 +30,13 @@ public partial class CtrlrUser(
 
 		R.MapGet("/Time", async(HttpContext Ctx, CT Ct)=>{
 			return await Task.FromResult(Results.Ok(new Tempus()));
+		});
+
+		R.MapGet("/TestRedis", async(HttpContext Ctx, CT Ct)=>{
+			var Cache = Ctx.RequestServices.GetRequiredService<IDistributedCache>();
+			await Cache.SetStringAsync("key", new Tempus().ToIso(), Ct);
+			var R = await Cache.GetStringAsync("key", Ct);
+			return await Task.FromResult(Results.Ok(R));
 		});
 
 		R.MapPost(U.AddUser, AddUser);

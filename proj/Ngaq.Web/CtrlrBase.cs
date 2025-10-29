@@ -6,6 +6,17 @@ public partial interface ICtrlr{
 	);
 }
 
+public abstract class BaseCtrlr: ICtrlr{
+	public abstract nil InitRouter(
+		RouteGroupBuilder R
+	);
+
+	public nil Register(){
+		
+		return NIL;
+	}
+}
+
 // public abstract class BaseCtrlr:ICtrlr{
 // 	public abstract nil InitRouter(
 // 		RouteGroupBuilder R

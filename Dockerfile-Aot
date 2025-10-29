@@ -1,6 +1,6 @@
 #pwd=項目根目錄
 #docker build -t ngaq-server:1.0 -f ./Ngaq.Server/Dockerfile-Aot .
-#docker run --rm -p 5000:2341 --name ngaq-server ngaq-server:1.0
+
 #構建上下文在Ngaq/ 洏不在Ngaq/Ngaq.Server
 # 构建阶段（使用.NET 9 SDK）
 # TODO 拷配置文件
@@ -38,6 +38,7 @@ COPY . .
 RUN dotnet publish "Ngaq.Server/proj/Ngaq.Web/Ngaq.Web.csproj" \
 -c Release -o /app/publish \
 -r linux-x64
+
 #-p:PublishAot=true \ #加此則報錯曰 不支持提前編譯。只在csproj中開aot即可
 
 # RUN dotnet publish "Ngaq.Server/proj/Ngaq.Web/Ngaq.Web.csproj" -c Release -r linux-x64 -o /app/publish

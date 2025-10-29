@@ -53,13 +53,17 @@ builder.Services.ConfigureHttpJsonOptions(opt =>
 	//opt.SerializerOptions.Converters.Add(new CustomJsonConvtrFctry());
 });
 
+//builder.Services.AddAuthentication().AddBearerToken();
+
 builder.Services
 	.Setup(Cfg)
 ;
 
 
 //AppRouterIniter.Inst.RegisterCtrlr();
-var AppRouterIniter = new AppRouterIniter(builder.Services);
+var appRouterIniter = AppRouterIniter.Inst;
+appRouterIniter.Init(builder.Services);
+
 var app = builder.Build();
 
 //cors
@@ -73,7 +77,7 @@ app.MapGet("/", async()=>{
 var BaseRoute = app.MapGroup("/"); //RouteGroupBuilder
 
 var Svc = app.Services;
-AppRouterIniter.Init(Svc, BaseRoute);
+appRouterIniter.InitRouters(Svc, BaseRoute);
 return app;
 	}
 }
