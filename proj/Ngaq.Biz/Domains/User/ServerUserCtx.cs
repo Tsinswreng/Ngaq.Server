@@ -31,8 +31,10 @@ public static class ExtnUseCtx{
 	}
 
 	static IdUser GetUserIdFromClaims(ClaimsPrincipal Principal){
-		var sub = Principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
-		??throw new Exception("sub is null");//TODO此旹璫返401
+		var sub = Principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+		if(sub is null){
+			return IdUser.Zero;//訪問公開Url(無須驗令牌者)旹則取不到用戶
+		}
 		var UserId = IdUser.FromLow64Base(sub);
 		return UserId;
 	}

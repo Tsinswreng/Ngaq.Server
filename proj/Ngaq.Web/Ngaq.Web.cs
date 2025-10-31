@@ -59,16 +59,20 @@ builder.Services
 	.SetupEntry(Cfg)
 ;
 
+builder.Services.AddExceptionHandler<GlobalErrHandler>();
+builder.Services.AddProblemDetails(); // ✅ 必须加这个
 
 //AppRouterIniter.Inst.RegisterCtrlr();
 var appRouterIniter = AppRouterIniter.Inst;
 appRouterIniter.Init(builder.Services);
 
 var app = builder.Build();
+app.UseExceptionHandler();
 
 //cors
 app.UseCors();
 app.UseMiddleware<TokenValidationMiddleware>();
+
 app.MapGet("/", async()=>{
 	return new Tempus().ToString();
 });

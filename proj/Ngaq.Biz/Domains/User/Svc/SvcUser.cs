@@ -33,6 +33,12 @@ public partial class SvcUser(
 	:ISvcUser
 {
 
+	/// <summary>
+	///TODO 檢查用戶存在否
+	/// </summary>
+	/// <param name="DbFnCtx"></param>
+	/// <param name="Ct"></param>
+	/// <returns></returns>
 	public async Task<Func<
 		IUserCtx
 		,ReqAddUser
@@ -94,25 +100,25 @@ public partial class SvcUser(
 			PoUser? PoUser = null;
 			if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.UniqueName){
 				if(str.IsNullOrEmpty(Req.UniqueName)){
-					throw new ErrArg("str.IsNullOrEmpty(Req.UniqueName)"); //TODO 優化異常處理 錯誤碼, 前端多語言
+					//throw new ErrArg("str.IsNullOrEmpty(Req.UniqueName)");
+					throw ItemsErr.Common.ArgErr.ToErr([nameof(Req.UniqueName)]);
 				}
 				PoUser = await SelectUserByUniqueName(Req.UniqueName,Ct);
 			}else if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.Email){
 				if(str.IsNullOrEmpty(Req.Email)){
-					throw new ErrArg("str.IsNullOrEmpty(Req.Email)"); //TODO 優化異常處理 錯誤碼, 前端多語言
+					throw ItemsErr.Common.ArgErr.ToErr([nameof(Req.Email)]);
 				}
 				PoUser = await SelectUserByEmail(Req.Email,Ct);
 			}
 			if(PoUser == null){
-				throw new ErrBase("User not exsists");
+				throw ItemsErr.User.UserNotExist.ToErr();
 			}
-
 			var PoPassword = await SelectPasswordById(PoUser.Id, Ct);
 			if(PoPassword is null){
-				throw new ErrBase("Password not exsists");
+				throw new AppErr("Password not exsists");
 			}
 			if(! await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) ){
-				throw new ErrBase("Password not correct");
+				throw ItemsErr.User.PasswordNotMatch.ToErr();
 			};
 			var UserCtx = User.AsServerUserCtx();
 			UserCtx.UserId = PoUser.Id;

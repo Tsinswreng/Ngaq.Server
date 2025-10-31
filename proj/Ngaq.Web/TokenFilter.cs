@@ -17,11 +17,12 @@ public class TokenValidationMiddleware {
 		// 只针对 /api/* 做验证
 		CT Ct = Ctx.RequestAborted;
 		if (Ctx.Request.Path.StartsWithSegments(
-				ConstUrl.Api+"", StringComparison.OrdinalIgnoreCase
+				"/Api"+"", StringComparison.OrdinalIgnoreCase
 			)
 		){
 			if (!Ctx.Request.Headers.TryGetValue("Authorization", out var header) ||
-				!header.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) {
+				!header.ToString().StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+			){
 				Ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
 				return;
 			}

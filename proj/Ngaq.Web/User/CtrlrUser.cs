@@ -11,11 +11,13 @@ using Ngaq.Core.Infra;
 using Tsinswreng.CsCore;
 
 using U = Ngaq.Core.Infra.Url.ConstUrl.UrlOpenUser;
+using UrlUser = Ngaq.Core.Infra.Url.ConstUrl.UrlUser;
 using Ngaq.Biz.Domains.User;
 using Microsoft.Extensions.Caching.Distributed;
 
 public partial class CtrlrOpenUser(
 	SvcUser SvcUser
+	,ISvcToken SvcToken
 )
 	:ICtrlr
 {
@@ -40,6 +42,7 @@ public partial class CtrlrOpenUser(
 		});
 
 		R.MapPost(U.AddUser, AddUser);
+		R.MapPost(UrlUser.TokenRefresh, RefreshToken);
 		return NIL;
 	}
 
@@ -49,12 +52,17 @@ public partial class CtrlrOpenUser(
 			,Req, Ct
 		);
 		//return Results.Ok(JSON.stringify(R));
-		return Results.Ok(R);
+		return this.Ok(R);
 	}
 
 	public async Task<IResult> AddUser(ReqAddUser ReqAddUser, HttpContext Ctx, CT Ct){
 		await SvcUser.AddUser(Ctx.ToUserCtx(), ReqAddUser, Ct);
-		return Results.Ok();
+		return this.Ok();
+	}
+
+	public async Task<IResult> RefreshToken(ReqRefreshTheToken Req, HttpContext Ctx, CT Ct){
+		var R = await SvcToken.ValidateEtRefreshTheToken(Ctx.ToUserCtx(), Req.RefreshToken, Ct);
+		return this.Ok(R);
 	}
 
 
