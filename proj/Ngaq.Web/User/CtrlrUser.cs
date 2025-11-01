@@ -14,6 +14,9 @@ using U = Ngaq.Core.Infra.Url.ConstUrl.UrlOpenUser;
 using UrlUser = Ngaq.Core.Infra.Url.ConstUrl.UrlUser;
 using Ngaq.Biz.Domains.User;
 using Microsoft.Extensions.Caching.Distributed;
+using Ngaq.Core.Infra.Errors;
+using Ngaq.Core.Infra.Core;
+using Ngaq.Core.Tools;
 
 public partial class CtrlrOpenUser(
 	SvcUser SvcUser
@@ -61,7 +64,8 @@ public partial class CtrlrOpenUser(
 	}
 
 	public async Task<IResult> RefreshToken(ReqRefreshTheToken Req, HttpContext Ctx, CT Ct){
-		var R = await SvcToken.ValidateEtRefreshTheToken(Ctx.ToUserCtx(), Req.RefreshToken, Ct);
+		var Ans = await SvcToken.ValidateEtRefreshTheToken(Ctx.ToUserCtx(), Req.RefreshToken, Ct);
+		var R = Ans.DataOrThrow();
 		return this.Ok(R);
 	}
 

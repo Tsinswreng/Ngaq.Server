@@ -1,7 +1,6 @@
 namespace Ngaq.Biz.Infra.Cfg;
 
 using Ngaq.Core.Infra;
-using Ngaq.Core.Infra.Cfg;
 using Tsinswreng.CsCfg;
 using static Tsinswreng.CsCfg.CfgItem<obj?>;
 public partial class ItemsServerCfg{
@@ -63,5 +62,15 @@ public partial class ItemsServerCfg{
 			_Auth, [nameof(JwtAudience)], "Ngaq.Client"
 		);
 	}
+	public class Debug{
+		public static ICfgItem _R = Mk(null, [nameof(Debug)]);
+		public class Auth{
+			public static ICfgItem _R = Mk(null, [nameof(Auth)]);
+			public static ICfgItem<str> UserId = Mk(_R, [nameof(UserId)], "1");
+			public static ICfgItem<str> AllowedAccessToken => Mk(_R, [nameof(AllowedAccessToken)], "TsinswrengAccessToken");
+			public static ICfgItem<str> AllowedRefreshToken => Mk(_R, [nameof(AllowedRefreshToken)], "TsinswrengRefreshToken");
+		}
+	}
+
 	//public static ICfgItem<str> JwtSecret => Mk(Auth, [nameof(JwtSecret)], "");
 }

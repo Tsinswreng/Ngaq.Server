@@ -73,7 +73,7 @@ public static class DiBiz{
 		z.AddScoped<TxnWrapper<DbFnCtx>>();
 		z.AddSingleton<NpgsqlDataSource>(ServerDb.Inst.DataSource);
 		//z.AddSingleton<I_GetDbConnAsy, PostgresConnPool>();
-		z.AddSingleton<I_GetDbConnAsy>(ServerDb.Inst.DbConnPool);
+		z.AddSingleton<IDbConnMgr>(ServerDb.Inst.DbConnPool);
 		z.AddSingleton<ITblMgr>(ServerTblMgr.Inst);
 
 		z.AddRepoScoped<SchemaHistory, i64>();

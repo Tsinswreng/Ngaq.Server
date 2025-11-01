@@ -72,7 +72,6 @@ public class SvcToken
 		var JwtSecret = Cfg.Get(ItemsServerCfg.Auth.JwtSecret);
 		var securityKey = new SymmetricSecurityKey(
 			//注意: 小於256字節則報錯
-			//Encoding.UTF8.GetBytes("2025-04-16T21:00:39.328+08:00_W16-3=2025-04-16T21:00:50.706+08:00_W16-3")
 			Encoding.UTF8.GetBytes(JwtSecret??"")
 		);
 		var credentials = new SigningCredentials(
@@ -216,6 +215,7 @@ public class SvcToken
 				R.AddErr(ItemsErr.User.InvalidToken.ToErr());
 				return R;
 			}
+			User.UserId = OldToken.UserId;
 			var RespNeoRToken = await GenRTokenEtStore(User, Ct);
 			OldToken.RevokeAt = new Tempus();
 			var RespNeoAToken = GenAccessToken(new ReqGenAccessToken{
@@ -238,7 +238,7 @@ public class SvcToken
 		var Insert = await RepoToken.FnInsertOne(Ctx, Ct);
 		return async (User, Ct)=>{
 			var UserCtx = User.AsServerUserCtx();
-			var UserIdStr = UserCtx.UserId.ToString();
+			var UserIdStr = UserCtx.GetValidUserId().ToString();
 			var Resp = GenRefreshToken(new ReqGenRefreshToken{
 				UserId = UserIdStr
 			});

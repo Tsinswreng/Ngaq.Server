@@ -26,5 +26,12 @@
 		// ,"RefreshTokenExpiryMs":
 		// ,"JwtIssuer":
 		// ,"JwtAudience":
+	},
+	"Debug":{
+		"Auth":{
+			"UserId": "1"
+			,"AllowedAccessToken": "TsinswrengAccessToken"
+			,"AllowedRefreshToken": "TsinswrengRefreshToken"
+		}
 	}
 }
