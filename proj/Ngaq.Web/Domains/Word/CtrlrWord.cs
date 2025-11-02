@@ -15,6 +15,8 @@ public class CtrlrWord(
 		RouteGroupBuilder R
 	){
 		R.MapPost(U.Push, ReceiveFull);
+		R.MapPost(U.Pull, SendFull);
+
 		return NIL;
 	}
 
@@ -25,12 +27,18 @@ public class CtrlrWord(
 		await Ctx.Request.Body.CopyToAsync(ms, Ct);
 		var Body = ms.ToArray();
 		var textWithBlob = ToolTextWithBlob.Parse(Body);
-		var info = JSON.parse<WordsPackInfo>(textWithBlob.Text);
-		if(info is null){
-			throw ItemsErr.Common.ArgErr.ToErr();
-		}
-		var Req = info.ToDtoCompressedWords(textWithBlob.Blob.ToArray());
-		await SvcWord.AddCompressedWord(Ctx.ToUserCtx(), Req, Ct);
+		await SvcWord.AddFromTextWithBlob(Ctx.ToUserCtx(), textWithBlob, Ct);
 		return Results.Ok();
+	}
+
+	public async Task<IResult> SendFull(
+		ReqPackWords Req
+		,HttpContext Ctx, CT Ct
+	){
+		var textWithBlob = await SvcWord.PackAllWordsToTextWithBlobNoStream(
+			Ctx.ToUserCtx(), Req, Ct
+		);
+		var bytes = textWithBlob.ToByteArr();
+		return Results.Bytes(bytes);
 	}
 }

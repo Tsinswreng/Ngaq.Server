@@ -26,12 +26,12 @@ AND {T.Eq(PTokenValue)}
 		var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
 		return async (TokenValue, Ct)=>{
 			var Arg = ArgDict.Mk(T).AddT(PTokenValue, TokenValue);
-			var R = await Ctx.Attach(Cmd, Arg).FirstOrDefault<PoRefreshToken>(T, Ct);
+			var R = await Ctx.RunCmd(Cmd, Arg).FirstOrDefault<PoRefreshToken>(T, Ct);
 			return R;
 		};
 	}
 
-	
+
 
 	// public async Task<Func<
 	// 	IdUser
