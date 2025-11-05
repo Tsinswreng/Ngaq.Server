@@ -163,3 +163,4 @@ public partial class SvcUser(
 	}
 
 }
+

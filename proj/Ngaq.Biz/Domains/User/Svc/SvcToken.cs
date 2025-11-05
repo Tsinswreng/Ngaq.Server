@@ -238,7 +238,7 @@ public class SvcToken
 		var Insert = await RepoToken.FnInsertOne(Ctx, Ct);
 		return async (User, Ct)=>{
 			var UserCtx = User.AsServerUserCtx();
-			var UserIdStr = UserCtx.GetValidUserId().ToString();
+			var UserIdStr = UserCtx.UserId.ToString();
 			var Resp = GenRefreshToken(new ReqGenRefreshToken{
 				UserId = UserIdStr
 			});

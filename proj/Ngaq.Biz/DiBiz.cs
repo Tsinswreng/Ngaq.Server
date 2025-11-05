@@ -33,6 +33,7 @@ using Ngaq.Core.Shared.Word.Models.Po.Learn;
 using Ngaq.Core.Model.Po.Learn_;
 using Ngaq.Core.Shared.Word.Models.Po.Kv;
 using Ngaq.Core.Model.Po.Kv;
+using StackExchange.Redis;
 
 public static class DiBiz{
 	#if false
@@ -130,6 +131,11 @@ public static class DiBiz{
 			o.Configuration = $"{host}:{port},password={password}";
 			o.InstanceName = instanceName;
 		});
+
+		var redisConfig = ConfigurationOptions.Parse($"{host}:{port},password={password}");
+		var connectionMultiplexer = ConnectionMultiplexer.Connect(redisConfig);
+		z.AddSingleton<IConnectionMultiplexer>(connectionMultiplexer);
+
 
 		// var configurationOptions = ConfigurationOptions.Parse(redisConnectionString);
 		// // 可选：根据需要配置其他选项，例如：

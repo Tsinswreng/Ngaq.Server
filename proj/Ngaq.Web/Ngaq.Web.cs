@@ -7,6 +7,7 @@ using CfgItems = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Tools;
 using Tsinswreng.CsTools;
+using Ngaq.Web.Midware;
 
 
 var app = NgaqWeb.InitApp(args);
@@ -71,7 +72,8 @@ app.UseExceptionHandler();
 
 //cors
 app.UseCors();
-app.UseMiddleware<TokenValidationMiddleware>();
+app.UseMiddleware<TokenValidationMidware>();
+app.UseMiddleware<EdgeDebounceMidware>();
 
 app.MapGet("/", async()=>{
 	return new Tempus().ToString();

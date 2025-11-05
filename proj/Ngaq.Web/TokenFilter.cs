@@ -8,12 +8,12 @@ using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Core.Infra.Url;
 using Tsinswreng.CsCfg;
 
-public class TokenValidationMiddleware {
+public class TokenValidationMidware {
 	private readonly RequestDelegate _next;
 	ISvcToken SvcToken;
 	ICfgAccessor Cfg;
 
-	public TokenValidationMiddleware(
+	public TokenValidationMidware(
 		RequestDelegate next
 		,ISvcToken SvcToken
 		,ICfgAccessor Cfg

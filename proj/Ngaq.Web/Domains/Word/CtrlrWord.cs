@@ -1,11 +1,10 @@
 namespace Ngaq.Web.Domains.Word;
 
-using Ngaq.Biz.Domains.User;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Shared.Word.Models.Dto;
 using Ngaq.Core.Tools;
 using Ngaq.Core.Word.Svc;
-
+using Ngaq.Web.Infra;
 using U = Ngaq.Core.Infra.Url.ConstUrl.UrlWord;
 
 public class CtrlrWord(
@@ -27,7 +26,7 @@ public class CtrlrWord(
 		await Ctx.Request.Body.CopyToAsync(ms, Ct);
 		var Body = ms.ToArray();
 		var textWithBlob = ToolTextWithBlob.Parse(Body);
-		await SvcWord.AddFromTextWithBlob(Ctx.ToUserCtx(), textWithBlob, Ct);
+		await SvcWord.SyncFromTextWithBlob(Ctx.ToUserCtx(), textWithBlob, Ct);
 		return Results.Ok();
 	}
 
