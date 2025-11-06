@@ -1,10 +1,6 @@
 namespace Ngaq.Biz;
-using System.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Ngaq.Biz.Db;
 using Tsinswreng.CsSqlHelper;
-using Tsinswreng.CsSqlHelper.EFCore;
 using Tsinswreng.CsSqlHelper.Postgres;
 using Ngaq.Biz.Db.User;
 using Ngaq.Core.Model.Sys.Po.Password;

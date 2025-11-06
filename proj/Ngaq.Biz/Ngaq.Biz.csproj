@@ -7,7 +7,7 @@
 		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper/Tsinswreng.CsSqlHelper.csproj" />
 		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.Sqlite/Tsinswreng.CsSqlHelper.Sqlite.csproj" />
 		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.Postgres/Tsinswreng.CsSqlHelper.Postgres.csproj" />
-		<ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.EFCore/Tsinswreng.CsSqlHelper.EFCore.csproj" />
+		<!-- <ProjectReference Include="../../../Tsinswreng.CsSqlHelper/proj/Tsinswreng.CsSqlHelper.EFCore/Tsinswreng.CsSqlHelper.EFCore.csproj" /> -->
 		<ProjectReference Include="../../../Ngaq.Local/Ngaq.Local.csproj" />
 	</ItemGroup>
 
@@ -27,11 +27,11 @@
 
 <!-- EfCore -->
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tasks" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+<!--		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />  -->
+<!--		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" PrivateAssets="all" />  -->
+<!--		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />  -->
+<!--		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />  -->
+<!--		<PackageReference Include="Microsoft.EntityFrameworkCore.Tasks" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />  -->
 	</ItemGroup>
 
 </Project>
