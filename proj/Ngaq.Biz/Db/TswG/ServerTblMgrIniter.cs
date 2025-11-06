@@ -1,7 +1,4 @@
 namespace Ngaq.Biz.Db.TswG;
-
-using Ngaq.Core.Shared.User.Models.Bo.Device;
-using Ngaq.Core.Shared.User.Models.Bo.Jwt;
 using Ngaq.Core.Shared.User.Models.Po.Device;
 using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
 using Ngaq.Core.Shared.User.Models.Po.User;
@@ -12,11 +9,10 @@ using Ngaq.Core.Model.Sys.Po.RefreshToken;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.Permission;
 using Ngaq.Core.Models.Sys.Po.Role;
-using Ngaq.Core.Service.Parser;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsSqlHelper;
 using Tsinswreng.CsTools;
-
+using Ngaq.Core.Shared.User.Models.Bo.Device;
 
 public partial class ServerTblMgrIniter{
 
@@ -89,7 +85,7 @@ WHERE {o.SqlIsNonDel()}
 			var o = TblPassword;
 			CfgPoBase(o);
 			o.SetCol(nameof(PoPassword.Id)).MapType(IdPassword.MkTypeMapFn());
-			o.SetCol(nameof(PoPassword.Algo)).MapEnumTypeInt32<PoPassword.EAlgo>();
+			o.SetCol(nameof(PoPassword.Algo)).MapEnumToInt32<PoPassword.EAlgo>();
 			o.SetCol(nameof(PoPassword.UserId)).MapType(IdUser.MkTypeMapFn());
 		}
 
@@ -99,7 +95,7 @@ WHERE {o.SqlIsNonDel()}
 			var o = TblRole;
 			CfgPoBase(o);
 			o.SetCol(nameof(PoRole.Id)).MapType(IdRole.MkTypeMapFn());
-			o.SetCol(nameof(PoRole.Status)).MapEnumTypeInt32<PoRole.ERoleStatus>();
+			o.SetCol(nameof(PoRole.Status)).MapEnumToInt32<PoRole.ERoleStatus>();
 			o.OuterAdditionalSqls.AddRange([
 $"""
 CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_Code")}
@@ -134,8 +130,8 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			o.SetCol(nameof(PoRefreshToken.ExpireAt)).MapType(MapTempus());
 			o.SetCol(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempusN());
 			o.SetCol(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempusN());
-			o.SetCol(nameof(PoRefreshToken.TokenValueType)).MapEnumTypeInt32<PoRefreshToken.ETokenValueType>();
-			o.SetCol(nameof(PoRefreshToken.ClientType)).MapEnumTypeInt32<EClientType>();
+			o.SetCol(nameof(PoRefreshToken.TokenValueType)).MapEnumToStr<PoRefreshToken.ETokenValueType>();
+			o.SetCol(nameof(PoRefreshToken.ClientType)).MapEnumToStr<EClientType>();
 
 			o.OuterAdditionalSqls.AddRange([
 

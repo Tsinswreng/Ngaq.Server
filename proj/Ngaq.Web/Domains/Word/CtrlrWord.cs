@@ -27,7 +27,8 @@ public class CtrlrWord(
 		var Body = ms.ToArray();
 		var textWithBlob = ToolTextWithBlob.Parse(Body);
 		await SvcWord.SyncFromTextWithBlob(Ctx.ToUserCtx(), textWithBlob, Ct);
-		return Results.Ok();
+		//return Results.Ok();
+		return this.Ok();
 	}
 
 	public async Task<IResult> SendFull(
