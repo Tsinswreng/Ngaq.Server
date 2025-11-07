@@ -263,7 +263,7 @@ public class SvcToken
 		PoRefreshToken
 		,CT, Task<nil>
 	>> FnRevokeRefreshToken(IDbFnCtx Ctx, CT Ct){
-		var SlctById = await RepoToken.FnSlctById(Ctx, Ct);
+		var SlctById = await RepoToken.FnSlctOneById(Ctx, Ct);
 		var UpdById = await RepoToken.FnUpdOneById(
 			Ctx,[
 				nameof(PoRefreshToken.RevokeAt)
