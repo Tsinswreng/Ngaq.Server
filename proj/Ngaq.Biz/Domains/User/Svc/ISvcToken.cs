@@ -1,10 +1,10 @@
 namespace Ngaq.Biz.Domains.User.Svc;
 
 using Ngaq.Biz.Domains.User.Dto;
-using Ngaq.Core.Infra.Core;
 using Ngaq.Core.Shared.User.Models.Resp;
 using Ngaq.Core.Shared.User.UserCtx;
 using Ngaq.Local.Db.TswG;
+using Tsinswreng.CsErr;
 
 public interface ISvcToken{
 	public Task<Func<

@@ -14,9 +14,9 @@ using U = Ngaq.Core.Infra.Url.ConstUrl.UrlOpenUser;
 using UrlUser = Ngaq.Core.Infra.Url.ConstUrl.UrlUser;
 using Microsoft.Extensions.Caching.Distributed;
 using Ngaq.Core.Infra.Errors;
-using Ngaq.Core.Infra.Core;
 using Ngaq.Core.Tools;
 using Ngaq.Web.Infra;
+using Tsinswreng.CsErr;
 
 public partial class CtrlrOpenUser(
 	SvcUser SvcUser

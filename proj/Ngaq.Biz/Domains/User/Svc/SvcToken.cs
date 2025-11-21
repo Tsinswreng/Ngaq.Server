@@ -15,13 +15,13 @@ using Ngaq.Core.Shared.Base.Models.Req;
 using Ngaq.Core.Shared.User.Models.Po.Device;
 using Ngaq.Core.Shared.User.Models.Bo.Jwt;
 using Ngaq.Biz.Domains.User.Dao;
-using Ngaq.Core.Infra.Core;
 using Ngaq.Biz.Domains.User.Dto;
 using Microsoft.Extensions.Caching.Distributed;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Tsinswreng.CsSqlHelper;
 using Ngaq.Core.Shared.User.Models.Resp;
 using Ngaq.Core.Infra.Errors;
+using Tsinswreng.CsErr;
 
 public class RespGenJwtToken:BaseResp{
 	public Tempus ExpireAt{get;set;}
