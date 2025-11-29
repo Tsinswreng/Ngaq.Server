@@ -18,6 +18,7 @@ using Ngaq.Core.Shared.User.Models.Resp;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Shared.User.Svc;
 using Ngaq.Core.Shared.User.UserCtx;
+using Tsinswreng.CsErr;
 
 public partial class SvcUser(
 	DaoUser DaoUser
@@ -147,6 +148,18 @@ public partial class SvcUser(
 		};
 	}
 
+
+	public async Task<Func<
+		IUserCtx
+		,CT, Task<nil>
+	>> FnLogout(IDbFnCtx Ctx, CT Ct){
+		var RevokeTokensForLogout = await SvcToken.FnRevokeTokensForLogout(Ctx, Ct);
+		return async(User, Ct)=>{
+			await RevokeTokensForLogout(User, Ct);
+			return NIL;
+		};
+	}
+
 	[Impl]
 	public async Task<nil> AddUser(IUserCtx User, ReqAddUser ReqAddUser ,CT Ct){
 		return await TxnWrapper.Wrap(FnAddUser, User, ReqAddUser, Ct);
@@ -159,8 +172,7 @@ public partial class SvcUser(
 
 	[Impl]
 	public async Task<nil> Logout(IUserCtx User, ReqLogout ReqLogout, CT Ct){
-		return NIL;
+		return await TxnWrapper.Wrap(FnLogout, User, Ct);
 	}
-
 }
 

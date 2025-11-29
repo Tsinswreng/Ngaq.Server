@@ -128,8 +128,8 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			o.SetCol(nameof(PoRefreshToken.UserId)).MapType(IdUser.MkTypeMapFn());
 			o.SetCol(nameof(PoRefreshToken.ClientId)).MapType(IdClient.MkTypeMapFn());
 			o.SetCol(nameof(PoRefreshToken.ExpireAt)).MapType(MapTempus());
-			o.SetCol(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempusN());
-			o.SetCol(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempusN());
+			o.SetCol(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempus());
+			o.SetCol(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempus());
 			o.SetCol(nameof(PoRefreshToken.TokenValueType)).MapEnumToStr<PoRefreshToken.ETokenValueType>();
 			o.SetCol(nameof(PoRefreshToken.ClientType)).MapEnumToStr<EClientType>();
 

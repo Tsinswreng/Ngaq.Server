@@ -24,7 +24,10 @@ public interface ISvcToken{
 		IUserCtx User, str RefreshToken, CT Ct
 	);
 
-
+	public Task<Func<
+		IUserCtx
+		,CT, Task<nil>
+	>> FnRevokeTokensForLogout(IDbFnCtx Ctx, CT Ct);
 
 }
 

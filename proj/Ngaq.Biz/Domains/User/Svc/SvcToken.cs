@@ -249,7 +249,7 @@ public class SvcToken
 				o.BizCreatedAt = new Tempus();
 				o.ExpireAt = Resp.ExpireAt;
 				o.SetTokenValueSha256(Resp.RefreshToken);
-				o.ClientId = UserCtx.ClientId??IdClient.Zero;
+				o.ClientId = UserCtx.ClientId;
 				o.ClientType = UserCtx.ClientType;
 				o.IpAddr = UserCtx.IpAddr;
 				o.UserAgent = UserCtx.UserAgent;
@@ -260,11 +260,12 @@ public class SvcToken
 	}
 
 	public async Task<Func<
-		PoRefreshToken
+		IAsyncEnumerable<PoRefreshToken>
 		,CT, Task<nil>
-	>> FnRevokeRefreshToken(IDbFnCtx Ctx, CT Ct){
+	>> FnRevokeRefreshTokens(IDbFnCtx Ctx, CT Ct){
 		var SlctById = await RepoToken.FnSlctOneById(Ctx, Ct);
-		var UpdById = await RepoToken.FnUpdOneById(
+
+		var UpdById = await RepoToken.FnAsyEUpdManyById(
 			Ctx,[
 				nameof(PoRefreshToken.RevokeAt)
 				,nameof(PoRefreshToken.BizUpdatedAt)
@@ -285,6 +286,20 @@ public class SvcToken
 		return async(User, Po, Ct)=>{
 			throw new NotImplementedException();
 			//return NIL;
+		};
+	}
+
+	public async Task<Func<
+		IUserCtx
+		,CT, Task<nil>
+	>> FnRevokeTokensForLogout(IDbFnCtx Ctx, CT Ct){
+		var SlctValidTokens = await DaoToken.FnSlctValidTokens(Ctx, Ct);
+		var RevokeRefreshTokens = await FnRevokeRefreshTokens(Ctx, Ct);
+		return async(User, Ct)=>{
+			var SrvUser = User.AsServerUserCtx();
+			var validTokens = await SlctValidTokens(User.UserId, SrvUser.ClientId, Ct);
+			await RevokeRefreshTokens(validTokens, Ct);
+			return NIL;
 		};
 	}
 

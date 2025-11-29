@@ -9,7 +9,7 @@ using Ngaq.Core.Shared.User.Models.Po.Device;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Shared.User.UserCtx;
 using Ngaq.Core.Tools;
-
+using Tsinswreng.CsErr;
 
 public static class ExtnUserCtx{
 	/// <summary>
@@ -67,13 +67,13 @@ public static class ExtnUserCtx{
 
 		// 3. 客户端标识（自定义 Header 或 Query）
 		//    约定：Header 优先，Query 兜底，都没有就 null
-		if (HttpCtx.Request.Headers.TryGetValue("X-Client-Id", out var clientIdHdr))
+		if (HttpCtx.Request.Headers.TryGetValue("X-Client-Id", out var clientIdHdr)){
 			z.ClientId = IdClient.FromLow64Base(clientIdHdr!);
-		else if (HttpCtx.Request.Query.TryGetValue("client_id", out var clientIdQuery))
+		}else if (HttpCtx.Request.Query.TryGetValue("client_id", out var clientIdQuery)){
 			z.ClientId = IdClient.FromLow64Base(clientIdQuery!);
-		else
-			z.ClientId = null;
-
+		}else{
+			z.ClientId = IdClient.Zero;
+		}
 		// 4. 客户端类型（简单嗅探）
 		z.ClientType = SniffClientType(z.UserAgent);
 		z.UserId = GetUserIdFromClaims(HttpCtx.User);
@@ -87,8 +87,8 @@ public static class ExtnUserCtx{
 		if (headers.TryGetValue("X-Forwarded-For", out var forwarded))
 		{
 			var first = forwarded.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries)
-								.FirstOrDefault()
-								?.Trim();
+				.FirstOrDefault()
+				?.Trim();
 			if (!string.IsNullOrWhiteSpace(first) && IPAddress.TryParse(first, out _)){
 				return first;
 			}

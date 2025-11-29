@@ -9,11 +9,12 @@ using Ngaq.Core.Shared.User.Models.Po.Device;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Shared.User.UserCtx;
 using Ngaq.Core.Tools;
+using Tsinswreng.CsErr;
 
 public class ServerUserCtx : IServerUserCtx{
 	public IDictionary<str, obj?>? Props{get;set;}
 	public str? IpAddr{get;set;}
-	public IdClient? ClientId{get;set;}
+	public IdClient ClientId{get;set;}
 	public str? UserAgent{get;set;}
 	public EClientType ClientType{get;set;} = EClientType.Unknown;
 	public IdUser _UserId = IdUser.Zero;

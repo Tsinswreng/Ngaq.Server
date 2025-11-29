@@ -10,13 +10,15 @@ using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Infra;
 using Tsinswreng.CsCore;
 
-using U = Ngaq.Core.Infra.Url.ConstUrl.UrlOpenUser;
-using UrlUser = Ngaq.Core.Infra.Url.ConstUrl.UrlUser;
+using U = Ngaq.Core.Infra.Url.ConstUrl.OpenUser;
+using ApiUser = Ngaq.Core.Infra.Url.ConstUrl.ApiUser;
 using Microsoft.Extensions.Caching.Distributed;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Tools;
 using Ngaq.Web.Infra;
 using Tsinswreng.CsErr;
+using Ngaq.Core.Models.Sys.Req;
+using Ngaq.Core.Shared.User.Models.Resp;
 
 public partial class CtrlrOpenUser(
 	SvcUser SvcUser
@@ -46,11 +48,15 @@ public partial class CtrlrOpenUser(
 			var R = await Cache.GetStringAsync("key", Ct);
 			return await Task.FromResult(Results.Ok(R));
 		});
+
 		R.MapPost(U.AddUser, AddUser);
-		R.MapPost(UrlUser.TokenRefresh, RefreshToken);
+		R.MapPost(U.TokenRefresh, RefreshToken);
+		R.MapPost(ApiUser.Logout, Logout);
 		return NIL;
 	}
 
+
+	[Rtn(typeof(RespLogin))]
 	public async Task<IResult> Login(ReqLogin Req, HttpContext Ctx, CT Ct){
 		var R = await SvcUser.Login(
 			Ctx.ToUserCtx()
@@ -60,17 +66,24 @@ public partial class CtrlrOpenUser(
 		return this.Ok(R);
 	}
 
+	[Rtn(typeof(nil))]
 	public async Task<IResult> AddUser(ReqAddUser ReqAddUser, HttpContext Ctx, CT Ct){
 		await SvcUser.AddUser(Ctx.ToUserCtx(), ReqAddUser, Ct);
 		return this.Ok();
 	}
 
+	[Rtn(typeof(RespRefreshBothToken))]
 	public async Task<IResult> RefreshToken(ReqRefreshTheToken Req, HttpContext Ctx, CT Ct){
 		var Ans = await SvcToken.ValidateEtRefreshTheToken(Ctx.ToUserCtx(), Req.RefreshToken, Ct);
 		var R = Ans.DataOrThrow();
 		return this.Ok(R);
 	}
 
+	[Rtn(typeof(nil))]
+	public async Task<IResult> Logout(ReqLogout Req, HttpContext Ctx, CT Ct){
+		var R = await SvcUser.Logout(Ctx.ToUserCtx(), Req, Ct);
+		return this.Ok(R);
+	}
 
 }
 
