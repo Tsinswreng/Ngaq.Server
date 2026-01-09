@@ -30,17 +30,21 @@ public partial class DaoUser(
 		,CT
 		,Task<PoUser?>
 	>> FnSelectByEmail(
-		IDbFnCtx? Ctx
+		IDbFnCtx Ctx
 		,CT Ct
 	){
-var T = TblMgr.GetTbl<PoUser>(); var N = new PoUser.N();
-var PEmail = T.Prm(N.Email);
-var Sql =
-$"""
-SELECT * FROM {T.Qt(T.DbTblName)}
-WHERE 1=1
-AND {T.Eq(PEmail)}
-""";
+var T = TblMgr.GetTbl<PoUser>();
+// var N = new PoUser.N();
+// var PEmail = T.Prm(N.Email);
+// var Sql =
+// $"""
+// SELECT * FROM {T.Qt(T.DbTblName)}
+// WHERE 1=1
+// AND {T.Eq(PEmail)}
+// """;
+var Sql = T.SqlSplicer().Select("*").From()
+.WhereT().AndEq(x=>x.Email, out var PEmail).ToSqlStr();
+
 var Cmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct);
 Ctx?.AddToDispose(Cmd);
 		return async(Email, Ct)=>{
@@ -55,17 +59,21 @@ Ctx?.AddToDispose(Cmd);
 		,CT
 		,Task<PoPassword?>
 	>> FnSlctPasswordByUserId(
-		IDbFnCtx? Ctx
+		IDbFnCtx Ctx
 		,CT Ct
 	){
-var T = TblMgr.GetTbl<PoPassword>(); var PUserId = T.Prm(nameof(PoPassword.UserId));
-var Sql =
-$"""
-SELECT * FROM {T.Qt(T.DbTblName)}
-WHERE 1=1
-AND {T.SqlIsNonDel()}
-AND {T.Eq(PUserId)}
-"""; var SqlCmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct); Ctx?.AddToDispose(SqlCmd);
+var T = TblMgr.GetTbl<PoPassword>();
+var Sql = T.SqlSplicer().Select("*").From()
+.WhereT().And(T.SqlIsNonDel()).AndEq(x=>x.UserId, out var PUserId).ToSqlStr();
+// var PUserId = T.Prm(nameof(PoPassword.UserId));
+// var Sql =
+// $"""
+// SELECT * FROM {T.Qt(T.DbTblName)}
+// WHERE 1=1
+// AND {T.SqlIsNonDel()}
+// AND {T.Eq(PUserId)}
+//""";
+var SqlCmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct); Ctx?.AddToDispose(SqlCmd);
 		return async(UserId, Ct)=>{
 			var Args = ArgDict.Mk(T).AddT(PUserId, UserId);
 			var R = await SqlCmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoPassword>(T, Ct);
@@ -73,3 +81,5 @@ AND {T.Eq(PUserId)}
 		};
 	}
 }
+
+

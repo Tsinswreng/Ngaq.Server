@@ -14,19 +14,17 @@ public class DaoToken(
 	,ITblMgr TblMgr
 ){
 
+	ITable<PoRefreshToken> T{get=>TblMgr.GetTbl<PoRefreshToken>();}
+
+
 	public async Task<Func<
 		u8[] // TokenValue
 		,CT, Task<PoRefreshToken?>
 	>> FnSlctByTokenValue(IDbFnCtx Ctx, CT Ct){
-		var T = TblMgr.GetTbl<PoRefreshToken>();
-		var PTokenValue = T.Prm(nameof(PoRefreshToken.TokenValue));
-var Sql = $"""
-SELECT * FROM {T.Qt(T.DbTblName)}
-WHERE 1=1
-AND {T.SqlIsNonDel()}
-AND {T.Eq(PTokenValue)}
-""";
-		var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
+var Sql = T.SqlSplicer().Select("*").From()
+.WhereT().And(T.SqlIsNonDel()).AndEq(x=>x.TokenValue, out var PTokenValue).ToSqlStr();
+var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
+
 		return async (TokenValue, Ct)=>{
 			var Arg = ArgDict.Mk(T).AddT(PTokenValue, TokenValue);
 			var R = await Ctx.RunCmd(Cmd, Arg).FirstOrDefault<PoRefreshToken>(T, Ct);
@@ -41,16 +39,12 @@ AND {T.Eq(PTokenValue)}
 		IdUser, IdClient
 		,CT, Task<IAsyncEnumerable<PoRefreshToken>>
 	>> FnSlctValidTokens(IDbFnCtx Ctx, CT Ct){
-var T = TblMgr.GetTbl<PoRefreshToken>();
-var PUserId = T.Prm(nameof(PoRefreshToken.UserId));var PClientId = T.Prm(nameof(PoRefreshToken.ClientId));
-var Sql = $"""
-SELECT * FROM {T.Qt(T.DbTblName)}
-WHERE 1=1
-AND {T.SqlIsNonDel()}
-AND {T.Eq(PUserId)}
-AND {T.Eq(PClientId)}
-ORDER BY {T.Fld(nameof(PoRefreshToken.DbCreatedAt))} DESC
-""";
+
+var Sql = T.SqlSplicer().Select("*").From()
+.WhereT().And(T.SqlIsNonDel())
+.AndEq(x=>x.UserId, out var PUserId)
+.AndEq(x=>x.ClientId, out var PClientId)
+.OrderByDesc(x=>x.DbCreatedAt).ToSqlStr();
 		var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
 		return async(UserId, ClientId, Ct)=>{
 			var Arg = ArgDict.Mk(T).AddT(PUserId, UserId).AddT(PClientId, ClientId);
@@ -58,14 +52,5 @@ ORDER BY {T.Fld(nameof(PoRefreshToken.DbCreatedAt))} DESC
 			return RawAsyE.Select(x=>T.DbDictToEntity<PoRefreshToken>(x));
 		};
 	}
-
-
-
-
-
-	// public async Task<Func<
-	// 	IdUser
-	// 	,CT, Task<IPageAsyE<PoRefreshToken>>
-	// >>
 
 }

@@ -62,7 +62,7 @@ public partial class ServerTblMgrIniter{
 			var o = TblUser;
 			CfgPoBase(o);
 			LocalTblMgrIniter.CfgBizCreateUpdateTime(o);
-			o.SetCol(nameof(PoUser.Id)).MapType(IdUser.MkTypeMapFn());
+			o.Col(nameof(PoUser.Id)).MapType(IdUser.MkTypeMapFn());
 			o.OuterAdditionalSqls.AddRange([
 $"""
 CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_UniqueName")}
@@ -84,9 +84,9 @@ WHERE {o.SqlIsNonDel()}
 		{
 			var o = TblPassword;
 			CfgPoBase(o);
-			o.SetCol(nameof(PoPassword.Id)).MapType(IdPassword.MkTypeMapFn());
-			o.SetCol(nameof(PoPassword.Algo)).MapEnumToInt32<PoPassword.EAlgo>();
-			o.SetCol(nameof(PoPassword.UserId)).MapType(IdUser.MkTypeMapFn());
+			o.Col(nameof(PoPassword.Id)).MapType(IdPassword.MkTypeMapFn());
+			o.Col(nameof(PoPassword.Algo)).MapEnumToInt32<PoPassword.EAlgo>();
+			o.Col(nameof(PoPassword.UserId)).MapType(IdUser.MkTypeMapFn());
 		}
 
 		var TblRole = Mk<PoRole>("Role");
@@ -94,8 +94,8 @@ WHERE {o.SqlIsNonDel()}
 		{
 			var o = TblRole;
 			CfgPoBase(o);
-			o.SetCol(nameof(PoRole.Id)).MapType(IdRole.MkTypeMapFn());
-			o.SetCol(nameof(PoRole.Status)).MapEnumToInt32<PoRole.ERoleStatus>();
+			o.Col(nameof(PoRole.Id)).MapType(IdRole.MkTypeMapFn());
+			o.Col(nameof(PoRole.Status)).MapEnumToInt32<PoRole.ERoleStatus>();
 			o.OuterAdditionalSqls.AddRange([
 $"""
 CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_Code")}
@@ -109,7 +109,7 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoRole.Code))})
 		{
 			var o = TblPermission;
 			CfgPoBase(o);
-			o.SetCol(nameof(PoPermission.Id)).MapType(IdPermission.MkTypeMapFn());
+			o.Col(nameof(PoPermission.Id)).MapType(IdPermission.MkTypeMapFn());
 			o.OuterAdditionalSqls.AddRange([
 $"""
 CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_Code")}
@@ -124,14 +124,14 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			var o = TblRefreshToken;
 			CfgPoBase(o);
 			LocalTblMgrIniter.CfgBizCreateUpdateTime(o);
-			o.SetCol(nameof(PoRefreshToken.Id)).MapType(IdRefreshToken.MkTypeMapFn());
-			o.SetCol(nameof(PoRefreshToken.UserId)).MapType(IdUser.MkTypeMapFn());
-			o.SetCol(nameof(PoRefreshToken.ClientId)).MapType(IdClient.MkTypeMapFn());
-			o.SetCol(nameof(PoRefreshToken.ExpireAt)).MapType(MapTempus());
-			o.SetCol(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempus());
-			o.SetCol(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempus());
-			o.SetCol(nameof(PoRefreshToken.TokenValueType)).MapEnumToStr<PoRefreshToken.ETokenValueType>();
-			o.SetCol(nameof(PoRefreshToken.ClientType)).MapEnumToStr<EClientType>();
+			o.Col(nameof(PoRefreshToken.Id)).MapType(IdRefreshToken.MkTypeMapFn());
+			o.Col(nameof(PoRefreshToken.UserId)).MapType(IdUser.MkTypeMapFn());
+			o.Col(nameof(PoRefreshToken.ClientId)).MapType(IdClient.MkTypeMapFn());
+			o.Col(nameof(PoRefreshToken.ExpireAt)).MapType(MapTempus());
+			o.Col(nameof(PoRefreshToken.RevokeAt)).MapType(MapTempus());
+			o.Col(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempus());
+			o.Col(nameof(PoRefreshToken.TokenValueType)).MapEnumToStr<PoRefreshToken.ETokenValueType>();
+			o.Col(nameof(PoRefreshToken.ClientType)).MapEnumToStr<EClientType>();
 
 			o.OuterAdditionalSqls.AddRange([
 

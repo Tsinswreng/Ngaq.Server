@@ -43,7 +43,7 @@ static async Task InitTestData(){
 
 //await InitDb(args);
 static async Task Test(){
-	var txnWrapper = Program.Services.GetRequiredService<TxnWrapper<DbFnCtx>>();
+	var txnWrapper = Program.Services.GetRequiredService<TxnWrapper<Ngaq.Local.Db.TswG.DbFnCtx>>();
 	var dao = Program.Services.GetRequiredService<DaoSqlWord>();
 	await txnWrapper.Wrap(dao.FnTextMultiSelect, default);
 }

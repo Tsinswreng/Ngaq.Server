@@ -62,12 +62,12 @@ public static class DiBiz{
 		//事務執行器
 		z.AddTransient<ITxnRunner, AdoTxnRunner>();
 
-		z.AddTransient<DbFnCtxMkr<DbFnCtx>>();
+		z.AddTransient<MkrDbFnCtx>();
 		z.AddTransient<ISqlCmdMkr, PostgresCmdMkr>();
-		z.AddScoped<I_GetTxnAsy, PostgresCmdMkr>();
-		z.AddScoped<IDbFnCtxMkr<DbFnCtx>, DbFnCtxMkr<DbFnCtx>>();
+		z.AddScoped<IMkrTxn, PostgresCmdMkr>();
+		z.AddScoped<IMkrDbFnCtx, MkrDbFnCtx>();
 		//事務函數包裝器
-		z.AddScoped<TxnWrapper<DbFnCtx>>();
+		z.AddScoped<TxnWrapper>();
 		z.AddSingleton<NpgsqlDataSource>(ServerDb.Inst.DataSource);
 		//z.AddSingleton<I_GetDbConnAsy, PostgresConnPool>();
 		z.AddSingleton<IDbConnMgr>(ServerDb.Inst.DbConnPool);

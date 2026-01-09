@@ -51,13 +51,13 @@ public class SvcToken
 	IAppRepo<PoRefreshToken, IdRefreshToken> RepoToken;
 	DaoToken DaoToken;
 	IDistributedCache Cache;
-	TxnWrapper<DbFnCtx> TxnWrapper;
+	TxnWrapper TxnWrapper;
 	public SvcToken(
 		ICfgAccessor Cfg
 		,IAppRepo<PoRefreshToken, IdRefreshToken> RepoToken
 		,DaoToken DaoToken
 		,IDistributedCache Cache
-		,TxnWrapper<DbFnCtx> TxnWrapper
+		,TxnWrapper TxnWrapper
 	){
 		this.Cfg = Cfg;
 		this.RepoToken = RepoToken;

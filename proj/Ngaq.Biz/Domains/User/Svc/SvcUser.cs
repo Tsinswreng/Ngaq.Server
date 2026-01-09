@@ -26,7 +26,7 @@ public partial class SvcUser(
 	,IAppRepo<PoPassword, IdPassword> RepoPassword
 	// ,DbFnCtxMkr DbFnCtxMkr
 	// ,ITxnRunner TxnRunner
-	,TxnWrapper<DbFnCtx> TxnWrapper
+	,TxnWrapper TxnWrapper
 	,IDistributedCache Cache
 	,ILogger<SvcUser> Log
 	,ISvcToken SvcToken
@@ -46,7 +46,7 @@ public partial class SvcUser(
 		,CT
 		,Task<nil>
 	>> FnAddUser(
-		IDbFnCtx? DbFnCtx
+		IDbFnCtx DbFnCtx
 		,CT Ct
 	){
 		var AddUsers = await RepoUser.FnInsertMany(DbFnCtx, Ct);
