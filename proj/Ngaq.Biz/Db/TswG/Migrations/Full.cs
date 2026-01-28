@@ -7,7 +7,7 @@ namespace Ngaq.Biz.Db.TswG.Migrations;
 public class FullInit: IMigration{
 	public ISqlCmdMkr SqlCmdMkr;
 	public ITblMgr TblMgr;
-	public TxnWrapper<Local.Db.TswG.DbFnCtx> TxnWrapper;
+	public TxnWrapper TxnWrapper;
 	public IAppRepo<SchemaHistory, i64> RepoSchemaHistory{get;set;}
 	[Impl]
 	public IList<str> SqlsUp{get;} = new List<str>();
@@ -16,7 +16,7 @@ public class FullInit: IMigration{
 
 	public FullInit(
 		ISqlCmdMkr SqlCmdMkr
-		,TxnWrapper<Local.Db.TswG.DbFnCtx> TxnWrapper
+		,TxnWrapper TxnWrapper
 		,ITblMgr TblMgr
 		,IAppRepo<SchemaHistory, i64> RepoSchemaHistory
 	){
@@ -41,11 +41,11 @@ public class FullInit: IMigration{
 
 	public async Task<Func<
 		CT, Task<nil>
-	>> FnMkSchema(Local.Db.TswG.IDbFnCtx? Ctx, CT Ct){
+	>> FnMkSchema(IDbFnCtx Ctx, CT Ct){
 	var SqlCmd = await SqlCmdMkr.MkCmd(Ctx, SqlUp, Ct);
 		return async(Ct)=>{
 			try{
-				await SqlCmd.WithCtx(Ctx).All(Ct);
+				await SqlCmd.WithCtx(Ctx).All1d(Ct);
 				return NIL;
 			}catch(Exception e){
 				throw new Exception(
@@ -59,7 +59,7 @@ public class FullInit: IMigration{
 
 	public async Task<Func<
 		CT, Task<nil>
-	>> FnInit(Local.Db.TswG.IDbFnCtx? Ctx, CT Ct){
+	>> FnInit(IDbFnCtx Ctx, CT Ct){
 		var MkSchema = await FnMkSchema(Ctx, Ct);
 		var InsertSchemaHistory = await RepoSchemaHistory.FnInsertManyNoPrepare(Ctx, Ct);
 		return async(Ct)=>{
@@ -77,6 +77,14 @@ public class FullInit: IMigration{
 		return await TxnWrapper.Wrap(FnInit, Ct);
 	}
 	public async Task<nil> DownAsy(CT Ct){
+		throw new NotImplementedException();
+	}
+
+	public Task<Func<CT, Task<object>>> FnUpAsy(IDbFnCtx Ctx, CT Ct) {
+		throw new NotImplementedException();
+	}
+
+	public Task<Func<CT, Task<object>>> FnDownAsy(IDbFnCtx Ctx, CT Ct) {
 		throw new NotImplementedException();
 	}
 }

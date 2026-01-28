@@ -13,6 +13,7 @@ using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsSqlHelper;
 using Tsinswreng.CsTools;
 using Ngaq.Core.Shared.User.Models.Bo.Device;
+using Tsinswreng.CsCore;
 
 public partial class ServerTblMgrIniter{
 

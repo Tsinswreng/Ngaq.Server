@@ -114,7 +114,7 @@ public static class DiBiz{
 
 		z.AddScoped<ISvcWord, SvcWord>();
 		z.AddScoped<ISvcParseWordList, SvcParseWordList>();
-		z.AddScoped<DaoSqlWord, DaoSqlWord>();
+		z.AddScoped<DaoWord, DaoWord>();
 
 		// 配置 Redis 连接
 		var Cfg = ServerCfg.Inst;

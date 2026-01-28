@@ -22,7 +22,7 @@ public class DaoToken(
 		,CT, Task<PoRefreshToken?>
 	>> FnSlctByTokenValue(IDbFnCtx Ctx, CT Ct){
 var Sql = T.SqlSplicer().Select("*").From()
-.WhereT().And(T.SqlIsNonDel()).AndEq(x=>x.TokenValue, out var PTokenValue).ToSqlStr();
+.Where1().And(T.SqlIsNonDel()).AndEq(x=>x.TokenValue, out var PTokenValue).ToSqlStr();
 var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
 
 		return async (TokenValue, Ct)=>{
@@ -41,14 +41,14 @@ var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
 	>> FnSlctValidTokens(IDbFnCtx Ctx, CT Ct){
 
 var Sql = T.SqlSplicer().Select("*").From()
-.WhereT().And(T.SqlIsNonDel())
+.Where1().And(T.SqlIsNonDel())
 .AndEq(x=>x.UserId, out var PUserId)
 .AndEq(x=>x.ClientId, out var PClientId)
 .OrderByDesc(x=>x.DbCreatedAt).ToSqlStr();
 		var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
 		return async(UserId, ClientId, Ct)=>{
 			var Arg = ArgDict.Mk(T).AddT(PUserId, UserId).AddT(PClientId, ClientId);
-			var RawAsyE = Ctx.RunCmd(Cmd, Arg).IterAsyE(Ct);
+			var RawAsyE = Ctx.RunCmd(Cmd, Arg).AsyE1d(Ct);
 			return RawAsyE.Select(x=>T.DbDictToEntity<PoRefreshToken>(x));
 		};
 	}

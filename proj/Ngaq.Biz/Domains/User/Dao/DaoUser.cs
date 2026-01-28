@@ -43,7 +43,7 @@ var T = TblMgr.GetTbl<PoUser>();
 // AND {T.Eq(PEmail)}
 // """;
 var Sql = T.SqlSplicer().Select("*").From()
-.WhereT().AndEq(x=>x.Email, out var PEmail).ToSqlStr();
+.Where1().AndEq(x=>x.Email, out var PEmail).ToSqlStr();
 
 var Cmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct);
 Ctx?.AddToDispose(Cmd);
@@ -64,7 +64,7 @@ Ctx?.AddToDispose(Cmd);
 	){
 var T = TblMgr.GetTbl<PoPassword>();
 var Sql = T.SqlSplicer().Select("*").From()
-.WhereT().And(T.SqlIsNonDel()).AndEq(x=>x.UserId, out var PUserId).ToSqlStr();
+.Where1().And(T.SqlIsNonDel()).AndEq(x=>x.UserId, out var PUserId).ToSqlStr();
 // var PUserId = T.Prm(nameof(PoPassword.UserId));
 // var Sql =
 // $"""

@@ -8,6 +8,7 @@ using Ngaq.Core.Infra;
 using Ngaq.Core.Tools;
 using Tsinswreng.CsTools;
 using Ngaq.Web.Midware;
+using Tsinswreng.CsCore;
 
 
 var app = NgaqWeb.InitApp(args);
