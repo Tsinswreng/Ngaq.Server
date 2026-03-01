@@ -24,7 +24,7 @@ public class MkDbSchema{
 
 
 	public static async Task InitTestData(){
-		var svcWord = Program.Services.GetRequiredService<ISvcWord>();
+		var svcWord = Program.SvcProvdr.GetRequiredService<ISvcWord>();
 		var list = new List<IJnWord>();
 		var user = new UserCtx{
 			UserId = new Ngaq.Core.Shared.User.Models.Po.User.IdUser()

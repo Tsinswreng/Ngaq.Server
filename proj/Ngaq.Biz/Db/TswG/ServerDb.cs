@@ -51,7 +51,6 @@ public static ServerDb Inst => _Inst??= new ServerDb();
 			return this;
 		}
 		var TblMgr = ServerTblMgr.Inst;
-		TblMgr.DbSrcType = ConstDbSrcType.Postgres;
 		var LocalTblMgrIniter = new LocalTblMgrIniter(TblMgr);
 		new ServerTblMgrIniter(
 			Mgr: TblMgr, LocalTblMgrIniter: LocalTblMgrIniter
