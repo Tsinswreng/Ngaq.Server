@@ -17,29 +17,6 @@ using Tsinswreng.CsSqlHelper;
 Program.args = args;
 Program.Init();
 
-static async Task InitDb(str[] args){
-var app = NgaqWeb.InitApp(args);
-var fullInit = app.Services.GetRequiredService<FullInit>();
-await fullInit.UpAsy(default);
-System.Console.WriteLine("done");
-}
-
-
-static async Task InitTestData(){
-	var svcWord = Program.Services.GetRequiredService<ISvcWord>();
-	var list = new List<IJnWord>();
-	var user = new UserCtx{
-		UserId = new Ngaq.Core.Shared.User.Models.Po.User.IdUser()
-	};
-	for(var i = 0; i < 10_0000; i++){
-		var u = new JnWord();
-		u.Word = new PoWord{
-			Head = i+""
-		};
-		list.Add(u);
-	}
-	await svcWord.AddEtMergeWords(user, list, default);
-}
 
 //await InitDb(args);
 static async Task Test(){

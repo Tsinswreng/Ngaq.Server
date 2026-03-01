@@ -21,3 +21,6 @@ docker run --rm -p 5000:2341 --name ngaq-server \
   ngaq-server:1.0 \
   Ngaq.Server.dev.jsonc
 ```
+
+
+建庫: E:\_code\CsNgaq\Ngaq.Server\proj\Ngaq.Server.Test\MkDbSchema.cs
