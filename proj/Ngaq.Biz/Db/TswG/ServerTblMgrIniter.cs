@@ -2,13 +2,16 @@ namespace Ngaq.Biz.Db.TswG;
 using Ngaq.Core.Shared.User.Models.Po.Device;
 using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
 using Ngaq.Core.Shared.User.Models.Po.User;
+using Ngaq.Core.Shared.User.Models.Po;
 using Ngaq.Core.Infra;
+using Ngaq.Core.Model.Po;
 using Ngaq.Core.Model.Po.Role;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Core.Model.Sys.Po.RefreshToken;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Models.Sys.Po.Permission;
 using Ngaq.Core.Models.Sys.Po.Role;
+using Ngaq.Core.Shared.Base.Models.Po;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsSqlHelper;
 using Tsinswreng.CsTools;
@@ -41,11 +44,13 @@ public partial class ServerTblMgrIniter{
 		);
 	}
 
-	public ITable Mk<T>(str DbTblName){
+	public ITblSetter<T> Mk<T>(str DbTblName){
 		return LocalTblMgrIniter.Mk<T>(DbTblName);
 	}
 
-	public ITable CfgPoBase(ITable Tbl){
+	public ITblSetter<T> CfgPoBase<T>(ITblSetter<T> Tbl)
+		where T:IPoBase, new()
+	{
 		return LocalTblMgrIniter.CfgPoBase(Tbl);
 	}
 
@@ -58,26 +63,23 @@ public partial class ServerTblMgrIniter{
 
 
 		var TblUser = Mk<PoUser>("User");
-		Mgr.AddTbl(TblUser);
+		Mgr.AddTbl(TblUser.Tbl);
 		{
 			var o = TblUser;
 			CfgPoBase(o);
 			LocalTblMgrIniter.CfgBizCreateUpdateTime(o);
 			o.Col(nameof(PoUser.Id)).MapType(IdUser.MkTypeMapFn());
-			o.OuterAdditionalSqls.AddRange([
-$"""
-CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_UniqueName")}
-ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoUser.UniqueName))})
-WHERE {o.SqlIsNonDel()}
-AND {o.Fld(nameof(PoUser.UniqueName))} IS NOT NULL
-AND {o.Fld(nameof(PoUser.UniqueName))} <> ''
-"""
-,$"""
-CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_EMail")}
-ON{o.Qt(o.DbTblName)} ({o.Fld(nameof(PoUser.Email))})
-WHERE {o.SqlIsNonDel()}
-"""
-			]);
+			var optUxUniqueName = new OptMkIdx{
+				Unique = true
+				, Where =
+					o.Tbl.SqlIsNonDel()
+					+ $" AND {o.Tbl.Fld(nameof(PoUser.UniqueName))} IS NOT NULL"
+					+ $" AND {o.Tbl.Fld(nameof(PoUser.UniqueName))} <> ''"
+			};
+			o.Idx(optUxUniqueName, [nameof(PoUser.UniqueName)]);
+
+			var optUxEmail = new OptMkIdx{Unique = true, Where = o.Tbl.SqlIsNonDel()};
+			o.Idx(optUxEmail, [nameof(PoUser.Email)]);
 		}
 
 		var TblPassword = Mk<PoPassword>("Password");
@@ -97,12 +99,7 @@ WHERE {o.SqlIsNonDel()}
 			CfgPoBase(o);
 			o.Col(nameof(PoRole.Id)).MapType(IdRole.MkTypeMapFn());
 			o.Col(nameof(PoRole.Status)).MapEnumToInt32<PoRole.ERoleStatus>();
-			o.OuterAdditionalSqls.AddRange([
-$"""
-CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_Code")}
-ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoRole.Code))})
-"""
-			]);
+			o.Idx(new OptMkIdx{Unique = true}, [nameof(PoRole.Code)]);
 		}
 
 		var TblPermission = Mk<PoPermission>("Permission");
@@ -111,12 +108,7 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoRole.Code))})
 			var o = TblPermission;
 			CfgPoBase(o);
 			o.Col(nameof(PoPermission.Id)).MapType(IdPermission.MkTypeMapFn());
-			o.OuterAdditionalSqls.AddRange([
-$"""
-CREATE UNIQUE INDEX {o.Qt($"Ux_{o.DbTblName}_Code")}
-ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
-"""
-			]);
+			o.Idx(new OptMkIdx{Unique = true}, [nameof(PoPermission.Code)]);
 		}
 
 		var TblRefreshToken = Mk<PoRefreshToken>("RefreshToken");
@@ -133,15 +125,7 @@ ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoPermission.Code))})
 			o.Col(nameof(PoRefreshToken.LastUsedAt)).MapType(MapTempus());
 			o.Col(nameof(PoRefreshToken.TokenValueType)).MapEnumToStr<PoRefreshToken.ETokenValueType>();
 			o.Col(nameof(PoRefreshToken.ClientType)).MapEnumToStr<EClientType>();
-
-			o.OuterAdditionalSqls.AddRange([
-
-//UserId索引
-$"""
-CREATE INDEX {o.Qt($"Idx_{o.DbTblName}_{nameof(PoRefreshToken.UserId)}")}
-ON {o.Qt(o.DbTblName)} ({o.Fld(nameof(PoRefreshToken.UserId))})
-"""
-			]);
+			o.IdxExpr(null, x=>x.UserId);
 
 		}
 
