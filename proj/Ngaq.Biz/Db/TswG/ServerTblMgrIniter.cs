@@ -73,8 +73,8 @@ public partial class ServerTblMgrIniter{
 				Unique = true
 				, Where =
 					o.Tbl.SqlIsNonDel()
-					+ $" AND {o.Tbl.Fld(nameof(PoUser.UniqueName))} IS NOT NULL"
-					+ $" AND {o.Tbl.Fld(nameof(PoUser.UniqueName))} <> ''"
+					+ $" AND {o.Tbl.QtCol(nameof(PoUser.UniqueName))} IS NOT NULL"
+					+ $" AND {o.Tbl.QtCol(nameof(PoUser.UniqueName))} <> ''"
 			};
 			o.Idx(optUxUniqueName, [nameof(PoUser.UniqueName)]);
 

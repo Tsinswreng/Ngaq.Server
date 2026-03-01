@@ -112,11 +112,12 @@ public partial class SvcUser(
 				PoUser = await SelectUserByEmail(Req.Email,Ct);
 			}
 			if(PoUser == null){
-				throw ItemsErr.User.UserNotExist.ToErr();
+				throw ItemsErr.User.PasswordNotMatch.ToErr();
 			}
 			var PoPassword = await SelectPasswordById(PoUser.Id, Ct);
 			if(PoPassword is null){
-				throw new AppErr("Password not exsists");
+				//throw new AppErr("Password not exsists");
+				throw ItemsErr.User.PasswordNotMatch.ToErr();
 			}
 			if(! await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) ){
 				throw ItemsErr.User.PasswordNotMatch.ToErr();

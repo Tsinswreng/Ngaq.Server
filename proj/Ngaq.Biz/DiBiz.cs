@@ -93,17 +93,13 @@ public static class DiBiz{
 		z.AddSingleton<ICfgAccessor>(ServerCfg.Inst);
 		z.SetupTswgSqlAdo();
 		z.AddSingleton<IDictMapperShallow>(CoreDictMapper.Inst);
-
-
-
-
+		
 		z.AddRepoScoped<PoUser, IdUser>();
 		z.AddRepoScoped<PoPassword, IdPassword>();
 
 		z.AddRepoScoped<PoWord, IdWord>();
 		z.AddRepoScoped<PoWordLearn, IdWordLearn>();
 		z.AddRepoScoped<PoWordProp, IdWordProp>();
-
 
 		z.AddScoped<DaoUser>();
 		z.AddScoped<SvcUser>();
