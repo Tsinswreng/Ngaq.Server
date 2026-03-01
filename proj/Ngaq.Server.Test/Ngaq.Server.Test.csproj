@@ -10,6 +10,7 @@
 	<ItemGroup>
 		<ProjectReference Include="../Ngaq.Biz/Ngaq.Biz.csproj" />
 		<ProjectReference Include="../Ngaq.Web/Ngaq.Web.csproj" />
+		<ProjectReference Include="../../../Ngaq.Test/Ngaq.Test.csproj" />
 	</ItemGroup>
 
 </Project>

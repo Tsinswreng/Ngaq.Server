@@ -16,10 +16,16 @@ using Ngaq.Local.Word.Dao;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsPage;
 using Tsinswreng.CsSqlHelper;
+using Ngaq.Test;
+using Ngaq.Test.Try;
 // dotnet run -- E:/_code/CsNgaq/Ngaq.Server/ExternalRsrc/Ngaq.Server.dev.jsonc
 
 Program.args = args;
 Program.Init();
+
+await new TryRepoBat{
+	SvcProvdr = Program.SvcProvdr
+}.Run(default);
 
 
 //await InitDb(args);
@@ -29,29 +35,9 @@ static async Task Test(){
 	await txnWrapper.Wrap(dao.FnTextMultiSelect, default);
 }
 
-static async Task TryRepoBat(CT Ct){
-	var RepoWord = SvcProvdr.GetRequiredService<IAppRepo<PoWord, IdWord>>();
-	var Ctx = new DbFnCtx();
-	var fnPageAll = await RepoWord.FnPageAll(Ctx, Ct);
-	var all = await fnPageAll(PageQry.SlctI64Max(), Ct);
-	var data = all.DataAsyE.OrEmpty();
-	var allIds = await data.Select(x=>x.Id).ToListAsync(Ct);
-	var sw = Stopwatch.StartNew();
-	await RepoWord.BatSlctById(Ctx, allIds, Ct);
-	sw.Stop();
-	Console.WriteLine($"BatSlctById: {sw.ElapsedMilliseconds}ms");
-	var slctOne = await RepoWord.FnSlctOneById(Ctx, Ct);
-	sw.Restart();
-	foreach(var id in allIds){
-		var po = await slctOne(id, Ct);
-	}
-	sw.Stop();
-	Console.WriteLine($"SlctOneById: {sw.ElapsedMilliseconds}ms");
-	System.Console.WriteLine("allIds.Count: "+ allIds.Count);
-}
 
 //await InitTestData();
-await TryRepoBat(default);
+
 
 partial class Program{
 	public static str[] args = [];
