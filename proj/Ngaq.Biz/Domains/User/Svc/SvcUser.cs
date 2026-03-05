@@ -22,8 +22,8 @@ using Tsinswreng.CsErr;
 
 public partial class SvcUser(
 	DaoUser DaoUser
-	,IAppRepo<PoUser, IdUser> RepoUser
-	,IAppRepo<PoPassword, IdPassword> RepoPassword
+	, IRepo<PoUser, IdUser> RepoUser
+	, IRepo<PoPassword, IdPassword> RepoPassword
 	// ,DbFnCtxMkr DbFnCtxMkr
 	// ,ITxnRunner TxnRunner
 	,TxnWrapper TxnWrapper

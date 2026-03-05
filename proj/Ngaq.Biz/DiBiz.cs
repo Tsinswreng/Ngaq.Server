@@ -86,7 +86,7 @@ public static class DiBiz{
 	)where TEntity:class, new()
 	{
 		//z.AddScoped<IRepo<TEntity, TId>, EfRepo<TEntity, TId>>();
-		z.AddScoped<IAppRepo<TEntity, TId>, AppRepo<TEntity, TId>>();
+		z.AddScoped<IRepo<TEntity, TId>, AppRepo<TEntity, TId>>();
 		return z;
 	}
 	public static IServiceCollection SetupBiz(this IServiceCollection z){

@@ -48,13 +48,13 @@ public class SvcToken
 	:ISvcToken
 {
 	ICfgAccessor Cfg;
-	IAppRepo<PoRefreshToken, IdRefreshToken> RepoToken;
+	IRepo<PoRefreshToken, IdRefreshToken> RepoToken;
 	DaoToken DaoToken;
 	IDistributedCache Cache;
 	TxnWrapper TxnWrapper;
 	public SvcToken(
 		ICfgAccessor Cfg
-		,IAppRepo<PoRefreshToken, IdRefreshToken> RepoToken
+		, IRepo<PoRefreshToken, IdRefreshToken> RepoToken
 		,DaoToken DaoToken
 		,IDistributedCache Cache
 		,TxnWrapper TxnWrapper

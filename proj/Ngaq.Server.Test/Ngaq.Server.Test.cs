@@ -48,3 +48,9 @@ partial class Program{
 		SvcProvdr = App.Services;
 	}
 }
+/* 
+SlctManyInIds: 1168ms
+BatSlctById: 4061ms
+SlctOneById: 20789ms
+allIds.Count: 113372
+ */
