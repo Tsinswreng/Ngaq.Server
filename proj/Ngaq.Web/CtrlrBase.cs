@@ -17,25 +17,3 @@ public static class ExtnICtrlr{
 		return Results.Ok(Ans);
 	}
 }
-
-[Obsolete]
-public abstract class BaseCtrlr: ICtrlr{
-	// public abstract nil InitRouter(
-	// 	RouteGroupBuilder R
-	// );
-	public nil InitRouter(
-		RouteGroupBuilder R
-	){return NIL;}
-
-	public nil Register(){
-
-		return NIL;
-	}
-
-}
-
-// public abstract class BaseCtrlr:ICtrlr{
-// 	public abstract nil InitRouter(
-// 		RouteGroupBuilder R
-// 	);
-// }

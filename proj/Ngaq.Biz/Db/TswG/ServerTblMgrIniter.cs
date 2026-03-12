@@ -13,7 +13,7 @@ using Ngaq.Core.Models.Sys.Po.Permission;
 using Ngaq.Core.Models.Sys.Po.Role;
 using Ngaq.Core.Shared.Base.Models.Po;
 using Ngaq.Local.Db.TswG;
-using Tsinswreng.CsSqlHelper;
+using Tsinswreng.CsSql;
 using Tsinswreng.CsTools;
 using Ngaq.Core.Shared.User.Models.Bo.Device;
 using Tsinswreng.CsCore;

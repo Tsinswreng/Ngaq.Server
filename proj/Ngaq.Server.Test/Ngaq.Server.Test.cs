@@ -15,7 +15,7 @@ using Ngaq.Local.Db.TswG;
 using Ngaq.Local.Word.Dao;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsPage;
-using Tsinswreng.CsSqlHelper;
+using Tsinswreng.CsSql;
 using Ngaq.Test;
 using Ngaq.Test.Try;
 // dotnet run -- E:/_code/CsNgaq/Ngaq.Server/ExternalRsrc/Ngaq.Server.dev.jsonc

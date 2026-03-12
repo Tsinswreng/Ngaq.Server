@@ -12,7 +12,7 @@ using Ngaq.Core.Models.Sys.Req;
 using Ngaq.Core.Tools;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsCore;
-using Tsinswreng.CsSqlHelper;
+using Tsinswreng.CsSql;
 using Ngaq.Core.Shared.Base.Models.Req;
 using Ngaq.Core.Shared.User.Models.Resp;
 using Ngaq.Core.Shared.User.Models.Po.User;

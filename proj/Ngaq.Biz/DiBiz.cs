@@ -1,7 +1,8 @@
 namespace Ngaq.Biz;
+
 using Microsoft.Extensions.DependencyInjection;
-using Tsinswreng.CsSqlHelper;
-using Tsinswreng.CsSqlHelper.Postgres;
+using Tsinswreng.CsSql;
+using Tsinswreng.CsSql.Postgres;
 using Ngaq.Biz.Db.User;
 using Ngaq.Core.Model.Sys.Po.Password;
 using Ngaq.Biz.Infra.Cfg;
@@ -24,7 +25,6 @@ using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Local.Word.Dao;
 using Tsinswreng.CsTools;
 using Ngaq.Core.Shared.Word.Models.Po.Word;
-using Ngaq.Core.Model.Po.Word;
 using Ngaq.Core.Shared.Word.Models.Po.Learn;
 using Ngaq.Core.Model.Po.Learn_;
 using Ngaq.Core.Shared.Word.Models.Po.Kv;

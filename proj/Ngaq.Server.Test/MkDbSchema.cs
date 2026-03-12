@@ -11,7 +11,7 @@ using Ngaq.Core.Shared.Word.Models.Po.Word;
 using Ngaq.Core.Word.Svc;
 using Ngaq.Local.Db.TswG;
 using Ngaq.Local.Word.Dao;
-using Tsinswreng.CsSqlHelper;
+using Tsinswreng.CsSql;
 namespace Ngaq.Server.Test;
 
 public class MkDbSchema{

@@ -7,8 +7,8 @@ using Ngaq.Biz.Infra.Cfg;
 using Ngaq.Local.Db.TswG;
 using Npgsql;
 using Tsinswreng.CsCfg;
-using Tsinswreng.CsSqlHelper;
-using Tsinswreng.CsSqlHelper.Postgres;
+using Tsinswreng.CsSql;
+using Tsinswreng.CsSql.Postgres;
 using CFG = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
 
 

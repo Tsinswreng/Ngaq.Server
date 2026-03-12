@@ -1,6 +1,6 @@
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsCore;
-using Tsinswreng.CsSqlHelper;
+using Tsinswreng.CsSql;
 
 namespace Ngaq.Biz.Db.TswG.Migrations;
 

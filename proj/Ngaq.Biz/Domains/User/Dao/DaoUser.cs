@@ -3,7 +3,7 @@ namespace Ngaq.Biz.Db.User;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Local.Db.TswG;
-using Tsinswreng.CsSqlHelper;
+using Tsinswreng.CsSql;
 
 public partial class DaoUser(
 	ISqlCmdMkr SqlCmdMkr

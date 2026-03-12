@@ -1,6 +1,6 @@
 namespace Ngaq.Biz.Db.TswG;
 
-using Tsinswreng.CsSqlHelper.Postgres;
+using Tsinswreng.CsSql.Postgres;
 
 public class ServerTblMgr:PostgresTblMgr{
 protected static ServerTblMgr? _Inst = null;

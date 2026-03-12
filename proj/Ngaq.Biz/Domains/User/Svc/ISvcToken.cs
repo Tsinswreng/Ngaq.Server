@@ -5,7 +5,7 @@ using Ngaq.Core.Shared.User.Models.Resp;
 using Ngaq.Core.Shared.User.UserCtx;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsErr;
-using Tsinswreng.CsSqlHelper;
+using Tsinswreng.CsSql;
 
 public interface ISvcToken{
 	public Task<Func<
