@@ -193,9 +193,9 @@ public class SvcToken
 		}
 	}
 
-	/// <summary>
+	
 	/// AI曰不用做緩存
-	/// </summary>
+	
 	/// <param name="Ctx"></param>
 	/// <param name="Ct"></param>
 	/// <returns></returns>

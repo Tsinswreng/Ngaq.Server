@@ -12,9 +12,9 @@ using Ngaq.Core.Tools;
 using Tsinswreng.CsErr;
 
 public static class ExtnUserCtx{
-	/// <summary>
+	
 	/// 驗證用戶id後汶取。宜皆由此㕥取用戶id洏免直ᵈ調IUserCtx.UserId
-	/// </summary>
+	
 	/// <param name="z"></param>
 	/// <returns></returns>
 	public static IdUser GetValidUserId(this IUserCtx z){

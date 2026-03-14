@@ -2,8 +2,8 @@ namespace Ngaq.Web.Domains.Word;
 
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Shared.Word.Models.Dto;
+using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Core.Tools;
-using Ngaq.Core.Word.Svc;
 using Ngaq.Web.Infra;
 using U = Ngaq.Core.Infra.Url.ConstUrl.UrlWord;
 

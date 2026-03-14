@@ -34,9 +34,9 @@ public partial class SvcUser(
 	:ISvcUser
 {
 
-	/// <summary>
+	
 	///TODO 檢查用戶存在否
-	/// </summary>
+	
 	/// <param name="DbFnCtx"></param>
 	/// <param name="Ct"></param>
 	/// <returns></returns>

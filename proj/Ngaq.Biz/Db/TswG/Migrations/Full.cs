@@ -34,9 +34,9 @@ public class FullInit: IMigration{
 	[Impl]
 	public i64 CreatedMs{get;set;} = 1760270025478;
 	public str SqlUp = "";
-	/// <summary>
+	
 	/// version after ran this migration
-	/// </summary>
+	
 	//public str Version{get;set;}
 
 	public async Task<Func<

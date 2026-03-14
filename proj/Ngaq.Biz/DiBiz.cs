@@ -19,7 +19,6 @@ using Ngaq.Biz.Domains.User.Dao;
 using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
 using Ngaq.Core.Model.Sys.Po.RefreshToken;
 using Tsinswreng.CsCfg;
-using Ngaq.Core.Word.Svc;
 using Ngaq.Local.Domains.Word.Svc;
 using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Local.Word.Dao;

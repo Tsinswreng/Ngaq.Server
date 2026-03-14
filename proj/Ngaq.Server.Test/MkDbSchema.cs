@@ -8,7 +8,7 @@ using Ngaq.Core.Shared.User.UserCtx;
 using Ngaq.Core.Shared.Word.Models;
 using Ngaq.Core.Shared.Word.Models.Po.Kv;
 using Ngaq.Core.Shared.Word.Models.Po.Word;
-using Ngaq.Core.Word.Svc;
+using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Local.Db.TswG;
 using Ngaq.Local.Word.Dao;
 using Tsinswreng.CsSql;
