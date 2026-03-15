@@ -17,6 +17,7 @@ using Tsinswreng.CsSql;
 using Tsinswreng.CsTools;
 using Ngaq.Core.Shared.User.Models.Bo.Device;
 using Tsinswreng.CsCore;
+using Ngaq.Core.Infra.IF;
 
 public partial class ServerTblMgrIniter{
 

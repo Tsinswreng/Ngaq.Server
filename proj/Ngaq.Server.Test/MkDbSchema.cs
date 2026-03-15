@@ -22,6 +22,13 @@ public class MkDbSchema{
 		System.Console.WriteLine("done");
 	}
 
+	public static async Task MigrateDb(str[] args){
+		var app = NgaqWeb.InitApp(args);
+		var migrator = app.Services.GetRequiredService<MigrationRunner>();
+		await migrator.UpAsy(default);
+		System.Console.WriteLine("migrate done");
+	}
+
 
 	public static async Task InitTestData(){
 		var svcWord = Program.SvcProvdr.GetRequiredService<ISvcWord>();

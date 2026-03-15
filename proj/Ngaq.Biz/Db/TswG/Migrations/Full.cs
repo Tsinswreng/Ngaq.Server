@@ -20,11 +20,7 @@ public class FullInit: IMigration{
 		,ITblMgr TblMgr
 		, IRepo<SchemaHistory, i64> RepoSchemaHistory
 	){
-		if(RepoSchemaHistory is not SqlRepo<SchemaHistory, i64> SqlRepoSchemaHistory){
-			throw new ArgumentException("RepoSchemaHistory must be SqlRepo<SchemaHistory, i64>");
-		}
-		this.RepoSchemaHistory = RepoSchemaHistory;
-		SqlRepoSchemaHistory.DictMapper = SqlHelperDictMapper.Inst;
+		this.RepoSchemaHistory = RepoSchemaHistory.UseSqlHelperDictMapper();
 		this.SqlCmdMkr = SqlCmdMkr;
 		this.TxnWrapper = TxnWrapper;
 		this.TblMgr = TblMgr;

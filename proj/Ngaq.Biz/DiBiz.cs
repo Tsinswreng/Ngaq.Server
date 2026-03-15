@@ -73,6 +73,15 @@ public static class DiBiz{
 		z.AddSingleton<ITblMgr>(ServerTblMgr.Inst);
 
 		z.AddRepoScoped<SchemaHistory, i64>();
+		// 通用遷移執行邏輯在 CsSql；此處僅聲明 Biz 端遷移清單
+		z.AddScoped<IMigrationMgr>(sp=>
+			new MigrationMgr(
+				TblMgr: sp.GetRequiredService<ITblMgr>()
+				,SqlCmdMkr: sp.GetRequiredService<ISqlCmdMkr>()
+			)
+			.UseServerMigrations()
+		);
+		z.AddTransient<MigrationRunner>();
 
 		z.AddTransient<FullInit>();
 
