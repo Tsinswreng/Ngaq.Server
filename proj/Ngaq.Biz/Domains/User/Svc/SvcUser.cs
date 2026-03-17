@@ -56,7 +56,7 @@ public partial class SvcUser(
 			var Id = new IdUser();
 			var PoUser = new PoUser{
 				Id = Id
-				,UniqueName = Req.UniqueName??Id.ToString()
+				,UniqName = Req.UniqName??Id.ToString()
 				,Email = Req.Email
 			};
 			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(Req.Password, Ct);
@@ -91,7 +91,7 @@ public partial class SvcUser(
 		,CT Ct
 	){
 		//var SelectUserById = await RepoUser.FnSelectByIdAsy(DbFnCtx, ct);
-		var SelectUserByUniqueName = await DaoUser.FnSelectByUniqueName(Ctx, Ct);
+		var SelectUserByUniqName = await DaoUser.FnSelectByUniqName(Ctx, Ct);
 		var SelectUserByEmail = await DaoUser.FnSelectByEmail(Ctx, Ct);
 		var SelectPasswordById = await DaoUser.FnSlctPasswordByUserId(Ctx, Ct);
 		var GenEtStoreRToken = await SvcToken.FnGenEtStoreRefreshToken(Ctx,Ct);
@@ -99,12 +99,11 @@ public partial class SvcUser(
 
 			//TODO 校驗Req
 			PoUser? PoUser = null;
-			if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.UniqueName){
-				if(str.IsNullOrEmpty(Req.UniqueName)){
-					//throw new ErrArg("str.IsNullOrEmpty(Req.UniqueName)");
-					throw ItemsErr.Common.ArgErr.ToErr([nameof(Req.UniqueName)]);
+			if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.UniqName){
+				if(str.IsNullOrEmpty(Req.UniqName)){
+					throw ItemsErr.Common.ArgErr.ToErr([nameof(Req.UniqName)]);
 				}
-				PoUser = await SelectUserByUniqueName(Req.UniqueName,Ct);
+				PoUser = await SelectUserByUniqName(Req.UniqName,Ct);
 			}else if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.Email){
 				if(str.IsNullOrEmpty(Req.Email)){
 					throw ItemsErr.Common.ArgErr.ToErr([nameof(Req.Email)]);

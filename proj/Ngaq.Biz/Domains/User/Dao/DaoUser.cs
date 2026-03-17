@@ -16,7 +16,7 @@ public partial class DaoUser(
 		str
 		,CT
 		,Task<PoUser?>
-	>> FnSelectByUniqueName(
+	>> FnSelectByUniqName(
 		IDbFnCtx DbFnCtx
 		,CT Ct
 	){

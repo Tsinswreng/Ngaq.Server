@@ -70,14 +70,14 @@ public partial class ServerTblMgrIniter{
 			CfgPoBase(o);
 			LocalTblMgrIniter.CfgBizCreateUpdateTime(o);
 			o.Col(nameof(PoUser.Id)).MapType(IdUser.MkTypeMapFn());
-			var optUxUniqueName = new OptMkIdx{
+			var optUxUniqName = new OptMkIdx{
 				Unique = true
 				, Where =
 					o.Tbl.SqlIsNonDel()
-					+ $" AND {o.Tbl.QtCol(nameof(PoUser.UniqueName))} IS NOT NULL"
-					+ $" AND {o.Tbl.QtCol(nameof(PoUser.UniqueName))} <> ''"
+					+ $" AND {o.Tbl.QtCol(nameof(PoUser.UniqName))} IS NOT NULL"
+					+ $" AND {o.Tbl.QtCol(nameof(PoUser.UniqName))} <> ''"
 			};
-			o.Idx(optUxUniqueName, [nameof(PoUser.UniqueName)]);
+			o.Idx(optUxUniqName, [nameof(PoUser.UniqName)]);
 
 			var optUxEmail = new OptMkIdx{Unique = true, Where = o.Tbl.SqlIsNonDel()};
 			o.Idx(optUxEmail, [nameof(PoUser.Email)]);
