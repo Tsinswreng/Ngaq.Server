@@ -6,7 +6,7 @@ namespace Ngaq.Web;
 
 public static class ExtnHttpCtx{
 	public static HttpContext Body<T>(this HttpContext z, T Body){
-		var json = JSON.stringify(Body);
+		var json = JSON.Stringify(Body);
 		z.Response.ContentType = "application/json;charset=utf-8";
 		z.Response.BodyWriter.Write(Encoding.UTF8.GetBytes(json));
 		return z;

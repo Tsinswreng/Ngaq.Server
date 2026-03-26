@@ -19,6 +19,7 @@ using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Shared.User.Svc;
 using Ngaq.Core.Shared.User.UserCtx;
 using Tsinswreng.CsErr;
+using Ngaq.Core.Tools.Json;
 
 public partial class SvcUser(
 	DaoUser DaoUser
@@ -30,6 +31,7 @@ public partial class SvcUser(
 	,IDistributedCache Cache
 	,ILogger<SvcUser> Log
 	,ISvcToken SvcToken
+	,IJsonSerializer JsonS
 )
 	:ISvcUser
 {
@@ -70,7 +72,7 @@ public partial class SvcUser(
 			await AddPasswords([Password], Ct);
 			//TODO
 			try{
-				await Cache.SetStringAsync($"user:register:{PoUser.Id}", JSON.stringify(PoUser), new DistributedCacheEntryOptions {
+				await Cache.SetStringAsync($"user:register:{PoUser.Id}", JsonS.Stringify(PoUser), new DistributedCacheEntryOptions {
 					AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
 				}, Ct);
 			}catch(Exception e){
