@@ -150,7 +150,7 @@ public class SvcToken
 	}
 
 
-	public async Task<IAnswer<RespValidateAccessToken>> ValidateAccessTokenAsy(
+	public async Task<IAnswer<RespValidateAccessToken>> ValidateAccessToken(
 		ReqValidateAccessToken Req, CT Ct
 	){
 		var rawAccessToken = Req.AccessToken;

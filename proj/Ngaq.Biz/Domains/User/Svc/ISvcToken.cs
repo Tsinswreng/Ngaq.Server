@@ -17,7 +17,7 @@ public interface ISvcToken{
 		ReqGenAccessToken Req
 	);
 
-	public Task<IAnswer<RespValidateAccessToken>> ValidateAccessTokenAsy(
+	public Task<IAnswer<RespValidateAccessToken>> ValidateAccessToken(
 		ReqValidateAccessToken Req, CT Ct
 	);
 

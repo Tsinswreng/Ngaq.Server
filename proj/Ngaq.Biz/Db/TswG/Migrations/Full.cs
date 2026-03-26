@@ -69,10 +69,10 @@ public class FullInit: IMigration{
 		};
 	}
 
-	public async Task<nil> UpAsy(CT Ct){
+	public async Task<nil> Up(CT Ct){
 		return await TxnWrapper.Wrap(FnInit, Ct);
 	}
-	public async Task<nil> DownAsy(CT Ct){
+	public async Task<nil> Down(CT Ct){
 		throw new NotImplementedException();
 	}
 

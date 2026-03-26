@@ -54,7 +54,7 @@ public class TokenValidationMidware {
 				return;
 			}
 			#endif
-			var R = await SvcToken.ValidateAccessTokenAsy(new ReqValidateAccessToken{
+			var R = await SvcToken.ValidateAccessToken(new ReqValidateAccessToken{
 				AccessToken = token
 			}, Ct);
 			if(!R.Ok){

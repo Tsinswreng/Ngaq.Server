@@ -37,7 +37,7 @@ var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
 """)]
 	public async Task<Func<
 		IdUser, IdClient
-		,CT, Task<IAsyncEnumerable<PoRefreshToken>>
+		,CT, IAsyncEnumerable<PoRefreshToken>
 	>> FnSlctValidTokens(IDbFnCtx Ctx, CT Ct){
 
 var Sql = T.SqlSplicer().Select("*").From()
@@ -46,7 +46,7 @@ var Sql = T.SqlSplicer().Select("*").From()
 .AndEq(x=>x.ClientId, out var PClientId)
 .OrderByDesc(x=>x.DbCreatedAt).ToSqlStr();
 		var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
-		return async(UserId, ClientId, Ct)=>{
+		return (UserId, ClientId, Ct)=>{
 			var Arg = ArgDict.Mk(T).AddT(PUserId, UserId).AddT(PClientId, ClientId);
 			var RawAsyE = Ctx.RunCmd(Cmd, Arg).AsyE1d(Ct);
 			return RawAsyE.Select(x=>T.DbDictToEntity<PoRefreshToken>(x));

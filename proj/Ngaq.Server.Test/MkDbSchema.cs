@@ -18,14 +18,14 @@ public class MkDbSchema{
 	public static async Task InitDb(str[] args){
 		var app = NgaqWeb.InitApp(args);
 		var fullInit = app.Services.GetRequiredService<FullInit>();
-		await fullInit.UpAsy(default);
+		await fullInit.Up(default);
 		System.Console.WriteLine("done");
 	}
 
 	public static async Task MigrateDb(str[] args){
 		var app = NgaqWeb.InitApp(args);
 		var migrator = app.Services.GetRequiredService<MigrationRunner>();
-		await migrator.UpAsy(default);
+		await migrator.Up(default);
 		System.Console.WriteLine("migrate done");
 	}
 
