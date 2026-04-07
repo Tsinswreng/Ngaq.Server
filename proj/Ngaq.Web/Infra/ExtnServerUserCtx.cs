@@ -1,8 +1,8 @@
-namespace Ngaq.Web.Infra;
+namespace Ngaq.Server.Http.Infra;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
-using Ngaq.Biz.Domains.User;
+using Ngaq.Server.Domains.User;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Shared.User.Models.Bo.Device;
 using Ngaq.Core.Shared.User.Models.Po.Device;

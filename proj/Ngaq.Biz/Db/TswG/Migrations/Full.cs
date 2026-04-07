@@ -2,7 +2,7 @@ using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsSql;
 
-namespace Ngaq.Biz.Db.TswG.Migrations;
+namespace Ngaq.Server.Db.TswG.Migrations;
 
 public class FullInit: IMigration{
 	public ISqlCmdMkr SqlCmdMkr;

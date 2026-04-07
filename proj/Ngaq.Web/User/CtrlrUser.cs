@@ -1,11 +1,11 @@
-namespace Ngaq.Web.User;
+namespace Ngaq.Server.Http.User;
 
 using Ngaq.Core.Infra.Url;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Ngaq.Biz.Domains.User.Svc;
+using Ngaq.Server.Domains.User.Svc;
 using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Infra;
 using Tsinswreng.CsCore;
@@ -15,7 +15,7 @@ using ApiUser = Ngaq.Core.Infra.Url.ConstUrl.ApiUser;
 using Microsoft.Extensions.Caching.Distributed;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Tools;
-using Ngaq.Web.Infra;
+using Ngaq.Server.Http.Infra;
 using Tsinswreng.CsErr;
 using Ngaq.Core.Models.Sys.Req;
 using Ngaq.Core.Shared.User.Models.Resp;

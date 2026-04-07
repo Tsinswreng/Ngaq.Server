@@ -8,8 +8,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="../Ngaq.Biz/Ngaq.Biz.csproj" />
-		<ProjectReference Include="../Ngaq.Web/Ngaq.Web.csproj" />
+		<ProjectReference Include="../Ngaq.Server/Ngaq.Server.csproj" />
+		<ProjectReference Include="../Ngaq.Server.Http/Ngaq.Server.Http.csproj" />
 		<ProjectReference Include="../../../Ngaq.Test/Ngaq.Test.csproj" />
 	</ItemGroup>
 

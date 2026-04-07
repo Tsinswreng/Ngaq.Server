@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Infra.Cache;
+namespace Ngaq.Server.Infra.Cache;
 
 public partial class CacheKey{
 

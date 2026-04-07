@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Db.TswG;
+namespace Ngaq.Server.Db.TswG;
 
 using Tsinswreng.CsSql.Postgres;
 

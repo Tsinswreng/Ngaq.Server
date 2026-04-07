@@ -1,9 +1,9 @@
-namespace Ngaq.Biz.Domains.User.Svc;
+namespace Ngaq.Server.Domains.User.Svc;
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using Ngaq.Biz.Db.User;
-using Ngaq.Biz.Tools;
+using Ngaq.Server.Db.User;
+using Ngaq.Server.Tools;
 using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Model.Sys.Po.Password;

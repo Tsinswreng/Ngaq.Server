@@ -1,5 +1,5 @@
 namespace Ngaq.Server.Test;
-using Ngaq.Biz.Db.TswG;
+using Ngaq.Server.Db.TswG;
 
 public class TestNpgsqlParams{
 	public async Task Test(str[] args){

@@ -1,6 +1,6 @@
-namespace Ngaq.Web;
+namespace Ngaq.Server.Http;
 
-using Ngaq.Biz.Infra.Cfg;
+using Ngaq.Server.Infra.Cfg;
 using Tsinswreng.CsCfg;
 
 

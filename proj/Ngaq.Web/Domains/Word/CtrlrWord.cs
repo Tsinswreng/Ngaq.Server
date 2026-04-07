@@ -1,10 +1,10 @@
-namespace Ngaq.Web.Domains.Word;
+namespace Ngaq.Server.Http.Domains.Word;
 
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Shared.Word.Models.Dto;
 using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Core.Tools;
-using Ngaq.Web.Infra;
+using Ngaq.Server.Http.Infra;
 using U = Ngaq.Core.Infra.Url.ConstUrl.UrlWord;
 
 public class CtrlrWord(

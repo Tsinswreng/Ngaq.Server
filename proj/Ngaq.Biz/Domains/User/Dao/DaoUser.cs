@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Db.User;
+namespace Ngaq.Server.Db.User;
 
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Models.Sys.Po.Password;

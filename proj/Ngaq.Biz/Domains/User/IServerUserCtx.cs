@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Domains.User;
+namespace Ngaq.Server.Domains.User;
 
 using Ngaq.Core.Shared.User.Models.Bo.Device;
 using Ngaq.Core.Shared.User.Models.Po.Device;

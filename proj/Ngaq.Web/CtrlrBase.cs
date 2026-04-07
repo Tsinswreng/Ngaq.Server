@@ -1,7 +1,7 @@
 using Ngaq.Core.Infra;
 using Tsinswreng.CsErr;
 
-namespace Ngaq.Web;
+namespace Ngaq.Server.Http;
 
 public partial interface ICtrlr{
 	public nil InitRouter(

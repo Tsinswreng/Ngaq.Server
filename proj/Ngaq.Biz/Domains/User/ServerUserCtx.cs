@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Domains.User;
+namespace Ngaq.Server.Domains.User;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;

@@ -1,5 +1,5 @@
 #if false
-namespace Ngaq.Biz.Db.User;
+namespace Ngaq.Server.Db.User;
 
 using Microsoft.EntityFrameworkCore;
 using Ngaq.Core.Shared.User.Models.Po.User;

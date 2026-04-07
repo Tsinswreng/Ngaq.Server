@@ -1,10 +1,10 @@
-namespace Ngaq.Web;
+namespace Ngaq.Server.Http;
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Ngaq.Biz.Domains.User.Dto;
-using Ngaq.Biz.Domains.User.Svc;
-using Ngaq.Biz.Infra.Cfg;
+using Ngaq.Server.Domains.User.Dto;
+using Ngaq.Server.Domains.User.Svc;
+using Ngaq.Server.Infra.Cfg;
 using Ngaq.Core.Infra.Url;
 using Tsinswreng.CsCfg;
 

@@ -1,6 +1,6 @@
-namespace Ngaq.Web.Midware;
+namespace Ngaq.Server.Http.Midware;
 
-using Ngaq.Web.Infra;
+using Ngaq.Server.Http.Infra;
 using StackExchange.Redis;
 using Tsinswreng.CsCfg;
 

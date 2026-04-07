@@ -1,6 +1,6 @@
 #if false
 /*
-pwd=Ngaq.Biz
+pwd=Ngaq.Server
 dotnet ef migrations add Init --context ServerDbCtx
 dotnet ef database update --context ServerDbCtx
  */
@@ -13,7 +13,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Ngaq.Biz.Infra.Cfg;
+using Ngaq.Server.Infra.Cfg;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Infra;
 using Ngaq.Core.Infra.IF;
@@ -30,7 +30,7 @@ using IdTool = Tsinswreng.CsTools.ToolUInt128;
 //using Ngaq.Core.Model.PoRole;
 
 
-namespace Ngaq.Biz.Db;
+namespace Ngaq.Server.Db;
 
 public  partial class ServerDbCtx
 	:DbContext

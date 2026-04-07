@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Ngaq.Biz.Db.TswG;
-using Ngaq.Biz.Db.TswG.Migrations;
+using Ngaq.Server.Db.TswG;
+using Ngaq.Server.Db.TswG.Migrations;
 using Ngaq.Core.Model.Po.Word;
 using Ngaq.Core.Shared.Kv.Models;
 using Ngaq.Core.Shared.Kv.Svc;

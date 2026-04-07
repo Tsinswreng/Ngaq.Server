@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Ngaq.Web": {
+    "Ngaq.Server.Http": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

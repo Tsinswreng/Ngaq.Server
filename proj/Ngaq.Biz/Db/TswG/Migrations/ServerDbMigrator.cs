@@ -1,6 +1,6 @@
 using Tsinswreng.CsSql;
 
-namespace Ngaq.Biz.Db.TswG.Migrations;
+namespace Ngaq.Server.Db.TswG.Migrations;
 
 /// 服務端對外公開遷移入口（兼容包裝）。
 /// 真正通用遷移執行邏輯在 CsSql 的 MigrationRunner。

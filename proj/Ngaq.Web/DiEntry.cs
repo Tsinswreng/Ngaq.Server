@@ -1,10 +1,10 @@
-namespace Ngaq.Web;
+namespace Ngaq.Server.Http;
 
-using Ngaq.Biz;
-using Ngaq.Biz.Infra.Cfg;
+using Ngaq.Server;
+using Ngaq.Server.Infra.Cfg;
 using Ngaq.Core;
 using Tsinswreng.CsCfg;
-using CfgItems = Ngaq.Biz.Infra.Cfg.ItemsServerCfg;
+using CfgItems = Ngaq.Server.Infra.Cfg.ItemsServerCfg;
 
 
 

@@ -1,4 +1,4 @@
-namespace Ngaq.Web;
+namespace Ngaq.Server.Http;
 
 using System;
 using System.Threading.Tasks;

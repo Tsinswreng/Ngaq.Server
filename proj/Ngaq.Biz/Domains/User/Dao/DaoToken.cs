@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Domains.User.Dao;
+namespace Ngaq.Server.Domains.User.Dao;
 
 using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
 using Ngaq.Core.Model.Sys.Po.RefreshToken;

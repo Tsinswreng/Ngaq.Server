@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Infra.Cfg;
+namespace Ngaq.Server.Infra.Cfg;
 using Ngaq.Core.Infra.Cfg;
 using Tsinswreng.CsCfg;
 

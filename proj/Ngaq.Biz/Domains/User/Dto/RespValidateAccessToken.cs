@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Domains.User.Dto;
+namespace Ngaq.Server.Domains.User.Dto;
 
 using System.Security.Claims;
 using Ngaq.Core.Shared.Base.Models.Req;

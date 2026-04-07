@@ -1,5 +1,5 @@
 #if false
-namespace Ngaq.Web.AspNetTools;
+namespace Ngaq.Server.Http.AspNetTools;
 
 using Rtn = object;
 public partial interface IRouteGroup{

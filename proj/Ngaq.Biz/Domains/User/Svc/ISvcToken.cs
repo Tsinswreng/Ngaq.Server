@@ -1,6 +1,6 @@
-namespace Ngaq.Biz.Domains.User.Svc;
+namespace Ngaq.Server.Domains.User.Svc;
 
-using Ngaq.Biz.Domains.User.Dto;
+using Ngaq.Server.Domains.User.Dto;
 using Ngaq.Core.Shared.User.Models.Resp;
 using Ngaq.Core.Shared.User.UserCtx;
 using Ngaq.Local.Db.TswG;

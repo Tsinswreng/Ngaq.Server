@@ -1,6 +1,6 @@
 using Tsinswreng.CsSql;
 
-namespace Ngaq.Biz.Db.TswG.Migrations;
+namespace Ngaq.Server.Db.TswG.Migrations;
 
 /// Biz 端遷移清單註冊（僅保留業務遷移選擇）。
 public static class ServerMigrations{

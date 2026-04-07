@@ -1,4 +1,4 @@
-namespace Ngaq.Web;
+namespace Ngaq.Server.Http;
 
 public static class DiWeb{
 	public static IServiceCollection SetupWeb(

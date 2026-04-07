@@ -2,7 +2,7 @@ using Ngaq.Core.Infra;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsSql;
 
-namespace Ngaq.Biz.Db.TswG.Migrations;
+namespace Ngaq.Server.Db.TswG.Migrations;
 
 /// Biz 端的 StudyPlan 結構遷移。
 ///

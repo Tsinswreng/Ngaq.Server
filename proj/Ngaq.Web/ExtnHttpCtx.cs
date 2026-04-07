@@ -2,7 +2,7 @@ using System.Buffers;
 using System.Text;
 using Ngaq.Core.Tools;
 
-namespace Ngaq.Web;
+namespace Ngaq.Server.Http;
 
 public static class ExtnHttpCtx{
 	public static HttpContext Body<T>(this HttpContext z, T Body){

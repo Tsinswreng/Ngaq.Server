@@ -20,8 +20,8 @@ COPY ["Ngaq.Core/Ngaq.Core.csproj", "Ngaq.Core/Ngaq.Core.csproj"]
 COPY ["Ngaq.Local/Ngaq.Local.csproj", "Ngaq.Local/Ngaq.Local.csproj"]
 COPY ["Ngaq.Server/proj/Directory.Build.props", "Ngaq.Server/proj/Directory.Build.props"]
 COPY ["Ngaq.Server/proj/Directory.Packages.props", "Ngaq.Server/proj/Directory.Packages.props"]
-COPY ["Ngaq.Server/proj/Ngaq.Biz/Ngaq.Biz.csproj", "Ngaq.Server/proj/Ngaq.Biz/Ngaq.Biz.csproj"]
-COPY ["Ngaq.Server/proj/Ngaq.Web/Ngaq.Web.csproj", "Ngaq.Server/proj/Ngaq.Web/Ngaq.Web.csproj"]
+COPY ["Ngaq.Server/proj/Ngaq.Server/Ngaq.Server.csproj", "Ngaq.Server/proj/Ngaq.Server/Ngaq.Server.csproj"]
+COPY ["Ngaq.Server/proj/Ngaq.Server.Http/Ngaq.Server.Http.csproj", "Ngaq.Server/proj/Ngaq.Server.Http/Ngaq.Server.Http.csproj"]
 
 
 # 还原NuGet包
@@ -29,19 +29,19 @@ COPY ["Ngaq.Server/proj/Ngaq.Web/Ngaq.Web.csproj", "Ngaq.Server/proj/Ngaq.Web/Ng
 # 避免一次性複製所有文件，防止宿主機路徑結構汙染容器。
 #RUN dotnet restore "TeQuaero.Backend.sln"
 #RUN cd src/TeQuaero.Web/ && dotnet restore TeQuaero.Web.csproj && cd ../..
-#RUN cd ./Ngaq.Server/proj/Ngaq.Web/ && dotnet restore
+#RUN cd ./Ngaq.Server/proj/Ngaq.Server.Http/ && dotnet restore
 # 复制所有源码
 COPY . .
 
 
 # 发布项目
-RUN dotnet publish "Ngaq.Server/proj/Ngaq.Web/Ngaq.Web.csproj" \
+RUN dotnet publish "Ngaq.Server/proj/Ngaq.Server.Http/Ngaq.Server.Http.csproj" \
 -c Release -o /app/publish \
 -r linux-x64
 
 #-p:PublishAot=true \ #加此則報錯曰 不支持提前編譯。只在csproj中開aot即可
 
-# RUN dotnet publish "Ngaq.Server/proj/Ngaq.Web/Ngaq.Web.csproj" -c Release -r linux-x64 -o /app/publish
+# RUN dotnet publish "Ngaq.Server/proj/Ngaq.Server.Http/Ngaq.Server.Http.csproj" -c Release -r linux-x64 -o /app/publish
 
 
 
@@ -59,4 +59,4 @@ RUN apt-get update && apt-get install -y \
 COPY --from=build /app/publish .
 
 EXPOSE 2341
-ENTRYPOINT ["./Ngaq.Web"]
+ENTRYPOINT ["./Ngaq.Server.Http"]

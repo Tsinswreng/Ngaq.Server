@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Ngaq.Biz.Db.TswG;
-using Ngaq.Biz.Db.TswG.Migrations;
+using Ngaq.Server.Db.TswG;
+using Ngaq.Server.Db.TswG.Migrations;
 using Ngaq.Core.Shared.Kv.Models;
 using Ngaq.Core.Shared.Kv.Svc;
 using Ngaq.Core.Shared.User.UserCtx;

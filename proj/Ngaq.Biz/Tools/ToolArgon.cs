@@ -1,4 +1,4 @@
-namespace Ngaq.Biz.Tools;
+namespace Ngaq.Server.Tools;
 
 using System;
 using System.Security.Cryptography;
