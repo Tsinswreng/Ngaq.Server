@@ -10,6 +10,7 @@ using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Shared.User.UserCtx;
 using Ngaq.Core.Tools;
 using Tsinswreng.CsErr;
+using Ngaq.Core.Infra.IF;
 
 public static class ExtnUserCtx{
 	

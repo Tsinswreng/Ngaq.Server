@@ -5,6 +5,7 @@ using Ngaq.Core.Shared.Word.Models.Dto;
 using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Core.Tools;
 using Ngaq.Server.Http.Infra;
+using Tsinswreng.CsTextWithBlob;
 using U = Ngaq.Core.Infra.Url.ConstUrl.UrlWord;
 
 public class CtrlrWord(
@@ -25,7 +26,7 @@ public class CtrlrWord(
 		using var ms = new MemoryStream();
 		await Ctx.Request.Body.CopyToAsync(ms, Ct);
 		var Body = ms.ToArray();
-		var textWithBlob = ToolTextWithBlob.Parse(Body);
+		var textWithBlob = NgaqTextWithBlob.Parse(Body);
 		await SvcWord.SyncFromTextWithBlob(Ctx.ToUserCtx(), textWithBlob, Ct);
 		//return Results.Ok();
 		return this.Ok();

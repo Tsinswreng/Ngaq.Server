@@ -20,7 +20,7 @@ public class FullInit: IMigration{
 		,ITblMgr TblMgr
 		, IRepo<SchemaHistory, i64> RepoSchemaHistory
 	){
-		this.RepoSchemaHistory = RepoSchemaHistory.UseSqlHelperDictMapper();
+		this.RepoSchemaHistory = RepoSchemaHistory.UseCsSqlSrefl();
 		this.SqlCmdMkr = SqlCmdMkr;
 		this.TxnWrapper = TxnWrapper;
 		this.TblMgr = TblMgr;

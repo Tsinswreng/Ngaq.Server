@@ -9,7 +9,6 @@ using Ngaq.Server.Infra.Cfg;
 using Ngaq.Server.Db.TswG;
 using Npgsql;
 using Ngaq.Core.Models.Sys.Po.Password;
-using Tsinswreng.CsDictMapper;
 using Ngaq.Core.Infra;
 using Ngaq.Server.Db.TswG.Migrations;
 using Ngaq.Local.Db.TswG;
@@ -29,6 +28,7 @@ using Ngaq.Core.Model.Po.Learn_;
 using Ngaq.Core.Shared.Word.Models.Po.Kv;
 using Ngaq.Core.Model.Po.Kv;
 using StackExchange.Redis;
+using Tsinswreng.Srefl;
 
 public static class DiBiz{
 	#if false
@@ -100,7 +100,7 @@ public static class DiBiz{
 	public static IServiceCollection SetupBiz(this IServiceCollection z){
 		z.AddSingleton<ICfgAccessor>(ServerCfg.Inst);
 		z.SetupTswgSqlAdo();
-		z.AddSingleton<IDictMapperShallow>(CoreDictMapper.Inst);
+		z.AddSingleton<IPropAccessorReg>(CoreDictMapper.Inst);
 		
 		z.AddRepoScoped<PoUser, IdUser>();
 		z.AddRepoScoped<PoPassword, IdPassword>();

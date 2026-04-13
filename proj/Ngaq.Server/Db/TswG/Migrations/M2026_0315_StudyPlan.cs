@@ -1,6 +1,7 @@
 using Ngaq.Core.Infra;
 using Ngaq.Local.Db.TswG;
 using Tsinswreng.CsSql;
+using Tsinswreng.CsTempus;
 
 namespace Ngaq.Server.Db.TswG.Migrations;
 

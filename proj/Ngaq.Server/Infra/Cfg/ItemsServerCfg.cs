@@ -2,6 +2,7 @@ namespace Ngaq.Server.Infra.Cfg;
 
 using Ngaq.Core.Infra;
 using Tsinswreng.CsCfg;
+using Tsinswreng.CsTempus;
 using static Tsinswreng.CsCfg.CfgNode<obj?>;
 public partial class ItemsServerCfg{
 	protected static ItemsServerCfg? _Inst = null;

@@ -22,6 +22,7 @@ using Tsinswreng.CsSql;
 using Ngaq.Core.Shared.User.Models.Resp;
 using Ngaq.Core.Infra.Errors;
 using Tsinswreng.CsErr;
+using Tsinswreng.CsTempus;
 
 public class RespGenJwtToken:BaseResp{
 	public Tempus ExpireAt{get;set;}
@@ -297,7 +298,7 @@ public class SvcToken
 		var RevokeRefreshTokens = await FnRevokeRefreshTokens(Ctx, Ct);
 		return async(User, Ct)=>{
 			var SrvUser = User.AsServerUserCtx();
-			var validTokens = await SlctValidTokens(User.UserId, SrvUser.ClientId, Ct);
+			var validTokens = SlctValidTokens(User.UserId, SrvUser.ClientId, Ct);
 			await RevokeRefreshTokens(validTokens, Ct);
 			return NIL;
 		};

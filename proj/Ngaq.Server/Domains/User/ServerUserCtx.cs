@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using Ngaq.Core.Infra.Errors;
+using Ngaq.Core.Infra.IF;
 using Ngaq.Core.Shared.User.Models.Bo.Device;
 using Ngaq.Core.Shared.User.Models.Po.Device;
 using Ngaq.Core.Shared.User.Models.Po.User;

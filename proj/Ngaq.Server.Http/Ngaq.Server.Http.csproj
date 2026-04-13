@@ -5,6 +5,8 @@
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<PublishAot>true</PublishAot>
 		<AssetsPath>../../Assets</AssetsPath>		<!-- 根据实际情况修改 -->
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+		<CompilerGeneratedFilesOutputPath>obj/Generated</CompilerGeneratedFilesOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>

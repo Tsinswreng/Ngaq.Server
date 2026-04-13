@@ -19,6 +19,7 @@ using Ngaq.Server.Http.Infra;
 using Tsinswreng.CsErr;
 using Ngaq.Core.Models.Sys.Req;
 using Ngaq.Core.Shared.User.Models.Resp;
+using Tsinswreng.CsTempus;
 
 public partial class CtrlrOpenUser(
 	SvcUser SvcUser
