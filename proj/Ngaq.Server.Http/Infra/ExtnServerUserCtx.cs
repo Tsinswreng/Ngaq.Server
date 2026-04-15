@@ -21,7 +21,7 @@ public static class ExtnUserCtx{
 	public static IdUser GetValidUserId(this IUserCtx z){
 		var UserId = z.UserId;
 		if(UserId.IsNullOrDefault()){
-			throw ItemsErr.User.AuthenticationFailed.ToErr();
+			throw KeysErr.User.AuthenticationFailed.ToErr();
 		}
 		return UserId;
 	}

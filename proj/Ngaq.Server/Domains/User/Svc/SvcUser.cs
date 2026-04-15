@@ -103,25 +103,25 @@ public partial class SvcUser(
 			PoUser? PoUser = null;
 			if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.UniqName){
 				if(str.IsNullOrEmpty(Req.UniqName)){
-					throw ItemsErr.Common.ArgErr.ToErr([nameof(Req.UniqName)]);
+					throw KeysErr.Common.ArgErr.ToErr([nameof(Req.UniqName)]);
 				}
 				PoUser = await SelectUserByUniqName(Req.UniqName,Ct);
 			}else if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.Email){
 				if(str.IsNullOrEmpty(Req.Email)){
-					throw ItemsErr.Common.ArgErr.ToErr([nameof(Req.Email)]);
+					throw KeysErr.Common.ArgErr.ToErr([nameof(Req.Email)]);
 				}
 				PoUser = await SelectUserByEmail(Req.Email,Ct);
 			}
 			if(PoUser == null){
-				throw ItemsErr.User.PasswordNotMatch.ToErr();
+				throw KeysErr.User.PasswordNotMatch.ToErr();
 			}
 			var PoPassword = await SelectPasswordById(PoUser.Id, Ct);
 			if(PoPassword is null){
 				//throw new AppErr("Password not exsists");
-				throw ItemsErr.User.PasswordNotMatch.ToErr();
+				throw KeysErr.User.PasswordNotMatch.ToErr();
 			}
 			if(! await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) ){
-				throw ItemsErr.User.PasswordNotMatch.ToErr();
+				throw KeysErr.User.PasswordNotMatch.ToErr();
 			};
 			var UserCtx = User.AsServerUserCtx();
 			UserCtx.UserId = PoUser.Id;

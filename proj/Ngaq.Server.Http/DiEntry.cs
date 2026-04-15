@@ -4,7 +4,7 @@ using Ngaq.Server;
 using Ngaq.Server.Infra.Cfg;
 using Ngaq.Core;
 using Tsinswreng.CsCfg;
-using CfgItems = Ngaq.Server.Infra.Cfg.ItemsServerCfg;
+using CfgItems = Ngaq.Server.Infra.Cfg.KeysServerCfg;
 
 
 

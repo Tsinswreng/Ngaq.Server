@@ -4,9 +4,9 @@ using Ngaq.Core.Infra;
 using Tsinswreng.CsCfg;
 using Tsinswreng.CsTempus;
 using static Tsinswreng.CsCfg.CfgNode<obj?>;
-public partial class ItemsServerCfg{
-	protected static ItemsServerCfg? _Inst = null;
-	public static ItemsServerCfg Inst => _Inst??= new ItemsServerCfg();
+public partial class KeysServerCfg{
+	protected static KeysServerCfg? _Inst = null;
+	public static KeysServerCfg Inst => _Inst??= new KeysServerCfg();
 	protected str ConnectionString = nameof(ConnectionString);
 
 	public static ICfgNode<i32> Port => Mk(null, [nameof(Port)], 5000);

@@ -38,9 +38,9 @@ public class TokenValidationMidware {
 
 			var token = header.ToString()["Bearer ".Length..].Trim();
 			#if DEBUG //TEMP
-			var AllowedAToken = Cfg.Get(ItemsServerCfg.Debug.Auth.AllowedAccessToken);
+			var AllowedAToken = Cfg.Get(KeysServerCfg.Debug.Auth.AllowedAccessToken);
 			if(token == AllowedAToken){
-				var UserIdStr = Cfg.Get(ItemsServerCfg.Debug.Auth.UserId);
+				var UserIdStr = Cfg.Get(KeysServerCfg.Debug.Auth.UserId);
 				Claim[] claims = [
 					new Claim(JwtRegisteredClaimNames.Sub, UserIdStr+""),          // OIDC 標準
 					new Claim(ClaimTypes.NameIdentifier, UserIdStr+""),            // .NET 傳統

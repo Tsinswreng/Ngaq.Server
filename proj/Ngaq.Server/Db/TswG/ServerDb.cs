@@ -9,7 +9,7 @@ using Npgsql;
 using Tsinswreng.CsCfg;
 using Tsinswreng.CsSql;
 using Tsinswreng.CsSql.Postgres;
-using CFG = Ngaq.Server.Infra.Cfg.ItemsServerCfg;
+using CFG = Ngaq.Server.Infra.Cfg.KeysServerCfg;
 
 
 public partial class ServerDb{

@@ -70,7 +70,7 @@ public class SvcToken
 		ReqGenAccessToken Req
 	){
 		var R = new RespGenAccessToken();
-		var JwtSecret = Cfg.Get(ItemsServerCfg.Auth.JwtSecret);
+		var JwtSecret = Cfg.Get(KeysServerCfg.Auth.JwtSecret);
 		var securityKey = new SymmetricSecurityKey(
 			//注意: 小於256字節則報錯
 			Encoding.UTF8.GetBytes(JwtSecret??"")
@@ -94,10 +94,10 @@ public class SvcToken
 			//,new Claim("role", "admin")//custom
 		};
 
-		var expires = DateTime.UtcNow.AddMilliseconds(Cfg.Get(ItemsServerCfg.Auth.AccessTokenExpiryMs));
+		var expires = DateTime.UtcNow.AddMilliseconds(Cfg.Get(KeysServerCfg.Auth.AccessTokenExpiryMs));
 		var token = new JwtSecurityToken(
-			issuer: Cfg.Get(ItemsServerCfg.Auth.JwtIssuer)
-			,audience: Cfg.Get(ItemsServerCfg.Auth.JwtAudience)
+			issuer: Cfg.Get(KeysServerCfg.Auth.JwtIssuer)
+			,audience: Cfg.Get(KeysServerCfg.Auth.JwtAudience)
 			,claims: claims
 			,expires: expires
 			,signingCredentials: credentials
@@ -113,7 +113,7 @@ public class SvcToken
 		ReqGenRefreshToken Req
 	){
 		var R = new RespGenRefreshToken();
-		var jwtSecret = ItemsServerCfg.Auth.JwtSecret.GetFrom(Cfg);
+		var jwtSecret = KeysServerCfg.Auth.JwtSecret.GetFrom(Cfg);
 		var securityKey = new SymmetricSecurityKey(
 			Encoding.UTF8.GetBytes(jwtSecret ?? "")
 		);
@@ -136,10 +136,10 @@ public class SvcToken
 					ClaimValueTypes.Integer64),
 		};
 
-		var expires = now.AddMilliseconds(Cfg.Get(ItemsServerCfg.Auth.RefreshTokenExpiryMs));
+		var expires = now.AddMilliseconds(Cfg.Get(KeysServerCfg.Auth.RefreshTokenExpiryMs));
 		var token = new JwtSecurityToken(
-			issuer: Cfg.Get(ItemsServerCfg.Auth.JwtIssuer),
-			audience: Cfg.Get(ItemsServerCfg.Auth.JwtAudience),
+			issuer: Cfg.Get(KeysServerCfg.Auth.JwtIssuer),
+			audience: Cfg.Get(KeysServerCfg.Auth.JwtAudience),
 			claims: claims,
 			expires: expires.UtcDateTime,  // 7 天過期
 			signingCredentials: credentials
@@ -158,9 +158,9 @@ public class SvcToken
 		var R = new Answer<RespValidateAccessToken>();
 		R.Ok = true;
 		if (string.IsNullOrWhiteSpace(rawAccessToken)){
-			return R.AddErr(ItemsErr.User.InvalidToken.ToErr());
+			return R.AddErr(KeysErr.User.InvalidToken.ToErr());
 		}
-		var jwtSecret = Cfg.Get(ItemsServerCfg.Auth.JwtSecret);
+		var jwtSecret = Cfg.Get(KeysServerCfg.Auth.JwtSecret);
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret ?? ""));
 		var handler = new JwtSecurityTokenHandler();
 		try{
@@ -169,8 +169,8 @@ public class SvcToken
 				ValidateAudience = true,
 				ValidateLifetime = true,
 				ValidateIssuerSigningKey = true,
-				ValidIssuer = Cfg.Get(ItemsServerCfg.Auth.JwtIssuer),
-				ValidAudience = Cfg.Get(ItemsServerCfg.Auth.JwtAudience),
+				ValidIssuer = Cfg.Get(KeysServerCfg.Auth.JwtIssuer),
+				ValidAudience = Cfg.Get(KeysServerCfg.Auth.JwtAudience),
 				IssuerSigningKey = key,
 				ClockSkew = TimeSpan.FromSeconds(30)//留30s容錯
 			};
@@ -182,15 +182,15 @@ public class SvcToken
 			});
 		}
 		catch (SecurityTokenExpiredException){
-			return R.AddErr(ItemsErr.User.TokenExpired.ToErr());
+			return R.AddErr(KeysErr.User.TokenExpired.ToErr());
 		}
 		catch (SecurityTokenInvalidSignatureException){
-			return R.AddErr(ItemsErr.User.InvalidToken.ToErr());
+			return R.AddErr(KeysErr.User.InvalidToken.ToErr());
 			//return R.AddErrStr("Invalid token signature.");
 		}
 		catch (Exception ex){
 			//return R.AddErrStr($"Token validation failed: {ex.Message}");
-			return R.AddErr(ItemsErr.User.InvalidToken.ToErr());
+			return R.AddErr(KeysErr.User.InvalidToken.ToErr());
 		}
 	}
 
@@ -213,7 +213,7 @@ public class SvcToken
 			PoRefreshToken.SetTokenValueSha256(RawTokenStr);
 			var OldToken = await SlctToken(PoRefreshToken.TokenValue!, Ct);
 			if(OldToken is null){
-				R.AddErr(ItemsErr.User.InvalidToken.ToErr());
+				R.AddErr(KeysErr.User.InvalidToken.ToErr());
 				return R;
 			}
 			User.UserId = OldToken.UserId;
