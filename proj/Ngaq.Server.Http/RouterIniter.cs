@@ -1,7 +1,7 @@
 namespace Ngaq.Server.Http;
 
+using Ngaq.Server.Http.Domains.User;
 using Ngaq.Server.Http.Domains.Word;
-using Ngaq.Server.Http.User;
 
 
 public partial class AppRouterIniter{

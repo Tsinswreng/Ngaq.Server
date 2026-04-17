@@ -1,4 +1,4 @@
-namespace Ngaq.Server.Http.User;
+namespace Ngaq.Server.Http.Domains.User;
 
 using Ngaq.Core.Infra.Url;
 
@@ -10,8 +10,8 @@ using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Infra;
 using Tsinswreng.CsCore;
 
-using U = Ngaq.Core.Infra.Url.ConstUrl.OpenUser;
-using ApiUser = Ngaq.Core.Infra.Url.ConstUrl.ApiUser;
+using U = Core.Infra.Url.ConstUrl.OpenUser;
+using ApiUser = Core.Infra.Url.ConstUrl.ApiUser;
 using Microsoft.Extensions.Caching.Distributed;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Tools;
