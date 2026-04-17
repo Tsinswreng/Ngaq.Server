@@ -46,6 +46,17 @@ docker run --rm -p 5000:2341 --name ngaq-server \
 	#H[編譯][
 		`sh WebSrv.sh`
 	]
+	#H[初始化數據庫架構(臨時)][
+		```cs
+		using Ngaq.Server.Http.Test;
+
+		Console.WriteLine("Hello, World!");
+
+		await MkDbSchema.InitDb([@"E:\_code\CsNgaq\Ngaq.Server\ExternalRsrc\Ngaq.Server.dev.jsonc"]);
+
+		```
+		`dotnet run`
+	]
 	#H[斷點調試運行][
 ```json
 {
@@ -72,5 +83,4 @@ docker run --rm -p 5000:2341 --name ngaq-server \
 	
 
 ]
-
 

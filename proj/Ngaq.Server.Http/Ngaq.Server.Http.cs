@@ -12,11 +12,15 @@ using Tsinswreng.CsCore;
 using Tsinswreng.CsTempus;
 
 
-var app = NgaqWeb.InitApp(args);
-app.Run();
+namespace Ngaq.Server.Http;
 
 
 public class NgaqWeb{
+	public static void Main(string [] args){
+		var app = NgaqWeb.InitApp(args);
+		app.Run();
+	}
+	
 	public static WebApplication InitApp(str[] args){
 var Cfg = ServerCfg.Inst;
 System.Console.WriteLine(

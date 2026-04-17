@@ -2,9 +2,13 @@ namespace Ngaq.Server.Http;
 
 using Ngaq.Server.Infra.Cfg;
 using Tsinswreng.CsCfg;
-
+using Tsinswreng.CsCore;
 
 public static class CfgLoader{
+	
+	[Doc(@$"從{nameof(args)}[0] 讀 配置文件路徑;
+	未設置 則從默認路徑讀取
+	")]
 	public static str GetCfgFilePathFromCliArgs(string[] args){
 		var CfgFilePath = "";
 		if(args.Length > 0){
@@ -19,6 +23,7 @@ public static class CfgLoader{
 		return CfgFilePath;
 	}
 
+	[Doc(@$"{nameof(GetCfgFilePathFromCliArgs)}")]
 	public static ICfgAccessor LoadFromArgs(
 		this ServerCfg Cfg
 		,str[] args

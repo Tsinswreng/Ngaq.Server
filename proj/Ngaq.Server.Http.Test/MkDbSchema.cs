@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+
 using Microsoft.Extensions.DependencyInjection;
 using Ngaq.Server.Db.TswG;
 using Ngaq.Server.Db.TswG.Migrations;
@@ -12,7 +12,8 @@ using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Local.Db.TswG;
 using Ngaq.Local.Word.Dao;
 using Tsinswreng.CsSql;
-namespace Ngaq.Server.Test;
+using Ngaq.Server.Http;
+namespace Ngaq.Server.Http.Test;
 
 public class MkDbSchema{
 	public static async Task InitDb(str[] args){
@@ -28,22 +29,4 @@ public class MkDbSchema{
 		await migrator.Up(default);
 		System.Console.WriteLine("migrate done");
 	}
-
-
-	public static async Task InitTestData(){
-		var svcWord = Program.SvcProvdr.GetRequiredService<ISvcWord>();
-		var list = new List<IJnWord>();
-		var user = new UserCtx{
-			UserId = new Ngaq.Core.Shared.User.Models.Po.User.IdUser()
-		};
-		for(var i = 0; i < 10_0000; i++){
-			var u = new JnWord();
-			u.Word = new PoWord{
-				Head = i+""
-			};
-			list.Add(u);
-		}
-		await svcWord.AddEtMergeWords(user, list, default);
-	}
-
 }
