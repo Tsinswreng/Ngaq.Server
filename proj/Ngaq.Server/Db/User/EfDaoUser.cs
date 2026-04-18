@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Models.Po;
 using Ngaq.Core.Models.Sys.Po.Password;
-using Ngaq.Local.Db.TswG;
+using Ngaq.Backend.Db.TswG;
 
 public partial class DaoEfUser(
 	ServerDbCtx DbCtx

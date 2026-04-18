@@ -1,5 +1,5 @@
 using Ngaq.Core.Test;
-using Ngaq.Local.Test;
+using Ngaq.Backend.Test;
 using Ngaq.Server.Test.Domains.User.Http;
 using Ngaq.Server.Test.Domains.User.Svc;
 using Tsinswreng.CsTreeTest;

@@ -4,7 +4,7 @@ namespace Ngaq.Server.Db.TswG;
 using System.Data;
 using System.Data.Common;
 using Ngaq.Server.Infra.Cfg;
-using Ngaq.Local.Db.TswG;
+using Ngaq.Backend.Db.TswG;
 using Npgsql;
 using Tsinswreng.CsCfg;
 using Tsinswreng.CsSql;

@@ -2,7 +2,7 @@ namespace Ngaq.Server.Domains.User.Dao;
 
 using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
 using Ngaq.Core.Model.Sys.Po.RefreshToken;
-using Ngaq.Local.Db.TswG;
+using Ngaq.Backend.Db.TswG;
 using Tsinswreng.CsPage;
 using Tsinswreng.CsSql;
 using Ngaq.Core.Shared.User.Models.Po.User;

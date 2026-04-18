@@ -10,7 +10,7 @@
 		<ProjectReference Include="../../../Tsinswreng.CsSql/proj/Tsinswreng.CsSql.Sqlite/Tsinswreng.CsSql.Sqlite.csproj" />
 		<ProjectReference Include="../../../Tsinswreng.CsSql/proj/Tsinswreng.CsSql.Postgres/Tsinswreng.CsSql.Postgres.csproj" />
 		<!-- <ProjectReference Include="../../../Tsinswreng.CsSql/proj/Tsinswreng.CsSql.EFCore/Tsinswreng.CsSql.EFCore.csproj" /> -->
-		<ProjectReference Include="../../../Ngaq.Local/Ngaq.Local.csproj" />
+		<ProjectReference Include="../../../Ngaq.Backend/Ngaq.Backend.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

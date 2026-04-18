@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 #COPY ["Ngaq.sln", "."]
 #COPY ["src/*/*.csproj", "src/"]
 COPY ["Ngaq.Core/Ngaq.Core.csproj", "Ngaq.Core/Ngaq.Core.csproj"]
-COPY ["Ngaq.Local/Ngaq.Local.csproj", "Ngaq.Local/Ngaq.Local.csproj"]
+COPY ["Ngaq.Backend/Ngaq.Backend.csproj", "Ngaq.Backend/Ngaq.Backend.csproj"]
 COPY ["Ngaq.Server/proj/Directory.Build.props", "Ngaq.Server/proj/Directory.Build.props"]
 COPY ["Ngaq.Server/proj/Directory.Packages.props", "Ngaq.Server/proj/Directory.Packages.props"]
 COPY ["Ngaq.Server/proj/Ngaq.Server/Ngaq.Server.csproj", "Ngaq.Server/proj/Ngaq.Server/Ngaq.Server.csproj"]

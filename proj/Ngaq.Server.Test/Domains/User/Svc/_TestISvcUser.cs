@@ -7,7 +7,7 @@ using Ngaq.Core.Shared.User.Models.Po.Device;
 using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Shared.User.Svc;
-using Ngaq.Local.Db.TswG;
+using Ngaq.Backend.Db.TswG;
 using Ngaq.Server.Db.User;
 using Ngaq.Server.Domains.User;
 using Ngaq.Server.Domains.User.Dao;

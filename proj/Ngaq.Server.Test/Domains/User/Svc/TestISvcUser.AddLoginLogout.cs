@@ -2,7 +2,7 @@ using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Shared.User.Models.Resp;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Tsinswreng.CsSql;
-using Ngaq.Local.Db.TswG;
+using Ngaq.Backend.Db.TswG;
 using Tsinswreng.CsTreeTest;
 
 namespace Ngaq.Server.Test.Domains.User.Svc;

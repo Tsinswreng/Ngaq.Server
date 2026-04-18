@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Ngaq.Core;
 using Ngaq.Core.Infra.Url;
-using Ngaq.Local.Di;
+using Ngaq.Backend.Di;
 using Ngaq.Server;
 using Ngaq.Server.Http;
 using Ngaq.Server.Infra.Cfg;

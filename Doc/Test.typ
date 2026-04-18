@@ -12,7 +12,7 @@
 
 測試程序集會收編:
 - `Ngaq.Core.Test`
-- `Ngaq.Local.Test`
+- `Ngaq.Backend.Test`
 - `Ngaq.Server.Test` 自己的測試
 ]
 

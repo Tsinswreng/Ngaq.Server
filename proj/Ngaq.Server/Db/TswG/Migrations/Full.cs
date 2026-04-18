@@ -1,4 +1,4 @@
-using Ngaq.Local.Db.TswG;
+using Ngaq.Backend.Db.TswG;
 using Tsinswreng.CsCore;
 using Tsinswreng.CsSql;
 

@@ -1,5 +1,5 @@
 using Ngaq.Core.Infra;
-using Ngaq.Local.Db.TswG;
+using Ngaq.Backend.Db.TswG;
 using Tsinswreng.CsSql;
 using Tsinswreng.CsTempus;
 
