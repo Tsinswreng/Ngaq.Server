@@ -30,34 +30,19 @@ using Ngaq.Core.Shared.Word.Models.Po.Kv;
 using Ngaq.Core.Model.Po.Kv;
 using StackExchange.Redis;
 using Tsinswreng.Srefl;
+using Ngaq.Core.Shared.Word.Models.Po.UserLang;
+using Ngaq.Core.Shared.Dictionary.Models.Po.NormLang;
+using Ngaq.Core.Shared.Word.Models.Po.NormLangToUserLang;
+using Ngaq.Core.Shared.Kv.Models;
+using Ngaq.Core.Shared.StudyPlan.Models.Po.StudyPlan;
+using Ngaq.Core.Shared.StudyPlan.Models.Po.WeightArg;
+using Ngaq.Core.Shared.StudyPlan.Models.Po.WeightCalculator;
+using Ngaq.Core.Shared.StudyPlan.Models.Po.PreFilter;
+using Tsinswreng.CsCore;
 
 public static class DiBiz{
-	#if false
-	static IServiceCollection SetupEfCore(this IServiceCollection z){
-		z.AddDbContext<ServerDbCtx>();
-		z.AddScoped<DbContext>(provider => provider.GetRequiredService<ServerDbCtx>());//EfRepo要用
-		z.AddTransient<ITxnRunner, EfTxnRunner>();
-		z.AddDbContext<ServerDbCtx>();
-		return z;
-	}
-
-
-	static IServiceCollection SetupTswGSqlEf(this IServiceCollection z){
-		z.AddTransient<DbFnCtxMkr<DbFnCtx>>();
-		z.AddScoped<I_GetTxnAsy, PostgresCmdMkr>();
-		z.AddScoped<IDbFnCtxMkr<DbFnCtx>, DbFnCtxMkr<DbFnCtx>>();
-		z.AddScoped<ITxnRunner, EfTxnRunner>();
-		z.AddScoped<TxnWrapper<DbFnCtx>>();
-		z.AddScoped<IDbConnection>((s)=>{
-			var DbCtx = s.GetRequiredService<ServerDbCtx>();
-			var R = DbCtx.Database.GetDbConnection();
-			R.Open();
-			return R;
-		});
-		return z;
-	}
-	#endif
-
+	
+	[Doc("數據庫與ORM基礎設施")]
 	static IServiceCollection SetupTswgSqlAdo(this IServiceCollection z){
 		//事務執行器
 		z.AddTransient<ITxnRunner, AdoTxnRunner>();
@@ -68,7 +53,7 @@ public static class DiBiz{
 		z.AddScoped<IMkrDbFnCtx, MkrDbFnCtx>();
 		//事務函數包裝器
 		z.AddScoped<TxnWrapper>();
-		z.AddSingleton<NpgsqlDataSource>(ServerDb.Inst.DataSource);
+		z.AddSingleton(ServerDb.Inst.DataSource);
 		//z.AddSingleton<I_GetDbConnAsy, PostgresConnPool>();
 		z.AddSingleton<IDbConnMgr>(ServerDb.Inst.DbConnPool);
 		z.AddSingleton<ITblMgr>(ServerTblMgr.Inst);
@@ -89,29 +74,26 @@ public static class DiBiz{
 		return z;
 	}
 
-	//TODO 改依賴IAppRepo洏非IRepo
 	static IServiceCollection AddRepoScoped<TEntity, TId>(
 		this IServiceCollection z
 	)where TEntity:class, new()
 	{
-		//z.AddScoped<IRepo<TEntity, TId>, EfRepo<TEntity, TId>>();
 		z.AddScoped<IRepo<TEntity, TId>, AppRepo<TEntity, TId>>();
 		return z;
 	}
 	public static IServiceCollection SetupBiz(this IServiceCollection z){
+		SetupRepos(z);
+		SetupUser(z);
 		z.AddSingleton<ICfgAccessor>(ServerCfg.Inst);
 		z.SetupTswgSqlAdo();
 		z.AddSingleton<IPropAccessorReg>(CoreDictMapper.Inst);
 		
-		z.AddRepoScoped<PoUser, IdUser>();
-		z.AddRepoScoped<PoPassword, IdPassword>();
+		
 
 		z.AddRepoScoped<PoWord, IdWord>();
 		z.AddRepoScoped<PoWordLearn, IdWordLearn>();
 		z.AddRepoScoped<PoWordProp, IdWordProp>();
 
-		z.AddScoped<DaoUser>();
-		z.AddScoped<SvcUser>();
 		z.AddScoped<ISvcUser>(sp=>sp.GetRequiredService<SvcUser>());
 		z.AddRepoScoped<PoRefreshToken, IdRefreshToken>();
 
@@ -146,6 +128,33 @@ public static class DiBiz{
 		// z.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(configurationOptions));
 		return z;
 	}
+	
+	static IServiceCollection SetupRepos(this IServiceCollection z){
+		z.AddRepoScoped<SchemaHistory, i64>();
+		z.AddRepoScoped<PoWord, IdWord>();
+		z.AddRepoScoped<PoWordProp, IdWordProp>();
+		z.AddRepoScoped<PoWordLearn, IdWordLearn>();
+		z.AddRepoScoped<PoUserLang, IdUserLang>();
+		z.AddRepoScoped<PoNormLang, IdNormLang>();
+		z.AddRepoScoped<PoNormLangToUserLang, IdNormLangToUserLang>();
+		z.AddRepoScoped<PoKv, IdKv>();
+		z.AddRepoScoped<PoStudyPlan, IdStudyPlan>();
+		z.AddRepoScoped<PoWeightArg, IdWeightArg>();
+		z.AddRepoScoped<PoWeightCalculator, IdWeightCalculator>();
+		z.AddRepoScoped<PoPreFilter, IdPreFilter>();
+		//z.AddScoped<IRunInTxn, AdoTxnRunner>();
+		return z;
+	}
+	
+	static IServiceCollection SetupUser(this IServiceCollection z){
+		z.AddRepoScoped<PoUser, IdUser>();
+		z.AddRepoScoped<PoPassword, IdPassword>();
+		z.AddTransient<DaoUser>();
+		z.AddTransient<SvcUser>();
+		return z;
+	}
+	
+	
 
 /*
 .AddStackExchangeRedisCache(opt=>{

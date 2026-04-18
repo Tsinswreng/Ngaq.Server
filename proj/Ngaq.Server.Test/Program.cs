@@ -23,7 +23,7 @@ internal class Program{
 			.AddLogging()
 			.SetupCore()
 			.SetupBiz()
-			.SetupLocal()
+			.SetupCommonBackend()
 		;
 
 		var mgr = ServerTestMgr.Inst;
