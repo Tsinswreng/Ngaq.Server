@@ -32,6 +32,12 @@ internal class Program{
 		await ServerTestBootstrap.EnsureServerDbReady(SvcProvdr, default);
 
 		ITestExecutor executor = new TreeTestExecutor();
-		await executor.RunEtPrint(mgr.TestNode);
+		await executor.RunEtPrint(
+			mgr.TestNode
+			// ,Opt: new OptTestExecutor{
+			// 	IsParallel = false,
+			// 	MaxDegreeOfParallelism = 1,
+			// }
+		);
 	}
 }
