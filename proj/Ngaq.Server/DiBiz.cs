@@ -17,6 +17,7 @@ using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Server.Domains.User.Dao;
 using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
 using Ngaq.Core.Model.Sys.Po.RefreshToken;
+using Ngaq.Core.Shared.User.Svc;
 using Tsinswreng.CsCfg;
 using Ngaq.Local.Domains.Word.Svc;
 using Ngaq.Core.Shared.Word.Svc;
@@ -111,6 +112,7 @@ public static class DiBiz{
 
 		z.AddScoped<DaoUser>();
 		z.AddScoped<SvcUser>();
+		z.AddScoped<ISvcUser>(sp=>sp.GetRequiredService<SvcUser>());
 		z.AddRepoScoped<PoRefreshToken, IdRefreshToken>();
 
 		z.AddScoped<DaoToken>();

@@ -1,0 +1,7 @@
+{
+	"Version": "1.0.0",
+	"Lang": "zh-TW",
+	"RwCfgPath": "Ngaq.Local.Test.Rw.jsonc",
+	"SqlitePath": "./Ngaq.Local.Test.sqlite",
+	"ServerBaseUrl": "http://localhost:5500/"
+}

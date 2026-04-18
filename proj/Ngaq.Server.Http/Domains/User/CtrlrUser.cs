@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Ngaq.Server.Domains.User.Svc;
+using Ngaq.Core.Shared.User.Svc;
 using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Infra;
 using Tsinswreng.CsCore;
@@ -22,7 +23,7 @@ using Ngaq.Core.Shared.User.Models.Resp;
 using Tsinswreng.CsTempus;
 
 public partial class CtrlrOpenUser(
-	SvcUser SvcUser
+	ISvcUser SvcUser
 	,ISvcToken SvcToken
 )
 	:ICtrlr
