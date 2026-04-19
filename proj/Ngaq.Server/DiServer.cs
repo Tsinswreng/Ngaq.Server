@@ -39,6 +39,7 @@ using Ngaq.Core.Shared.StudyPlan.Models.Po.WeightArg;
 using Ngaq.Core.Shared.StudyPlan.Models.Po.WeightCalculator;
 using Ngaq.Core.Shared.StudyPlan.Models.Po.PreFilter;
 using Tsinswreng.CsCore;
+using Ngaq.Backend.Di;
 
 public static class DiBiz{
 	
@@ -81,15 +82,14 @@ public static class DiBiz{
 		z.AddScoped<IRepo<TEntity, TId>, AppRepo<TEntity, TId>>();
 		return z;
 	}
-	public static IServiceCollection SetupBiz(this IServiceCollection z){
+	public static IServiceCollection SetupServer(this IServiceCollection z){
 		SetupRepos(z);
 		SetupUser(z);
+		z.SetupCommonBackend();
 		z.AddSingleton<ICfgAccessor>(ServerCfg.Inst);
 		z.SetupTswgSqlAdo();
 		z.AddSingleton<IPropAccessorReg>(CoreDictMapper.Inst);
 		
-		
-
 		z.AddRepoScoped<PoWord, IdWord>();
 		z.AddRepoScoped<PoWordLearn, IdWordLearn>();
 		z.AddRepoScoped<PoWordProp, IdWordProp>();

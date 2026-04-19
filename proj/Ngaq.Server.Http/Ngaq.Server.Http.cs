@@ -63,7 +63,7 @@ builder.Services.ConfigureHttpJsonOptions(opt =>
 //builder.Services.AddAuthentication().AddBearerToken();
 
 builder.Services
-	.SetupEntry(Cfg)
+	.SetupHttpServer(Cfg)
 ;
 
 builder.Services.AddExceptionHandler<GlobalErrHandler>();

@@ -22,7 +22,7 @@ internal class Program{
 		SvcColct
 			.AddLogging()
 			.SetupCore()
-			.SetupBiz()
+			.SetupServer()
 			.SetupCommonBackend()
 		;
 
