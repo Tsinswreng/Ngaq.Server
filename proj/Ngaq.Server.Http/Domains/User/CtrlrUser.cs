@@ -11,8 +11,8 @@ using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Infra;
 using Tsinswreng.CsCore;
 
-using U = Core.Infra.Url.ConstUrl.OpenUser;
-using ApiUser = Core.Infra.Url.ConstUrl.ApiUser;
+using U = Core.Infra.Url.KeysUrl.OpenUser;
+using ApiUser = Core.Infra.Url.KeysUrl.ApiUser;
 using Microsoft.Extensions.Caching.Distributed;
 using Ngaq.Core.Infra.Errors;
 using Ngaq.Core.Tools;

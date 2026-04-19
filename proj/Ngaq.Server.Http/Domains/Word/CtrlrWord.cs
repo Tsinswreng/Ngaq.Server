@@ -6,7 +6,7 @@ using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Core.Tools;
 using Ngaq.Server.Http.Infra;
 using Tsinswreng.CsTextWithBlob;
-using U = Ngaq.Core.Infra.Url.ConstUrl.UrlWord;
+using U = Ngaq.Core.Infra.Url.KeysUrl.Word;
 
 public class CtrlrWord(
 	ISvcWord SvcWord
