@@ -20,6 +20,7 @@ public partial class AppRouterIniter{
 		//TODO 用源生成器掃描ICtrlr接口
 		CtrlrRegisterer.RegisterCtrlr<CtrlrOpenUser>();
 		CtrlrRegisterer.RegisterCtrlr<CtrlrWord>();
+		CtrlrRegisterer.RegisterCtrlr<CtrlrWordV2>();
 		return NIL;
 	}
 
