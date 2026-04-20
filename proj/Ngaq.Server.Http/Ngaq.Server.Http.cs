@@ -46,18 +46,17 @@ builder.WebHost.UseKestrel(options =>{
 
 builder.Services.ConfigureHttpJsonOptions(opt =>
 {
-	opt.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonCtx.Default);
+	opt.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonCtx.Inst);
 	opt.SerializerOptions.PropertyNamingPolicy = null;
 	opt.SerializerOptions.WriteIndented = true;
 	opt.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-
-//fucking Asp.net don't use my already defined converters in AppJsonCtx through [JsonSourceGenerationOptions(Converters=[...])]
 	opt.SerializerOptions.Converters.AddRange(
 		AppJsonCtx.JsonConverters
 	);
-	//我已經給AppJsonCtx配過一堆Converters了 能不能在這裏直接調用 而不是讓我再手上配一次
-	//opt.SerializerOptions.Converters.Add();
-	//opt.SerializerOptions.Converters.Add(new CustomJsonConvtrFctry());
+	opt.SerializerOptions.Converters.Add(
+		new JsonStringEnumConverter()
+	);
+	
 });
 
 //builder.Services.AddAuthentication().AddBearerToken();
