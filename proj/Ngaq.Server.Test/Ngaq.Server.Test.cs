@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Ngaq.Core;
 using Ngaq.Core.Infra.Url;
 using Ngaq.Backend.Di;
@@ -39,5 +39,6 @@ internal class Program{
 			// 	MaxDegreeOfParallelism = 1,
 			// }
 		);
+		throw new Exception("Test AOT Exeption Output");
 	}
 }
