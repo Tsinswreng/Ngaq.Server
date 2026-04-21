@@ -11,6 +11,8 @@ using Ngaq.Core.Shared.User.UserCtx;
 using Ngaq.Core.Tools;
 using Tsinswreng.CsErr;
 using Ngaq.Core.Infra.IF;
+using Ngaq.Core.Infra;
+using Tsinswreng.CsSql;
 
 public static class ExtnUserCtx{
 	
@@ -28,6 +30,15 @@ public static class ExtnUserCtx{
 
 	public static IServerUserCtx ToUserCtx(this HttpContext z){
 		return new ServerUserCtx().FromHttpCtx(z);
+	}
+	
+	public static IDbUserCtx ToDbUserCtx(
+		this HttpContext z
+		,IDbFnCtx? DbFnCtx = null
+	){
+		var user = new ServerUserCtx().FromHttpCtx(z);
+		var R = new DbUserCtx(user, DbFnCtx);
+		return R;
 	}
 
 	static IdUser GetUserIdFromClaims(ClaimsPrincipal Principal){
