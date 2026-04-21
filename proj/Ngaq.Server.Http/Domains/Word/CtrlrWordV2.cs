@@ -1,6 +1,5 @@
 namespace Ngaq.Server.Http.Domains.Word;
 
-using System.IO;
 using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Server.Http.Infra;
 using U = Ngaq.Core.Infra.Url.KeysUrl.WordV2;
@@ -25,12 +24,9 @@ public class CtrlrWordV2(
 	/// <param name="Ct">取消令牌。</param>
 	/// <returns>成功返回空 OK。</returns>
 	public async Task<IResult> ReceiveFull(HttpContext Ctx, CT Ct){
-		using var ms = new MemoryStream();
-		await Ctx.Request.Body.CopyToAsync(ms, Ct);
-		ms.Position = 0;
 		await foreach(var _ in SvcWordV2.BatSyncJnWordByBizIdFromStream(
 			Ctx.ToDbUserCtx(),
-			ms,
+			Ctx.Request.Body,
 			Ct
 		)){
 			// 消費枚舉以觸發同步執行。
@@ -43,9 +39,7 @@ public class CtrlrWordV2(
 	/// <param name="Ct">取消令牌。</param>
 	/// <returns>字節流響應。</returns>
 	public async Task<IResult> SendFull(HttpContext Ctx, CT Ct){
-		using var packed = await SvcWordV2.PackAllWordsWithDel(Ctx.ToDbUserCtx(), Ct);
-		using var ms = new MemoryStream();
-		await packed.CopyToAsync(ms, Ct);
-		return Results.Bytes(ms.ToArray());
+		var packed = await SvcWordV2.PackAllWordsWithDel(Ctx.ToDbUserCtx(), Ct);
+		return Results.Stream(packed, "application/octet-stream");
 	}
 }
