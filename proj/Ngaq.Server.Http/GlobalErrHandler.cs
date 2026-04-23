@@ -10,6 +10,7 @@ using Tsinswreng.CsErr;
 
 public class GlobalErrHandler : IExceptionHandler {
 	public async ValueTask<bool> TryHandleAsync(HttpContext Ctx, Exception Err, CT Ct) {
+		System.Console.WriteLine(Err);//TODO 改用日誌
 		if(Err is IAppErr E){
 			if(
 				E.Tags.Contains(AppErrTags.BizErr)
