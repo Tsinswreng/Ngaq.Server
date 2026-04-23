@@ -32,16 +32,16 @@ public partial class ServerTblMgrIniter{
 		this.LocalTblMgrIniter = LocalTblMgrIniter;
 	}
 
-	public static IUpperTypeMapFnT<i64,Tempus> MapTempus(){
-		return UpperTypeMapFnT<i64, Tempus>.Mk(
-			raw=>new Tempus(raw)
+	public static IUpperTypeMapFnT<i64,UnixMs> MapTempus(){
+		return UpperTypeMapFnT<i64, UnixMs>.Mk(
+			raw=>new UnixMs(raw)
 			,tempus=>tempus.Value
 		);
 	}
 
-	public static IUpperTypeMapFnT<i64?,Tempus?> MapTempusN(){
-		return UpperTypeMapFnT<i64?, Tempus?>.Mk(
-			val=>val==null?null:new Tempus(val.Value)
+	public static IUpperTypeMapFnT<i64?,UnixMs?> MapTempusN(){
+		return UpperTypeMapFnT<i64?, UnixMs?>.Mk(
+			val=>val==null?null:new UnixMs(val.Value)
 			,tempus=>tempus?.Value
 		);
 	}

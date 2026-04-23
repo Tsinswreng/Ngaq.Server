@@ -25,7 +25,7 @@ using Tsinswreng.CsErr;
 using Tsinswreng.CsTempus;
 
 public class RespGenJwtToken:BaseResp{
-	public Tempus ExpireAt{get;set;}
+	public UnixMs ExpireAt{get;set;}
 	public Jti Jti{get;set;}
 }
 
@@ -104,7 +104,7 @@ public class SvcToken
 		);
 		var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
 		R.AccessToken = accessToken;
-		R.ExpireAt = Tempus.FromDateTime(expires);
+		R.ExpireAt = UnixMs.FromDateTime(expires);
 
 		return R;
 	}
@@ -145,7 +145,7 @@ public class SvcToken
 			signingCredentials: credentials
 		);
 		R.RefreshToken = new JwtSecurityTokenHandler().WriteToken(token);
-		R.ExpireAt = Tempus.FromDateTime(expires.UtcDateTime);
+		R.ExpireAt = UnixMs.FromDateTime(expires.UtcDateTime);
 
 		return R;
 	}
@@ -218,7 +218,7 @@ public class SvcToken
 			}
 			User.UserId = OldToken.UserId;
 			var RespNeoRToken = await GenRTokenEtStore(User, Ct);
-			OldToken.RevokeAt = new Tempus();
+			OldToken.RevokeAt = new UnixMs();
 			var RespNeoAToken = GenAccessToken(new ReqGenAccessToken{
 				UserId = User.UserId.ToString()
 			});
@@ -247,7 +247,7 @@ public class SvcToken
 			var Session = new PoRefreshToken();{
 				var o = Session;
 				o.UserId = UserCtx.UserId;
-				o.BizCreatedAt = new Tempus();
+				o.BizCreatedAt = new UnixMs();
 				o.ExpireAt = Resp.ExpireAt;
 				o.SetTokenValueSha256(Resp.RefreshToken);
 				o.ClientId = UserCtx.ClientId;

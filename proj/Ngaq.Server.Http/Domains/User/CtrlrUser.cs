@@ -38,15 +38,15 @@ public partial class CtrlrOpenUser(
 		R.MapPost(U.Login, Login);
 
 		R.MapGet("/Time", async(HttpContext Ctx, CT Ct)=>{
-			return await Task.FromResult(Results.Ok(new Tempus()));
+			return await Task.FromResult(Results.Ok(new UnixMs()));
 		});
 		R.MapGet("/Open/Time", async(HttpContext Ctx, CT Ct)=>{
-			return this.Ok(new Tempus());
+			return this.Ok(new UnixMs());
 		});
 
 		R.MapGet("/TestRedis", async(HttpContext Ctx, CT Ct)=>{
 			var Cache = Ctx.RequestServices.GetRequiredService<IDistributedCache>();
-			await Cache.SetStringAsync("key", new Tempus().ToIso(), Ct);
+			await Cache.SetStringAsync("key", new UnixMs().ToIso(), Ct);
 			var R = await Cache.GetStringAsync("key", Ct);
 			return await Task.FromResult(Results.Ok(R));
 		});

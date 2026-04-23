@@ -79,7 +79,7 @@ public partial class TestCtrlrUser: ITester{
 		public RespGenAccessToken GenAccessToken(ReqGenAccessToken req){
 			return new RespGenAccessToken{
 				AccessToken = "fake-access-token",
-				ExpireAt = new Tsinswreng.CsTempus.Tempus()
+				ExpireAt = new Tsinswreng.CsTempus.UnixMs()
 			};
 		}
 
@@ -94,7 +94,7 @@ public partial class TestCtrlrUser: ITester{
 		public Task<Func<IUserCtx, CT, Task<RespGenRefreshToken>>> FnGenEtStoreRefreshToken(IDbFnCtx ctx, CT ct){
 			return Task.FromResult<Func<IUserCtx, CT, Task<RespGenRefreshToken>>>((_, _)=>Task.FromResult(new RespGenRefreshToken{
 				RefreshToken = "fake-refresh-token",
-				ExpireAt = new Tsinswreng.CsTempus.Tempus()
+				ExpireAt = new Tsinswreng.CsTempus.UnixMs()
 			}));
 		}
 

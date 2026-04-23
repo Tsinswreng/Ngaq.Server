@@ -81,7 +81,7 @@ app.UseMiddleware<TokenValidationMidware>();
 app.UseMiddleware<EdgeDebounceMidware>();
 
 app.MapGet("/", async()=>{
-	return new Tempus().ToString();
+	return new UnixMs().ToString();
 });
 
 
