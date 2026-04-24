@@ -8,6 +8,7 @@ using Tsinswreng.CsSql;
 using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Shared.User.Models.Po.Device;
 using Tsinswreng.CsCore;
+using Tsinswreng.CsTempus;
 
 public class DaoToken(
 	ISqlCmdMkr SqlCmdMkr
@@ -51,7 +52,9 @@ var Sql = T.SqlSplicer().Select("*").From()
 		var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
 		var Arg = ArgDict.Mk(T).AddT(PUserId, UserId).AddT(PClientId, ClientId);
 		var RawAsyE = Ctx.RunCmd(Cmd, Arg).AsyE1d(Ct);
-		return RawAsyE.Select(x=>T.DbDictToEntity<PoRefreshToken>(x));
+		var Now = UnixMs.Now();
+		return RawAsyE.Select(x=>T.DbDictToEntity<PoRefreshToken>(x))
+		.Where(x=>x.RevokeAt == UnixMs.Zero && x.ExpireAt > Now);
 	}
 
 }

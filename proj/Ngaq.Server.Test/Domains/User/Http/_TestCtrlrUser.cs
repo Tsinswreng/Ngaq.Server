@@ -140,12 +140,14 @@ public partial class TestCtrlrUser: ITester{
 		}
 
 		var req = MkReqAddUser();
-		var ctx = MkHttpCtx();
-		var ctrlr = MkCtrlr();
-		await ctrlr.AddUser(req, ctx, Ct);
-
 		var dbCtx = new DbFnCtx();
 		var poUser = await _daoUser.SelectByEmail(dbCtx, req.Email, Ct);
+		if(poUser is null){
+			var ctx = MkHttpCtx();
+			var ctrlr = MkCtrlr();
+			await ctrlr.AddUser(req, ctx, Ct);
+			poUser = await _daoUser.SelectByEmail(dbCtx, req.Email, Ct);
+		}
 		if(poUser is null){
 			throw new Exception("Expected user row after AddUser controller call.");
 		}
