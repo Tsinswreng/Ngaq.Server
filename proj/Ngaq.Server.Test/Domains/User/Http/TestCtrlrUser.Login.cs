@@ -15,34 +15,17 @@ public partial class TestCtrlrUser{
 		);
 		var R = register.Register;
 
-		R("Login_Should_CallSvcAndReturn200", async(o)=>{
-			var called = false;
-			var svcUser = new FakeSvcUser{
-				OnLogin = (user, req, ct)=>{
-					called = true;
-					if(req.Email != "test@example.com"){
-						throw new Exception("Unexpected login email.");
-					}
-					return Task.FromResult(new RespLogin{
-						AccessToken = "at",
-						RefreshToken = "rt",
-						UserId = "1"
-					});
-				}
-			};
-			var svcToken = new FakeSvcToken();
-			var ctrlr = new CtrlrOpenUser(svcUser, svcToken);
+		R("Login_Should_UseRealSvcAndReturn200", async(o)=>{
+			var ctrlr = MkCtrlr();
 			var ctx = MkHttpCtx();
+			var reqAdd = MkReqAddUser();
+			await EnsureUserCreated(CT.None);
 
 			var result = await ctrlr.Login(new ReqLogin{
-				Email = "test@example.com",
-				Password = "pwd",
+				Email = reqAdd.Email,
+				Password = reqAdd.Password,
 				UserIdentityMode = ReqLogin.EUserIdentityMode.Email
 			}, ctx, CT.None);
-
-			if(!called){
-				throw new Exception("ISvcUser.Login was not called.");
-			}
 			await AssertResultNotNull(result);
 			return NIL;
 		});

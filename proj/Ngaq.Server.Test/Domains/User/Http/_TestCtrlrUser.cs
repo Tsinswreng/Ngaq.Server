@@ -1,20 +1,61 @@
 using Microsoft.AspNetCore.Http;
-using Ngaq.Core.Models.Sys.Req;
-using Ngaq.Core.Shared.Base.Models.Resp;
+using System.Security.Claims;
+using Ngaq.Core.Infra.IF;
+using Ngaq.Core.Model.Sys.Po.Password;
+using Ngaq.Core.Model.Sys.Po.RefreshToken;
+using Ngaq.Core.Models.Sys.Po.Password;
 using Ngaq.Core.Shared.User.Models.Req;
-using Ngaq.Core.Shared.User.Models.Resp;
+using Ngaq.Core.Shared.User.Models.Bo.Device;
+using Ngaq.Core.Shared.User.Models.Po.Device;
+using Ngaq.Core.Shared.User.Models.Po.RefreshToken;
+using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Core.Shared.User.Svc;
 using Ngaq.Core.Shared.User.UserCtx;
-using Ngaq.Server.Domains.User.Dto;
+using Ngaq.Backend.Db.TswG;
+using Ngaq.Server.Domains.User.Dao;
 using Ngaq.Server.Domains.User.Svc;
 using Ngaq.Server.Http.Domains.User;
-using Tsinswreng.CsErr;
 using Tsinswreng.CsSql;
 using Tsinswreng.CsTreeTest;
+using Ngaq.Server.Domains.User;
+using Ngaq.Core.Shared.User.Models.Resp;
+using Ngaq.Server.Db.User;
 
 namespace Ngaq.Server.Test.Domains.User.Http;
 
 public partial class TestCtrlrUser: ITester{
+	readonly ISvcUser _svcUser;
+	readonly ISvcToken _svcToken;
+	readonly DaoUser _daoUser;
+	readonly DaoToken _daoToken;
+	readonly IRepo<PoUser, IdUser> _repoUser;
+	readonly IRepo<PoPassword, IdPassword> _repoPassword;
+	readonly IRepo<PoRefreshToken, IdRefreshToken> _repoRefreshToken;
+
+	str _token = "";
+	IdClient _clientId = new();
+	IdUser? _createdUserId = null;
+	IdPassword? _createdPasswordId = null;
+	readonly List<IdRefreshToken> _tokenIds = [];
+
+	public TestCtrlrUser(
+		ISvcUser svcUser
+		,ISvcToken svcToken
+		,DaoUser daoUser
+		,DaoToken daoToken
+		,IRepo<PoUser, IdUser> repoUser
+		,IRepo<PoPassword, IdPassword> repoPassword
+		,IRepo<PoRefreshToken, IdRefreshToken> repoRefreshToken
+	){
+		_svcUser = svcUser;
+		_svcToken = svcToken;
+		_daoUser = daoUser;
+		_daoToken = daoToken;
+		_repoUser = repoUser;
+		_repoPassword = repoPassword;
+		_repoRefreshToken = repoRefreshToken;
+	}
+
 	public ITestNode RegisterTestsInto(ITestNode? node){
 		node ??= new TestNode();
 		node.Ordered = true;
@@ -27,12 +68,22 @@ public partial class TestCtrlrUser: ITester{
 		);
 		var R = register.Register;
 
-		R("CtrlrUser_Setup", async(o)=>NIL);
+		R("CtrlrUser_Setup", async(o)=>{
+			_token = "ut_server_ctrlr_user_" + Guid.NewGuid().ToString("N");
+			_clientId = new IdClient();
+			_createdUserId = null;
+			_createdPasswordId = null;
+			_tokenIds.Clear();
+			return NIL;
+		});
 		RegisterLogin(node);
 		RegisterAddUser(node);
 		RegisterLogout(node);
 		RegisterRefreshToken(node);
-		R("CtrlrUser_Cleanup", async(o)=>NIL);
+		R("CtrlrUser_Cleanup", async(o)=>{
+			await CleanupData();
+			return NIL;
+		});
 		return node;
 	}
 
@@ -43,63 +94,105 @@ public partial class TestCtrlrUser: ITester{
 		return Task.CompletedTask;
 	}
 
-	static DefaultHttpContext MkHttpCtx(){
+	DefaultHttpContext MkHttpCtx(){
 		var ctx = new DefaultHttpContext();
 		ctx.Connection.RemoteIpAddress = System.Net.IPAddress.Parse("127.0.0.1");
 		ctx.Request.Headers.UserAgent = "Ngaq.Server.Test.Http";
+		ctx.Request.Headers["X-Client-Id"] = _clientId.ToString();
 		return ctx;
 	}
 
-	sealed class FakeSvcUser: ISvcUser{
-		public Func<IUserCtx, ReqAddUser, CT, Task<nil>> OnAddUser = (_, _, _)=>Task.FromResult(NIL);
-		public Func<IUserCtx, ReqLogin, CT, Task<RespLogin>> OnLogin = (_, _, _)=>Task.FromResult(new RespLogin());
-		public Func<IUserCtx, ReqLogout, CT, Task<nil>> OnLogout = (_, _, _)=>Task.FromResult(NIL);
+	DefaultHttpContext MkHttpCtxForUser(IdUser userId){
+		var ctx = MkHttpCtx();
+		var claims = new List<Claim>{
+			new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+			new Claim("sub", userId.ToString())
+		};
+		var identity = new ClaimsIdentity(claims, "TestAuth");
+		ctx.User = new ClaimsPrincipal(identity);
+		return ctx;
+	}
 
-		public Task<nil> AddUser(IUserCtx user, ReqAddUser reqAddUser, CT ct){
-			return OnAddUser(user, reqAddUser, ct);
+	CtrlrOpenUser MkCtrlr(){
+		return new CtrlrOpenUser(_svcUser, _svcToken);
+	}
+
+	IServerUserCtx MkServerUserCtx(){
+		return new ServerUserCtx{
+			ClientId = _clientId,
+			ClientType = EClientType.ApiTool,
+			IpAddr = "127.0.0.1",
+			UserAgent = "Ngaq.Server.Test.Http"
+		};
+	}
+
+	ReqAddUser MkReqAddUser(){
+		return new ReqAddUser{
+			Email = $"{_token}@example.com",
+			UniqName = $"{_token}_user",
+			Password = "P@ssw0rd_123456"
+		};
+	}
+
+	async Task<IdUser> EnsureUserCreated(CT Ct){
+		if(_createdUserId is not null){
+			return _createdUserId.Value;
 		}
-		public Task<RespLogin> Login(IUserCtx user, ReqLogin reqLogin, CT ct){
-			return OnLogin(user, reqLogin, ct);
+
+		var req = MkReqAddUser();
+		var ctx = MkHttpCtx();
+		var ctrlr = MkCtrlr();
+		await ctrlr.AddUser(req, ctx, Ct);
+
+		var dbCtx = new DbFnCtx();
+		var poUser = await _daoUser.SelectByEmail(dbCtx, req.Email, Ct);
+		if(poUser is null){
+			throw new Exception("Expected user row after AddUser controller call.");
 		}
-		public Task<nil> Logout(IUserCtx user, ReqLogout reqLogout, CT ct){
-			return OnLogout(user, reqLogout, ct);
+		_createdUserId = poUser.Id;
+
+		var pwd = await _daoUser.SlctPasswordByUserId(dbCtx, poUser.Id, Ct);
+		if(pwd is not null){
+			_createdPasswordId = pwd.Id;
+		}
+		return poUser.Id;
+	}
+
+	async Task<RespLogin> LoginByService(CT Ct){
+		var req = MkReqAddUser();
+		await EnsureUserCreated(Ct);
+		var userCtx = MkServerUserCtx();
+		var resp = await _svcUser.Login(userCtx, new ReqLogin{
+			Email = req.Email,
+			Password = req.Password,
+			UserIdentityMode = ReqLogin.EUserIdentityMode.Email
+		}, Ct);
+
+		var dbCtx = new DbFnCtx();
+		var tokens = await _daoToken.SlctValidTokens(dbCtx, IdUser.Parse(resp.UserId), _clientId, Ct);
+		await foreach(var token in tokens){
+			_tokenIds.Add(token.Id);
+		}
+		return resp;
+	}
+
+	async Task CleanupData(){
+		var ctx = new DbFnCtx();
+
+		if(_tokenIds.Count > 0){
+			await _repoRefreshToken.BatHardDelById(ctx, AsyE(_tokenIds.Distinct().ToArray()), CT.None);
+		}
+		if(_createdPasswordId is not null){
+			await _repoPassword.BatHardDelById(ctx, AsyE(_createdPasswordId.Value), CT.None);
+		}
+		if(_createdUserId is not null){
+			await _repoUser.BatHardDelById(ctx, AsyE(_createdUserId.Value), CT.None);
 		}
 	}
 
-	sealed class FakeSvcToken: ISvcToken{
-		public Func<ReqValidateAccessToken, CT, Task<IAnswer<RespValidateAccessToken>>> OnValidateAccessToken =
-			(_, _)=>Task.FromResult<IAnswer<RespValidateAccessToken>>(new Answer<RespValidateAccessToken>().OkWith(new RespValidateAccessToken()));
-
-		public Func<IUserCtx, str, CT, Task<IAnswer<RespRefreshBothToken>>> OnRefreshToken =
-			(_, _, _)=>Task.FromResult<IAnswer<RespRefreshBothToken>>(new Answer<RespRefreshBothToken>{
-				Ok = true,
-				Data = new RespRefreshBothToken()
-			});
-
-		public RespGenAccessToken GenAccessToken(ReqGenAccessToken req){
-			return new RespGenAccessToken{
-				AccessToken = "fake-access-token",
-				ExpireAt = new Tsinswreng.CsTempus.UnixMs()
-			};
-		}
-
-		public Task<IAnswer<RespValidateAccessToken>> ValidateAccessToken(ReqValidateAccessToken req, CT ct){
-			return OnValidateAccessToken(req, ct);
-		}
-
-		public Task<IAnswer<RespRefreshBothToken>> ValidateEtRefreshTheToken(IUserCtx user, str refreshToken, CT ct){
-			return OnRefreshToken(user, refreshToken, ct);
-		}
-
-		public Task<Func<IUserCtx, CT, Task<RespGenRefreshToken>>> FnGenEtStoreRefreshToken(IDbFnCtx ctx, CT ct){
-			return Task.FromResult<Func<IUserCtx, CT, Task<RespGenRefreshToken>>>((_, _)=>Task.FromResult(new RespGenRefreshToken{
-				RefreshToken = "fake-refresh-token",
-				ExpireAt = new Tsinswreng.CsTempus.UnixMs()
-			}));
-		}
-
-		public Task<Func<IUserCtx, CT, Task<nil>>> FnRevokeTokensForLogout(IDbFnCtx ctx, CT ct){
-			return Task.FromResult<Func<IUserCtx, CT, Task<nil>>>((_, _)=>Task.FromResult(NIL));
+	static async IAsyncEnumerable<T> AsyE<T>(params T[] items){
+		foreach(var i in items){
+			yield return i;
 		}
 	}
 }

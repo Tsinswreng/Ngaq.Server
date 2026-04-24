@@ -1,4 +1,6 @@
+using Ngaq.Core.Infra.IF;
 using Ngaq.Core.Models.Sys.Req;
+using Ngaq.Core.Shared.User.Models.Po.User;
 using Ngaq.Server.Http.Domains.User;
 using Tsinswreng.CsTreeTest;
 
@@ -14,22 +16,13 @@ public partial class TestCtrlrUser{
 		);
 		var R = register.Register;
 
-		R("Logout_Should_CallSvcAndReturn200", async(o)=>{
-			var called = false;
-			var svcUser = new FakeSvcUser{
-				OnLogout = (user, req, ct)=>{
-					called = true;
-					return Task.FromResult(NIL);
-				}
-			};
-			var ctrlr = new CtrlrOpenUser(svcUser, new FakeSvcToken());
-			var ctx = MkHttpCtx();
+		R("Logout_Should_UseRealSvcAndReturn200", async(o)=>{
+			var ctrlr = MkCtrlr();
+			var loginResp = await LoginByService(CT.None);
+			var userId = IdUser.Parse(loginResp.UserId);
+			var ctx = MkHttpCtxForUser(userId);
 
 			var result = await ctrlr.Logout(new ReqLogout(), ctx, CT.None);
-
-			if(!called){
-				throw new Exception("ISvcUser.Logout was not called.");
-			}
 			await AssertResultNotNull(result);
 			return NIL;
 		});

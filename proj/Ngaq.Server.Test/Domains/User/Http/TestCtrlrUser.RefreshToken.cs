@@ -1,9 +1,8 @@
 using Ngaq.Server.Http.Domains.User;
-using Ngaq.Server.Domains.User.Dto;
 using Ngaq.Core.Shared.User.Models.Req;
-using Ngaq.Core.Shared.User.Models.Resp;
-using Tsinswreng.CsErr;
 using Tsinswreng.CsTreeTest;
+using Ngaq.Core.Shared.User.Models.Po.User;
+using Ngaq.Core.Infra.IF;
 
 namespace Ngaq.Server.Test.Domains.User.Http;
 
@@ -17,34 +16,15 @@ public partial class TestCtrlrUser{
 		);
 		var R = register.Register;
 
-		R("RefreshToken_Should_CallSvcAndReturn200", async(o)=>{
-			var called = false;
-			var svcToken = new FakeSvcToken{
-				OnRefreshToken = (user, refreshToken, ct)=>{
-					called = true;
-					if(refreshToken != "rt-old"){
-						throw new Exception("Unexpected refresh token.");
-					}
-					var ans = new Answer<RespRefreshBothToken>{
-						Ok = true,
-						Data = new RespRefreshBothToken{
-						AccessToken = "new-at",
-						RefreshToken = "new-rt"
-						}
-					};
-					return Task.FromResult<IAnswer<RespRefreshBothToken>>(ans);
-				}
-			};
-			var ctrlr = new CtrlrOpenUser(new FakeSvcUser(), svcToken);
-			var ctx = MkHttpCtx();
+		R("RefreshToken_Should_UseRealSvcAndReturn200", async(o)=>{
+			var ctrlr = MkCtrlr();
+			var loginResp = await LoginByService(CT.None);
+			var userId = IdUser.Parse(loginResp.UserId);
+			var ctx = MkHttpCtxForUser(userId);
 
 			var result = await ctrlr.RefreshToken(new ReqRefreshTheToken{
-				RefreshToken = "rt-old"
+				RefreshToken = loginResp.RefreshToken
 			}, ctx, CT.None);
-
-			if(!called){
-				throw new Exception("ISvcToken.ValidateEtRefreshTheToken was not called.");
-			}
 			await AssertResultNotNull(result);
 			return NIL;
 		});

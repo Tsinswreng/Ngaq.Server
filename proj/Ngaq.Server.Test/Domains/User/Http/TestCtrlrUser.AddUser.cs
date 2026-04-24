@@ -1,4 +1,5 @@
 using Ngaq.Core.Shared.User.Models.Req;
+using Ngaq.Core.Tools;
 using Ngaq.Server.Http.Domains.User;
 using Tsinswreng.CsTreeTest;
 
@@ -14,28 +15,16 @@ public partial class TestCtrlrUser{
 		);
 		var R = register.Register;
 
-		R("AddUser_Should_CallSvcAndReturn200", async(o)=>{
-			var called = false;
-			var svcUser = new FakeSvcUser{
-				OnAddUser = (user, req, ct)=>{
-					called = true;
-					if(req.Email != "add@example.com"){
-						throw new Exception("Unexpected add-user email.");
-					}
-					return Task.FromResult(NIL);
-				}
-			};
-			var ctrlr = new CtrlrOpenUser(svcUser, new FakeSvcToken());
+		R("AddUser_Should_UseRealSvcAndReturn200", async(o)=>{
+			var ctrlr = MkCtrlr();
 			var ctx = MkHttpCtx();
+			var req = MkReqAddUser();
 
-			var result = await ctrlr.AddUser(new ReqAddUser{
-				Email = "add@example.com",
-				UniqName = "u_add",
-				Password = "pwd"
-			}, ctx, CT.None);
+			var result = await ctrlr.AddUser(req, ctx, CT.None);
 
-			if(!called){
-				throw new Exception("ISvcUser.AddUser was not called.");
+			var userId = await EnsureUserCreated(CT.None);
+			if(userId.IsNullOrDefault()){
+				throw new Exception("Expected non-default user id after AddUser.");
 			}
 			await AssertResultNotNull(result);
 			return NIL;
