@@ -12,25 +12,31 @@ public partial class DaoUser(
 ){
 
 
-	public async Task<Func<
-		str
-		,CT
-		,Task<PoUser?>
-	>> FnSelectByUniqName(
-		IDbFnCtx DbFnCtx
+	/// <summary>
+	/// 按唯一名稱查詢用戶。
+	/// </summary>
+	public async Task<PoUser?> SelectByUniqName(
+		IDbFnCtx Ctx
+		,str UniqName
 		,CT Ct
 	){
-		return async(str, Ct)=>{
-			throw new NotImplementedException();
-		};
+var T = TblMgr.GetTbl<PoUser>();
+var Sql = T.SqlSplicer().Select("*").From()
+.Where1().And(T.SqlIsNonDel()).AndEq(x=>x.UniqName, out var PUniqName).ToSqlStr();
+
+var Cmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct);
+Ctx?.AddToDispose(Cmd);
+		var Args = ArgDict.Mk(T).AddT(PUniqName, UniqName);
+		var R = await Cmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoUser>(T, Ct);
+		return R;
 	}
 
-	public async Task<Func<
-		str
-		,CT
-		,Task<PoUser?>
-	>> FnSelectByEmail(
+	/// <summary>
+	/// 按郵箱查詢用戶。
+	/// </summary>
+	public async Task<PoUser?> SelectByEmail(
 		IDbFnCtx Ctx
+		,str Email
 		,CT Ct
 	){
 var T = TblMgr.GetTbl<PoUser>();
@@ -47,19 +53,17 @@ var Sql = T.SqlSplicer().Select("*").From()
 
 var Cmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct);
 Ctx?.AddToDispose(Cmd);
-		return async(Email, Ct)=>{
-			var Args = ArgDict.Mk(T).AddT(PEmail, Email);
-			var R = await Cmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoUser>(T, Ct);
-			return R;
-		};
+		var Args = ArgDict.Mk(T).AddT(PEmail, Email);
+		var R = await Cmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoUser>(T, Ct);
+		return R;
 	}
 
-	public async Task<Func<
-		IdUser
-		,CT
-		,Task<PoPassword?>
-	>> FnSlctPasswordByUserId(
+	/// <summary>
+	/// 按用戶Id查詢密碼記錄。
+	/// </summary>
+	public async Task<PoPassword?> SlctPasswordByUserId(
 		IDbFnCtx Ctx
+		,IdUser UserId
 		,CT Ct
 	){
 var T = TblMgr.GetTbl<PoPassword>();
@@ -74,11 +78,9 @@ var Sql = T.SqlSplicer().Select("*").From()
 // AND {T.Eq(PUserId)}
 //""";
 var SqlCmd = await SqlCmdMkr.Prepare(Ctx, Sql, Ct); Ctx?.AddToDispose(SqlCmd);
-		return async(UserId, Ct)=>{
-			var Args = ArgDict.Mk(T).AddT(PUserId, UserId);
-			var R = await SqlCmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoPassword>(T, Ct);
-			return R;
-		};
+		var Args = ArgDict.Mk(T).AddT(PUserId, UserId);
+		var R = await SqlCmd.WithCtx(Ctx).Args(Args).FirstOrDefault<PoPassword>(T, Ct);
+		return R;
 	}
 }
 

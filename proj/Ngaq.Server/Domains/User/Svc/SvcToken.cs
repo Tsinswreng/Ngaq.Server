@@ -23,6 +23,7 @@ using Ngaq.Core.Shared.User.Models.Resp;
 using Ngaq.Core.Infra.Errors;
 using Tsinswreng.CsErr;
 using Tsinswreng.CsTempus;
+using Tsinswreng.CsTools;
 
 public class RespGenJwtToken:BaseResp{
 	public UnixMs ExpireAt{get;set;}
@@ -52,19 +53,19 @@ public class SvcToken
 	IRepo<PoRefreshToken, IdRefreshToken> RepoToken;
 	DaoToken DaoToken;
 	IDistributedCache Cache;
-	TxnWrapper TxnWrapper;
+	ISqlCmdMkr SqlCmdMkr;
 	public SvcToken(
 		ICfgAccessor Cfg
 		, IRepo<PoRefreshToken, IdRefreshToken> RepoToken
 		,DaoToken DaoToken
 		,IDistributedCache Cache
-		,TxnWrapper TxnWrapper
+		,ISqlCmdMkr SqlCmdMkr
 	){
 		this.Cfg = Cfg;
 		this.RepoToken = RepoToken;
 		this.DaoToken = DaoToken;
 		this.Cache = Cache;
-		this.TxnWrapper = TxnWrapper;
+		this.SqlCmdMkr = SqlCmdMkr;
 	}
 	public RespGenAccessToken GenAccessToken(
 		ReqGenAccessToken Req
@@ -188,7 +189,7 @@ public class SvcToken
 			return R.AddErr(KeysErr.User.InvalidToken.ToErr());
 			//return R.AddErrStr("Invalid token signature.");
 		}
-		catch (Exception ex){
+		catch (Exception){
 			//return R.AddErrStr($"Token validation failed: {ex.Message}");
 			return R.AddErr(KeysErr.User.InvalidToken.ToErr());
 		}
@@ -200,108 +201,113 @@ public class SvcToken
 	/// <param name="Ctx"></param>
 	/// <param name="Ct"></param>
 	/// <returns></returns>
-	public async Task<Func<
-		IUserCtx
-		,str//RawRefreshTokenValue
-		,CT, Task<IAnswer<RespRefreshBothToken>>
-	>> FnValidateEtRefreshTheToken(IDbFnCtx Ctx, CT Ct){
-		var SlctToken = await DaoToken.FnSlctByTokenValue(Ctx, Ct);//TODO 製Svc層之接口、未必從DB讀令牌
-		var GenRTokenEtStore = await FnGenEtStoreRefreshToken(Ctx, Ct);
-		return async(User, RawTokenStr, Ct)=>{
-			var R = new Answer<RespRefreshBothToken>();
-			var PoRefreshToken = new PoRefreshToken();
-			PoRefreshToken.SetTokenValueSha256(RawTokenStr);
-			var OldToken = await SlctToken(PoRefreshToken.TokenValue!, Ct);
-			if(OldToken is null){
-				R.AddErr(KeysErr.User.InvalidToken.ToErr());
-				return R;
-			}
-			User.UserId = OldToken.UserId;
-			var RespNeoRToken = await GenRTokenEtStore(User, Ct);
-			OldToken.RevokeAt = new UnixMs();
-			var RespNeoAToken = GenAccessToken(new ReqGenAccessToken{
-				UserId = User.UserId.ToString()
-			});
-			var Resp = new RespRefreshBothToken{
-				AccessToken = RespNeoAToken.AccessToken
-				,AccessTokenExpireAt = RespNeoAToken.ExpireAt
-				,RefreshToken = RespNeoRToken.RefreshToken
-				,RefreshTokenExpireAt = RespNeoRToken.ExpireAt
-			};
-			return R.OkWith(Resp);
+	protected async Task<IAnswer<RespRefreshBothToken>> ValidateEtRefreshTheTokenInTxn(
+		IDbFnCtx Ctx
+		,IUserCtx User
+		,str RawTokenStr
+		,CT Ct
+	){
+		var R = new Answer<RespRefreshBothToken>();
+		var PoRefreshToken = new PoRefreshToken();
+		PoRefreshToken.SetTokenValueSha256(RawTokenStr);
+		var OldToken = await DaoToken.SlctByTokenValue(Ctx, PoRefreshToken.TokenValue!, Ct);//TODO 製Svc層之接口、未必從DB讀令牌
+		if(OldToken is null){
+			R.AddErr(KeysErr.User.InvalidToken.ToErr());
+			return R;
+		}
+		User.UserId = OldToken.UserId;
+		var RespNeoRToken = await GenEtStoreRefreshToken(Ctx, User, Ct);
+		OldToken.RevokeAt = new UnixMs();
+		var RespNeoAToken = GenAccessToken(new ReqGenAccessToken{
+			UserId = User.UserId.ToString()
+		});
+		var Resp = new RespRefreshBothToken{
+			AccessToken = RespNeoAToken.AccessToken
+			,AccessTokenExpireAt = RespNeoAToken.ExpireAt
+			,RefreshToken = RespNeoRToken.RefreshToken
+			,RefreshTokenExpireAt = RespNeoRToken.ExpireAt
 		};
+		return R.OkWith(Resp);
 	}
 
-	public async Task<Func<
-		IUserCtx
-		,CT, Task<RespGenRefreshToken>
-	>> FnGenEtStoreRefreshToken(IDbFnCtx Ctx, CT Ct){
-		var Insert = await RepoToken.FnInsertOne(Ctx, Ct);
-		return async (User, Ct)=>{
-			var UserCtx = User.AsServerUserCtx();
-			var UserIdStr = UserCtx.UserId.ToString();
-			var Resp = GenRefreshToken(new ReqGenRefreshToken{
-				UserId = UserIdStr
-			});
+	public async Task<RespGenRefreshToken> GenEtStoreRefreshToken(
+		IDbFnCtx Ctx
+		,IUserCtx User
+		,CT Ct
+	){
+		var UserCtx = User.AsServerUserCtx();
+		var UserIdStr = UserCtx.UserId.ToString();
+		var Resp = GenRefreshToken(new ReqGenRefreshToken{
+			UserId = UserIdStr
+		});
 
-			var Session = new PoRefreshToken();{
-				var o = Session;
-				o.UserId = UserCtx.UserId;
-				o.BizCreatedAt = new UnixMs();
-				o.ExpireAt = Resp.ExpireAt;
-				o.SetTokenValueSha256(Resp.RefreshToken);
-				o.ClientId = UserCtx.ClientId;
-				o.ClientType = UserCtx.ClientType;
-				o.IpAddr = UserCtx.IpAddr;
-				o.UserAgent = UserCtx.UserAgent;
-			}
-			await Insert(Session, Ct);
-			return Resp;
-		};
+		var Session = new PoRefreshToken();{
+			var o = Session;
+			o.UserId = UserCtx.UserId;
+			o.BizCreatedAt = new UnixMs();
+			o.ExpireAt = Resp.ExpireAt;
+			o.SetTokenValueSha256(Resp.RefreshToken);
+			o.ClientId = UserCtx.ClientId;
+			o.ClientType = UserCtx.ClientType;
+			o.IpAddr = UserCtx.IpAddr;
+			o.UserAgent = UserCtx.UserAgent;
+		}
+		await RepoToken.BatAdd(Ctx, OneAsyE(Session), Ct);
+		return Resp;
 	}
 
-	public async Task<Func<
-		IAsyncEnumerable<PoRefreshToken>
-		,CT, Task<nil>
-	>> FnRevokeRefreshTokens(IDbFnCtx Ctx, CT Ct){
-		var SlctById = await RepoToken.FnSlctOneById(Ctx, Ct);
-
-		var UpdById = await RepoToken.FnAsyEUpdManyById(
-			Ctx,[
-				nameof(PoRefreshToken.RevokeAt)
-				,nameof(PoRefreshToken.BizUpdatedAt)
-				,nameof(PoRefreshToken.RevokeReason)
-			],Ct
+	protected async Task<nil> RevokeRefreshTokens(
+		IDbFnCtx Ctx
+		,IAsyncEnumerable<PoRefreshToken> Tokens
+		,CT Ct
+	){
+		// 使用批次收集器按批更新，避免整體載入內存，同時避免同連接讀寫交錯。
+		await using var Revoker = new BatchCollector<PoRefreshToken, IRespBatUpd>(
+			async(TokenBatch, Ct)=>{
+				var Now = UnixMs.Now();
+				for(var i = 0; i < TokenBatch.Count; i++){
+					var Token = TokenBatch[i];
+					Token.RevokeAt = Now;
+					Token.BizUpdatedAt = Now;
+					Token.RevokeReason = "Logout";
+				}
+				return await RepoToken.BatUpd(Ctx, ToAsyE(TokenBatch), Ct);
+			}
 		);
-		return async(Po, Ct)=>{
-			await UpdById(Po, Ct);
-			return NIL;
-		};
+		await Revoker.AddRange(Tokens, null, Ct);
+		await Revoker.End(Ct);
+		return NIL;
 	}
 
 
-	public async Task<Func<
-		IUserCtx, PoRefreshToken
-		,CT, Task<nil>
-	>> FnRevokeUsersAllRefreshToken(IDbFnCtx Ctx, CT Ct){
-		return async(User, Po, Ct)=>{
-			throw new NotImplementedException();
-			//return NIL;
-		};
+	public async Task<nil> RevokeUsersAllRefreshToken(
+		IDbFnCtx Ctx
+		,IUserCtx User
+		,PoRefreshToken Po
+		,CT Ct
+	){
+		throw new NotImplementedException();
 	}
 
-	public async Task<Func<
-		IUserCtx
-		,CT, Task<nil>
-	>> FnRevokeTokensForLogout(IDbFnCtx Ctx, CT Ct){
-		var SlctValidTokens = await DaoToken.FnSlctValidTokens(Ctx, Ct);
-		var RevokeRefreshTokens = await FnRevokeRefreshTokens(Ctx, Ct);
-		return async(User, Ct)=>{
-			var SrvUser = User.AsServerUserCtx();
-			var validTokens = SlctValidTokens(User.UserId, SrvUser.ClientId, Ct);
-			await RevokeRefreshTokens(validTokens, Ct);
-			return NIL;
-		};
+	public async Task<nil> RevokeTokensForLogout(
+		IDbFnCtx Ctx
+		,IUserCtx User
+		,CT Ct
+	){
+		var SrvUser = User.AsServerUserCtx();
+		var ValidTokens = await DaoToken.SlctValidTokens(Ctx, User.UserId, SrvUser.ClientId, Ct);
+		await RevokeRefreshTokens(Ctx, ValidTokens, Ct);
+		return NIL;
+	}
+
+	protected static async IAsyncEnumerable<PoRefreshToken> ToAsyE(IList<PoRefreshToken> Tokens){
+		for(var i = 0; i < Tokens.Count; i++){
+			yield return Tokens[i];
+		}
+	}
+
+	protected static async IAsyncEnumerable<PoRefreshToken> OneAsyE(PoRefreshToken Token){
+		yield return Token;
 	}
 
 
@@ -309,7 +315,9 @@ public class SvcToken
 	public async Task<IAnswer<RespRefreshBothToken>> ValidateEtRefreshTheToken(
 		IUserCtx User, str RefreshToken, CT Ct
 	){
-		return await TxnWrapper.Wrap(FnValidateEtRefreshTheToken, User, RefreshToken, Ct);
+		return await SqlCmdMkr.RunInTxn(Ct, async(Ctx)=>{
+			return await ValidateEtRefreshTheTokenInTxn(Ctx, User, RefreshToken, Ct);
+		});
 	}
 	#endregion TxApi
 

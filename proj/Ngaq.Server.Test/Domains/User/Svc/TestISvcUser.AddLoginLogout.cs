@@ -4,6 +4,7 @@ using Ngaq.Core.Shared.User.Models.Po.User;
 using Tsinswreng.CsSql;
 using Ngaq.Backend.Db.TswG;
 using Tsinswreng.CsTreeTest;
+using Ngaq.Core.Infra.IF;
 
 namespace Ngaq.Server.Test.Domains.User.Svc;
 
@@ -49,23 +50,33 @@ public partial class TestISvcUser{
 			);
 
 			AssertLoginResp(loginResp, email);
-			var userId = loginResp.PoUser!.Id;
+			var userIdStr = loginResp.UserId;
+			var userId = IdUser.Parse(userIdStr);
 			_createdUserId = userId;
 
 			var dbCtx = new DbFnCtx();
-			var slctPwd = await _daoUser.FnSlctPasswordByUserId(dbCtx, CT.None);
-			var pwd = await slctPwd(userId, CT.None);
+			var pwd = await _daoUser.SlctPasswordByUserId(dbCtx, userId, CT.None);
 			if(pwd is null){
 				throw new Exception("Login succeeded but password row not found.");
 			}
 			_createdPasswordId = pwd.Id;
 
-			var slctTokens = await _daoToken.FnSlctValidTokens(dbCtx, CT.None);
-			var tokensBeforeLogout = await ToList(slctTokens(userId, _clientId, CT.None));
+			var tokensBeforeLogout = await ToList(await _daoToken.SlctValidTokens(dbCtx, userId, _clientId, CT.None));
 			if(tokensBeforeLogout.Count == 0){
 				throw new Exception("Expected at least one refresh token after login.");
 			}
 			_tokenIds.AddRange(tokensBeforeLogout.Select(x=>x.Id));
+
+			await _svcUser.Logout(
+				userCtx,
+				new Ngaq.Core.Models.Sys.Req.ReqLogout(),
+				CT.None
+			);
+
+			var tokensAfterLogout = await ToList(await _daoToken.SlctValidTokens(dbCtx, userId, _clientId, CT.None));
+			if(tokensAfterLogout.Count != 0){
+				throw new Exception($"Expected no valid refresh token after logout, got [{tokensAfterLogout.Count}].");
+			}
 
 			return NIL;
 		});
@@ -80,12 +91,6 @@ public partial class TestISvcUser{
 		}
 		if(string.IsNullOrWhiteSpace(resp.UserId)){
 			throw new Exception("UserId should not be empty.");
-		}
-		if(resp.PoUser is null){
-			throw new Exception("PoUser should not be null.");
-		}
-		if(!string.Equals(resp.PoUser.Email, expectedEmail, StringComparison.OrdinalIgnoreCase)){
-			throw new Exception($"Expected email [{expectedEmail}], got [{resp.PoUser.Email}].");
 		}
 	}
 }

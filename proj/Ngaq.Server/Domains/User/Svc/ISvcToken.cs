@@ -8,10 +8,11 @@ using Tsinswreng.CsErr;
 using Tsinswreng.CsSql;
 
 public interface ISvcToken{
-	public Task<Func<
-		IUserCtx
-		,CT, Task<RespGenRefreshToken>
-	>> FnGenEtStoreRefreshToken(IDbFnCtx Ctx, CT Ct);
+	public Task<RespGenRefreshToken> GenEtStoreRefreshToken(
+		IDbFnCtx Ctx
+		,IUserCtx User
+		,CT Ct
+	);
 
 	public RespGenAccessToken GenAccessToken(
 		ReqGenAccessToken Req
@@ -25,10 +26,11 @@ public interface ISvcToken{
 		IUserCtx User, str RefreshToken, CT Ct
 	);
 
-	public Task<Func<
-		IUserCtx
-		,CT, Task<nil>
-	>> FnRevokeTokensForLogout(IDbFnCtx Ctx, CT Ct);
+	public Task<nil> RevokeTokensForLogout(
+		IDbFnCtx Ctx
+		,IUserCtx User
+		,CT Ct
+	);
 
 }
 

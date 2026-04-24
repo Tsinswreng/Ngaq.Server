@@ -25,9 +25,9 @@ public partial class SvcUser(
 	DaoUser DaoUser
 	, IRepo<PoUser, IdUser> RepoUser
 	, IRepo<PoPassword, IdPassword> RepoPassword
+	,ISqlCmdMkr SqlCmdMkr
 	// ,DbFnCtxMkr DbFnCtxMkr
 	// ,ITxnRunner TxnRunner
-	,TxnWrapper TxnWrapper
 	,IDistributedCache Cache
 	,ILogger<SvcUser> Log
 	,ISvcToken SvcToken
@@ -38,143 +38,126 @@ public partial class SvcUser(
 
 	
 	///TODO 檢查用戶存在否
-	
-	/// <param name="DbFnCtx"></param>
-	/// <param name="Ct"></param>
-	/// <returns></returns>
-	public async Task<Func<
-		IUserCtx
-		,ReqAddUser
-		,CT
-		,Task<nil>
-	>> FnAddUser(
-		IDbFnCtx DbFnCtx
-		,CT Ct
-	){
-		var AddUsers = await RepoUser.FnInsertMany(DbFnCtx, Ct);
-		var AddPasswords = await RepoPassword.FnInsertMany(DbFnCtx, Ct);
-		return async(UsrCtx, Req, Ct)=>{
-			Req.Validate();
-			var Id = new IdUser();
-			var PoUser = new PoUser{
-				Id = Id
-				,UniqName = Req.UniqName??Id.ToString()
-				,Email = Req.Email
-			};
-			var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(Req.Password, Ct);
-			var Password = new PoPassword{
-				Id = new()
-				,UserId = PoUser.Id
-				,Algo = PoPassword.EAlgo.Argon2id
-				,Text = PasswordHash
-			};
-			await AddUsers([PoUser], Ct);
-			await AddPasswords([Password], Ct);
-			//TODO
-			try{
-				await Cache.SetStringAsync($"user:register:{PoUser.Id}", JsonS.Stringify(PoUser), new DistributedCacheEntryOptions {
-					AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-				}, Ct);
-			}catch(Exception e){
-				Log.LogError(e, "Failed to cache user registration info.");
-			}
-			return NIL;
-		};
-	}
 
-
-	public async Task<Func<
-		IUserCtx
-		,ReqLogin
-		,CT
-		,Task<RespLogin>
-	>> FnLogin(
+	/// <summary>
+	/// 在事務內創建用戶與密碼記錄。
+	/// </summary>
+	protected async Task<nil> AddUserInTxn(
 		IDbFnCtx Ctx
+		,IUserCtx UsrCtx
+		,ReqAddUser Req
 		,CT Ct
 	){
-		//var SelectUserById = await RepoUser.FnSelectByIdAsy(DbFnCtx, ct);
-		var SelectUserByUniqName = await DaoUser.FnSelectByUniqName(Ctx, Ct);
-		var SelectUserByEmail = await DaoUser.FnSelectByEmail(Ctx, Ct);
-		var SelectPasswordById = await DaoUser.FnSlctPasswordByUserId(Ctx, Ct);
-		var GenEtStoreRToken = await SvcToken.FnGenEtStoreRefreshToken(Ctx,Ct);
-		return async(User, Req, Ct)=>{
-
-			//TODO 校驗Req
-			PoUser? PoUser = null;
-			if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.UniqName){
-				if(str.IsNullOrEmpty(Req.UniqName)){
-					throw KeysErr.Common.ArgErr.ToErr([nameof(Req.UniqName)]);
-				}
-				PoUser = await SelectUserByUniqName(Req.UniqName,Ct);
-			}else if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.Email){
-				if(str.IsNullOrEmpty(Req.Email)){
-					throw KeysErr.Common.ArgErr.ToErr([nameof(Req.Email)]);
-				}
-				PoUser = await SelectUserByEmail(Req.Email,Ct);
-			}
-			if(PoUser == null){
-				throw KeysErr.User.PasswordNotMatch.ToErr();
-			}
-			var PoPassword = await SelectPasswordById(PoUser.Id, Ct);
-			if(PoPassword is null){
-				//throw new AppErr("Password not exsists");
-				throw KeysErr.User.PasswordNotMatch.ToErr();
-			}
-			if(! await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) ){
-				throw KeysErr.User.PasswordNotMatch.ToErr();
-			};
-			var UserCtx = User.AsServerUserCtx();
-			UserCtx.UserId = PoUser.Id;
-
-			var AToken = SvcToken.GenAccessToken(new ReqGenAccessToken{
-				UserId = PoUser.Id.ToString()
-			});
-			var RTokenResp = await GenEtStoreRToken(UserCtx, Ct);
-
-
-			//SvcToken.GenRefreshToken()
-			//TODO
-			// await Cache.SetStringAsync($"user:token:{PoUser.Id}", accessToken, new DistributedCacheEntryOptions {
-			// 	AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
-			// }, Ct);
-
-			var RespLogin = new RespLogin{
-				AccessToken = AToken.AccessToken
-				,AccessTokenExpireAt = AToken.ExpireAt
-				,PoUser = PoUser
-				,UserId = PoUser.Id.ToString()
-				,RefreshToken = RTokenResp.RefreshToken
-				,RefreshTokenExpireAt = RTokenResp.ExpireAt
-			};
-			return RespLogin;
+		Req.Validate();
+		var Id = new IdUser();
+		var PoUser = new PoUser{
+			Id = Id
+			,UniqName = Req.UniqName??Id.ToString()
+			,Email = Req.Email
 		};
+		var PasswordHash = await ToolArgon.Inst.HashPasswordAsy(Req.Password, Ct);
+		var Password = new PoPassword{
+			Id = new()
+			,UserId = PoUser.Id
+			,Algo = PoPassword.EAlgo.Argon2id
+			,Text = PasswordHash
+		};
+		await RepoUser.BatAdd(Ctx, OneAsyE(PoUser), Ct);
+		await RepoPassword.BatAdd(Ctx, OneAsyE(Password), Ct);
+		try{
+			await Cache.SetStringAsync($"user:register:{PoUser.Id}", JsonS.Stringify(PoUser), new DistributedCacheEntryOptions {
+				AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+			}, Ct);
+		}catch(Exception e){
+			Log.LogError(e, "Failed to cache user registration info.");
+		}
+		return NIL;
 	}
 
+	/// <summary>
+	/// 在事務內校驗密碼並簽發訪問/刷新令牌。
+	/// </summary>
+	protected async Task<RespLogin> LoginInTxn(
+		IDbFnCtx Ctx
+		,IUserCtx User
+		,ReqLogin Req
+		,CT Ct
+	){
+		PoUser? PoUser = null;
+		if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.UniqName){
+			if(str.IsNullOrEmpty(Req.UniqName)){
+				throw KeysErr.Common.ArgErr.ToErr([nameof(Req.UniqName)]);
+			}
+			PoUser = await DaoUser.SelectByUniqName(Ctx, Req.UniqName, Ct);
+		}else if(Req.UserIdentityMode == ReqLogin.EUserIdentityMode.Email){
+			if(str.IsNullOrEmpty(Req.Email)){
+				throw KeysErr.Common.ArgErr.ToErr([nameof(Req.Email)]);
+			}
+			PoUser = await DaoUser.SelectByEmail(Ctx, Req.Email, Ct);
+		}
+		if(PoUser == null){
+			throw KeysErr.User.PasswordNotMatch.ToErr();
+		}
+		var PoPassword = await DaoUser.SlctPasswordByUserId(Ctx, PoUser.Id, Ct);
+		if(PoPassword is null){
+			throw KeysErr.User.PasswordNotMatch.ToErr();
+		}
+		if(! await ToolArgon.Inst.VerifyPasswordAsy(Req.Password??"", PoPassword.Text, Ct) ){
+			throw KeysErr.User.PasswordNotMatch.ToErr();
+		}
+		var UserCtx = User.AsServerUserCtx();
+		UserCtx.UserId = PoUser.Id;
 
-	public async Task<Func<
-		IUserCtx
-		,CT, Task<nil>
-	>> FnLogout(IDbFnCtx Ctx, CT Ct){
-		var RevokeTokensForLogout = await SvcToken.FnRevokeTokensForLogout(Ctx, Ct);
-		return async(User, Ct)=>{
-			await RevokeTokensForLogout(User, Ct);
-			return NIL;
+		var AToken = SvcToken.GenAccessToken(new ReqGenAccessToken{
+			UserId = PoUser.Id.ToString()
+		});
+		var RTokenResp = await SvcToken.GenEtStoreRefreshToken(Ctx, UserCtx, Ct);
+
+		var RespLogin = new RespLogin{
+			AccessToken = AToken.AccessToken
+			,AccessTokenExpireAt = AToken.ExpireAt
+			,UserId = PoUser.Id.ToString()
+			,RefreshToken = RTokenResp.RefreshToken
+			,RefreshTokenExpireAt = RTokenResp.ExpireAt
 		};
+		return RespLogin;
+	}
+
+	/// <summary>
+	/// 在事務內撤銷當前客戶端的有效刷新令牌。
+	/// </summary>
+	protected async Task<nil> LogoutInTxn(
+		IDbFnCtx Ctx
+		,IUserCtx User
+		,CT Ct
+	){
+		await SvcToken.RevokeTokensForLogout(Ctx, User, Ct);
+		return NIL;
+	}
+
+	protected static async IAsyncEnumerable<T> OneAsyE<T>(T Item){
+		yield return Item;
 	}
 
 	[Impl]
 	public async Task<nil> AddUser(IUserCtx User, ReqAddUser ReqAddUser ,CT Ct){
-		return await TxnWrapper.Wrap(FnAddUser, User, ReqAddUser, Ct);
+		return await SqlCmdMkr.RunInTxn(Ct, async(Ctx)=>{
+			return await AddUserInTxn(Ctx, User, ReqAddUser, Ct);
+		});
 	}
 
 	[Impl]
 	public async Task<RespLogin> Login(IUserCtx User, ReqLogin ReqLogin ,CT Ct){
-		return await TxnWrapper.Wrap(FnLogin, User, ReqLogin, Ct);
+		return await SqlCmdMkr.RunInTxn(Ct, async(Ctx)=>{
+			return await LoginInTxn(Ctx, User, ReqLogin, Ct);
+		});
 	}
 
 	[Impl]
 	public async Task<nil> Logout(IUserCtx User, ReqLogout ReqLogout, CT Ct){
-		return await TxnWrapper.Wrap(FnLogout, User, Ct);
+		return await SqlCmdMkr.RunInTxn(Ct, async(Ctx)=>{
+			return await LogoutInTxn(Ctx, User, Ct);
+		});
 	}
 }
 

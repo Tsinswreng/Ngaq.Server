@@ -17,28 +17,31 @@ public class DaoToken(
 	ITable<PoRefreshToken> T{get=>TblMgr.GetTbl<PoRefreshToken>();}
 
 
-	public async Task<Func<
-		u8[] // TokenValue
-		,CT, Task<PoRefreshToken?>
-	>> FnSlctByTokenValue(IDbFnCtx Ctx, CT Ct){
+	/// <summary>
+	/// 按令牌哈希值查詢一條刷新令牌。
+	/// </summary>
+	public async Task<PoRefreshToken?> SlctByTokenValue(
+		IDbFnCtx Ctx
+		,u8[] TokenValue
+		,CT Ct
+	){
 var Sql = T.SqlSplicer().Select("*").From()
 .Where1().And(T.SqlIsNonDel()).AndEq(x=>x.TokenValue, out var PTokenValue).ToSqlStr();
 var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
-
-		return async (TokenValue, Ct)=>{
-			var Arg = ArgDict.Mk(T).AddT(PTokenValue, TokenValue);
-			var R = await Ctx.RunCmd(Cmd, Arg).FirstOrDefault<PoRefreshToken>(T, Ct);
-			return R;
-		};
+		var Arg = ArgDict.Mk(T).AddT(PTokenValue, TokenValue);
+		var R = await Ctx.RunCmd(Cmd, Arg).FirstOrDefault<PoRefreshToken>(T, Ct);
+		return R;
 	}
 
 [Doc("""
 據UserId和ClientId取得所有有效的RefreshToken
 """)]
-	public async Task<Func<
-		IdUser, IdClient
-		,CT, IAsyncEnumerable<PoRefreshToken>
-	>> FnSlctValidTokens(IDbFnCtx Ctx, CT Ct){
+	public async Task<IAsyncEnumerable<PoRefreshToken>> SlctValidTokens(
+		IDbFnCtx Ctx
+		,IdUser UserId
+		,IdClient ClientId
+		,CT Ct
+	){
 
 var Sql = T.SqlSplicer().Select("*").From()
 .Where1().And(T.SqlIsNonDel())
@@ -46,11 +49,9 @@ var Sql = T.SqlSplicer().Select("*").From()
 .AndEq(x=>x.ClientId, out var PClientId)
 .OrderByDesc(x=>x.DbCreatedAt).ToSqlStr();
 		var Cmd = await Ctx.PrepareToDispose(SqlCmdMkr, Sql, Ct);
-		return (UserId, ClientId, Ct)=>{
-			var Arg = ArgDict.Mk(T).AddT(PUserId, UserId).AddT(PClientId, ClientId);
-			var RawAsyE = Ctx.RunCmd(Cmd, Arg).AsyE1d(Ct);
-			return RawAsyE.Select(x=>T.DbDictToEntity<PoRefreshToken>(x));
-		};
+		var Arg = ArgDict.Mk(T).AddT(PUserId, UserId).AddT(PClientId, ClientId);
+		var RawAsyE = Ctx.RunCmd(Cmd, Arg).AsyE1d(Ct);
+		return RawAsyE.Select(x=>T.DbDictToEntity<PoRefreshToken>(x));
 	}
 
 }
