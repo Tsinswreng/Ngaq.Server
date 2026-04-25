@@ -9,7 +9,6 @@ using Ngaq.Core.Tools;
 using Tsinswreng.CsTools;
 using Ngaq.Server.Http.Midware;
 using Tsinswreng.CsCore;
-using Tsinswreng.CsTempus;
 
 
 namespace Ngaq.Server.Http;
@@ -77,18 +76,23 @@ app.UseExceptionHandler();
 
 //cors
 app.UseCors();
+
+// 托管前端静态资源：优先返回 index.html，并开放 wwwroot 下文件访问。
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseMiddleware<TokenValidationMidware>();
 app.UseMiddleware<EdgeDebounceMidware>();
-
-app.MapGet("/", async()=>{
-	return new UnixMs().ToString();
-});
 
 
 var BaseRoute = app.MapGroup("/"); //RouteGroupBuilder
 
 var Svc = app.Services;
 appRouterIniter.InitRouters(Svc, BaseRoute);
+
+// 非 API 路由回退到前端入口，支持前端路由直达。
+app.MapFallbackToFile("/index.html");
+
 return app;
 	}
 }

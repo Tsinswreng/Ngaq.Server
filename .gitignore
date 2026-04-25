@@ -5,3 +5,4 @@ _Ngaq.Server.Http/
 *.sqlite
 *-wal
 *-shm
+wwwroot/

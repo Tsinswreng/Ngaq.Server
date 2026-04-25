@@ -7,6 +7,7 @@ using Ngaq.Core.Shared.Word.Models.Po.Word;
 using Ngaq.Core.Shared.Word.Svc;
 using Ngaq.Core.Tools.Json;
 using Ngaq.Server.Http.Infra;
+using Tsinswreng.CsCore;
 using Tsinswreng.CsTools;
 using U = Ngaq.Core.Infra.Url.KeysUrl.WordV2;
 
@@ -31,10 +32,7 @@ public class CtrlrWordV2(
 		return NIL;
 	}
 
-	/// 接收客戶端上傳的完整詞庫流並按 BizId 規則同步入庫。
-	/// <param name="Ctx">HTTP 上下文。</param>
-	/// <param name="Ct">取消令牌。</param>
-	/// <returns>成功返回空 OK。</returns>
+	[Doc(@$"{nameof(ISvcWordV2.BatSyncJnWordByBizIdFromStream)}")]
 	public async Task<IResult> ReceiveFull(HttpContext Ctx, CT Ct){
 		await foreach(var _ in SvcWordV2.BatSyncJnWordByBizIdFromStream(
 			Ctx.ToDbUserCtx(),
