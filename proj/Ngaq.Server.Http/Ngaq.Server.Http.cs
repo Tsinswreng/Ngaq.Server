@@ -9,6 +9,7 @@ using Ngaq.Core.Tools;
 using Tsinswreng.CsTools;
 using Ngaq.Server.Http.Midware;
 using Tsinswreng.CsCore;
+using System.IO;
 
 
 namespace Ngaq.Server.Http;
@@ -27,7 +28,12 @@ System.Console.WriteLine(
 );
 Cfg.LoadFromArgs(args);
 
-var builder = WebApplication.CreateSlimBuilder(args);
+var webRoot = ResolveWebRootPath();
+var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions{
+	Args = args,
+	WebRootPath = webRoot
+});
+System.Console.WriteLine("WebRoot: "+webRoot);
 // 为所有请求启用 CORS (不推荐用于生产环境):
 builder.Services.AddCors(opt=>{
 	opt.AddDefaultPolicy(plc=>{
@@ -91,9 +97,36 @@ var Svc = app.Services;
 appRouterIniter.InitRouters(Svc, BaseRoute);
 
 // 非 API 路由回退到前端入口，支持前端路由直达。
-app.MapFallbackToFile("/index.html");
+app.MapFallbackToFile("index.html");
 
 return app;
+	}
+
+	/// 解析静态文件目录。
+	/// 优先级：环境变量 NGAQ_WEB_ROOT > 程序集目录/wwwroot > 项目目录/wwwroot > 当前目录/wwwroot。
+	/// <returns>可用于 UseWebRoot 的绝对路径。</returns>
+	private static str ResolveWebRootPath(){
+		var fromEnv = Environment.GetEnvironmentVariable("NGAQ_WEB_ROOT");
+		if(!str.IsNullOrWhiteSpace(fromEnv)){
+			var envPath = Path.GetFullPath(fromEnv);
+			if(Directory.Exists(envPath)){
+				return envPath;
+			}
+		}
+
+		var fromBaseDir = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+		if(Directory.Exists(fromBaseDir)){
+			return fromBaseDir;
+		}
+
+		var fromProjDir = Path.GetFullPath(Path.Combine(
+			AppContext.BaseDirectory, "..", "..", "..", "wwwroot"
+		));
+		if(Directory.Exists(fromProjDir)){
+			return fromProjDir;
+		}
+
+		return Path.GetFullPath("wwwroot");
 	}
 }
 

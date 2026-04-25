@@ -1,5 +1,6 @@
 namespace Ngaq.Server.Http.Midware;
 
+using System;
 using Ngaq.Server.Http.Infra;
 using StackExchange.Redis;
 using Tsinswreng.CsCfg;
@@ -27,6 +28,11 @@ public class EdgeDebounceMidware {
 
 	public async Task InvokeAsync(HttpContext Ctx) {
 		// 1. 只處理可能改變狀態的 Method
+		// 仅对 /Api 路径生效；根路径与静态资源不参与防抖，也不应触发鉴权相关上下文解析。
+		if(!Ctx.Request.Path.StartsWithSegments("/Api", StringComparison.OrdinalIgnoreCase)){
+			await _next(Ctx);
+			return;
+		}
 
 		#if false
 		if (!HttpMethods.IsPost(Ctx.Request.Method) &&
@@ -44,7 +50,7 @@ public class EdgeDebounceMidware {
 		}
 
 
-		var isOpen = Ctx.Request.Path.StartsWithSegments("/Open");
+		var isOpen = Ctx.Request.Path.StartsWithSegments("/Open", StringComparison.OrdinalIgnoreCase);
 		var dimension = "";
 		if(isOpen){
 			dimension = $"ip:{ip}";
