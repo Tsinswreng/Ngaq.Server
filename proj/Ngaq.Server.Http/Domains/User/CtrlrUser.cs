@@ -1,26 +1,20 @@
 namespace Ngaq.Server.Http.Domains.User;
 
-using Ngaq.Core.Infra.Url;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Ngaq.Server.Domains.User.Svc;
-using Ngaq.Core.Shared.User.Svc;
-using Ngaq.Core.Shared.User.Models.Req;
-using Ngaq.Core.Infra;
-using Tsinswreng.CsCore;
-
-using U = Core.Infra.Url.KeysUrl.OpenUser;
-using ApiUser = Core.Infra.Url.KeysUrl.ApiUser;
 using Microsoft.Extensions.Caching.Distributed;
-using Ngaq.Core.Infra.Errors;
-using Ngaq.Core.Tools;
-using Ngaq.Server.Http.Infra;
-using Tsinswreng.CsErr;
 using Ngaq.Core.Models.Sys.Req;
+using Ngaq.Core.Shared.User.Models.Req;
 using Ngaq.Core.Shared.User.Models.Resp;
+using Ngaq.Core.Shared.User.Svc;
+using Ngaq.Server.Domains.User.Svc;
+using Ngaq.Server.Http.Infra;
+using Tsinswreng.CsCore;
+using Tsinswreng.CsErr;
 using Tsinswreng.CsTempus;
+using ApiUser = Core.Infra.Url.KeysUrl.ApiUser;
+using U = Core.Infra.Url.KeysUrl.OpenUser;
 
 public partial class CtrlrOpenUser(
 	ISvcUser SvcUser

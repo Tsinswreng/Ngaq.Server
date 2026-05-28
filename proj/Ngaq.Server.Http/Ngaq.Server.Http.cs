@@ -45,8 +45,8 @@ builder.Services.AddCors(opt=>{
 
 builder.WebHost.UseKestrel(options =>{
 	var Port = KeysServerCfg.Port.GetFrom(ServerCfg.Inst);
-	options.ListenLocalhost(Port);  // 监听本地端口
-	// 或者用 options.ListenAnyIP(5001); 监听所有IP地址
+	//options.ListenLocalhost(Port);  // 监听本地端口
+	options.ListenAnyIP(Port); //监听所有IP地址
 });
 
 builder.Services.ConfigureHttpJsonOptions(opt =>
