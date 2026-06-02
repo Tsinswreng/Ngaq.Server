@@ -111,12 +111,19 @@ public static class DiBiz{
 		var password = Cfg.Get(KeysServerCfg.Redis.Password);
 		var instanceName = Cfg.Get(KeysServerCfg.Redis.InstanceName);
 
+		var redisConfig = new ConfigurationOptions{
+			AbortOnConnectFail = false
+		};
+		redisConfig.EndPoints.Add(host, port);
+		if(!str.IsNullOrWhiteSpace(password)){
+			redisConfig.Password = password;
+		}
+
 		z.AddStackExchangeRedisCache(o =>{
-			o.Configuration = $"{host}:{port},password={password}";
+			o.ConfigurationOptions = redisConfig;
 			o.InstanceName = instanceName;
 		});
 
-		var redisConfig = ConfigurationOptions.Parse($"{host}:{port},password={password}");
 		var connectionMultiplexer = ConnectionMultiplexer.Connect(redisConfig);
 		z.AddSingleton<IConnectionMultiplexer>(connectionMultiplexer);
 

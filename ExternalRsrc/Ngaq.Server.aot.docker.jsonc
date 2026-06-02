@@ -1,0 +1,31 @@
+{
+	"Port": 2341
+	,"Db":{
+		"Postgres":{
+			"ConnectionString": ""
+			,"Server":"host.docker.internal"
+			,"Port":5432
+			,"Database":"postgres"
+			,"UserId":"postgres"
+			,"Password":"Tsinswreng"
+		},
+		"Sqlite": {
+			"Path": "Ngaq_Server.sqlite"
+		},
+		"Redis": {
+			"Host": "host.docker.internal"
+			,"Port": 6379
+			,"InstanceName": "CsNgaq"
+		}
+	},
+	"Auth":{
+		"JwtSecret": "TsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswreng"
+	},
+	"Debug":{
+		"Auth":{
+			"UserId": "1"
+			,"AllowedAccessToken": "TsinswrengAccessToken"
+			,"AllowedRefreshToken": "TsinswrengRefreshToken"
+		}
+	}
+}
