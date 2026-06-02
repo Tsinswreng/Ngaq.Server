@@ -46,8 +46,11 @@ wsl.exe -d Ubuntu-20.04 -- sh -lc "docker save ngaq-server:aot-slim | gzip -1 > 
 先把鏡像與部署文件上傳到服務器:
 
 ```bash
+# 鏡像
 scp /tmp/ngaq-server-aot-slim.tar.gz root@<server>:/opt/ngaq-server/upload/
+# docker compose配置
 scp Ngaq.Server/Deploy/Cloud/docker-compose.aot-slim.yml root@<server>:/opt/ngaq-server/upload/
+# 業務配置文件
 scp Ngaq.Server/ExternalRsrc/Ngaq.Server.cloud.docker.jsonc root@<server>:/opt/ngaq-server/upload/
 ```
 ]
@@ -66,6 +69,18 @@ docker compose -f docker-compose.aot-slim.yml up -d postgres redis
 docker compose -f docker-compose.aot-slim.yml run --rm web migrate Ngaq.Server.cloud.docker.jsonc
 docker compose -f docker-compose.aot-slim.yml up -d web
 ```
+
+第二條命令的解釋:
+````md
+
+run：启动一个新容器来执行指定的命令，而不是使用 up 常驻运行的容器。
+
+--rm：命令执行完毕后自动删除该临时容器（不留残骸）。
+
+web：指定 Compose 中定义的 web 服务（作为运行命令的模板，会使用它的镜像、环境变量等）。
+
+migrate：命令行傳參
+````
 ]
 
 #H[7. migrate 參數行爲][

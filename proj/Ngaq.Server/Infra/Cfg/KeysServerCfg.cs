@@ -31,7 +31,9 @@ public partial class KeysServerCfg{
 				Postgres, ["Password"], ""
 			);
 		//~Postgres
-		public static ICfgNode _Redis => Mk(Db, [nameof(_Redis)], null);
+		/// Redis 節點名必須與配置文件中的 `Db.Redis` 對應。
+		/// 不能用字段名 `_Redis`，否則會退回默認值 `localhost:6379`。
+		public static ICfgNode _Redis => Mk(Db, [nameof(Redis)], null);
 		public class Redis{
 			public static ICfgNode<str> Host => Mk(_Redis, [nameof(Host)], "localhost");
 			public static ICfgNode<i32> Port => Mk(_Redis, [nameof(Port)], 6379);

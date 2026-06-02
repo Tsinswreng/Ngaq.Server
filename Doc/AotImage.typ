@@ -10,6 +10,7 @@
 - 鏡像內直接啓動 `./Ngaq.Server.Http`
 - 不走 `dotnet Ngaq.Server.Http.dll` 的 JIT 運行路線
 - 運行層基於 `mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled`
+// 據說 mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled-aot 更小
 - 鏡像內不打包前端 `wwwroot`
 - 發布後刪除 `.dbg`、`.pdb`
 - 本次實測鏡像大小約 `61535235` bytes，約 `58.7 MiB`
