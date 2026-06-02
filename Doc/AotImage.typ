@@ -9,8 +9,10 @@
 - 產出 `Ngaq.Server.Http` 的 Linux `x64` Native AOT 原生可執行文件
 - 鏡像內直接啓動 `./Ngaq.Server.Http`
 - 不走 `dotnet Ngaq.Server.Http.dll` 的 JIT 運行路線
-- 運行層基於 `mcr.microsoft.com/dotnet/runtime-deps:10.0`，避免帶入整個 ASP.NET 運行時鏡像
-- 本次實測鏡像大小約 `350559314` bytes，約 `334.3 MiB`
+- 運行層基於 `mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled`
+- 鏡像內不打包前端 `wwwroot`
+- 發布後刪除 `.dbg`、`.pdb`
+- 本次實測鏡像大小約 `61535235` bytes，約 `58.7 MiB`
 ]
 
 #H[2. 關鍵文件][
@@ -20,13 +22,14 @@
 其中:
 - Dockerfile 在倉庫根上下文構建，因爲 `Ngaq.Server.Http` 會引用 `Ngaq.Core`、`Ngaq.Backend` 與多個 `Tsinswreng.*` 本地項目
 - 容器專用配置把 PG/Redis 主機名改成 `host.docker.internal`
+- 本鏡像只保留後端運行所需內容，不承擔前端靜態站點分發
 ]
 
 #H[3. 構建鏡像][
 在 Windows PowerShell 中經 WSL 執行:
 
 ```powershell
-wsl.exe -d Ubuntu-20.04 -- sh -lc "cd /mnt/e/_code/CsNgaq && docker build -t ngaq-server:aot -f ./Ngaq.Server/Dockerfile-Aot ."
+wsl.exe -d Ubuntu-20.04 -- sh -lc "cd /mnt/e/_code/CsNgaq && docker build -t ngaq-server:aot-slim -f ./Ngaq.Server/Dockerfile-Aot ."
 ```
 
 注意:
@@ -57,7 +60,7 @@ wsl.exe -d Ubuntu-20.04 -- sh -lc "mkdir -p ~/dockercfg && cp /mnt/e/_code/CsNga
 
 #H[6. 運行鏡像][
 ```powershell
-wsl.exe -d Ubuntu-20.04 -- sh -lc "docker run --rm -p 5000:2341 --add-host=host.docker.internal:host-gateway --name ngaq-server-aot -v \$HOME/dockercfg/Ngaq.Server.aot.docker.jsonc:/app/Ngaq.Server.aot.docker.jsonc:ro ngaq-server:aot Ngaq.Server.aot.docker.jsonc"
+wsl.exe -d Ubuntu-20.04 -- sh -lc "docker run --rm -p 5000:2341 --add-host=host.docker.internal:host-gateway --name ngaq-server-aot -v \$HOME/dockercfg/Ngaq.Server.aot.docker.jsonc:/app/Ngaq.Server.aot.docker.jsonc:ro ngaq-server:aot-slim Ngaq.Server.aot.docker.jsonc"
 ```
 
 說明:
@@ -68,20 +71,10 @@ wsl.exe -d Ubuntu-20.04 -- sh -lc "docker run --rm -p 5000:2341 --add-host=host.
 ]
 
 #H[7. 驗證][
-若服務正常起來，可在宿主訪問:
-
-```text
-http://localhost:5000/
-```
-
-當前代碼實測返回:
-- `HTTP/1.1 200 OK`
-- 響應內容爲 `/app/wwwroot/index.html`
-
-這說明:
-- Native AOT 可執行文件已成功啓動
-- Kestrel 已正常監聽容器內 `2341`
-- 靜態文件與 fallback 路由可正常工作
+當前實測結果:
+- 容器可正常啓動
+- Kestrel 正常監聽容器內 `2341`
+- 由於本鏡像不再打包 `wwwroot`，它是純後端鏡像，不再提供前端靜態頁面
 ]
 
 #H[8. 已知前提][

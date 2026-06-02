@@ -25,6 +25,9 @@ COPY ["Tsinswreng.Srefl/", "Tsinswreng.Srefl/"]
 
 RUN dotnet restore "Ngaq.Server/proj/Ngaq.Server.Http/Ngaq.Server.Http.csproj"
 
+# This image is for the backend only; exclude bundled frontend static assets.
+RUN rm -rf "Ngaq.Server/proj/Ngaq.Server.Http/wwwroot"
+
 # AOT publish
 RUN dotnet publish "Ngaq.Server/proj/Ngaq.Server.Http/Ngaq.Server.Http.csproj" \
     -c Release \
@@ -32,7 +35,9 @@ RUN dotnet publish "Ngaq.Server/proj/Ngaq.Server.Http/Ngaq.Server.Http.csproj" \
     -o /app/publish \
     -p:StripSymbols=true
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:10.0 AS runtime
+RUN find /app/publish -type f \( -name '*.dbg' -o -name '*.pdb' \) -delete
+
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0-noble-chiseled AS runtime
 WORKDIR /app
 
 COPY --from=build /app/publish ./
