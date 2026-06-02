@@ -14,7 +14,7 @@ namespace Ngaq.Server.Db.TswG.Migrations;
 public class M2026_0315_StudyPlan:SqlMigrationInfo{
 	/// 這條遷移的版本號。
 	/// 一旦發佈，不應再修改。
-	public override i64 CreatedMs{get;set;} = UnixMs.FromIso("2026-03-15T12:00:00+08:00");
+	public override i64 CreatedMs{get;set;} = UnixMs.FromIso("2026-03-15T12:00:00.000+08:00");
 
 	public M2026_0315_StudyPlan(){
 		Init();

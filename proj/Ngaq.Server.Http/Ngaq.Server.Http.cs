@@ -10,6 +10,9 @@ using Tsinswreng.CsTools;
 using Ngaq.Server.Http.Midware;
 using Tsinswreng.CsCore;
 using System.IO;
+using Ngaq.Server.Db.TswG.Migrations;
+using Tsinswreng.CsSql;
+using Ngaq.Server.Db.TswG;
 
 
 namespace Ngaq.Server.Http;
@@ -17,8 +20,43 @@ namespace Ngaq.Server.Http;
 
 public class NgaqWeb{
 	public static void Main(string [] args){
+		if(CfgLoader.IsMigrateCmd(args)){
+			RunMigrate(args).GetAwaiter().GetResult();
+			return;
+		}
 		var app = NgaqWeb.InitApp(args);
 		app.Run();
+	}
+
+	private static async Task RunMigrate(str[] args){
+		var app = NgaqWeb.InitApp(args);
+		if(!await HasSchemaHistoryTable(default)){
+			var fullInit = app.Services.GetRequiredService<FullInit>();
+			await fullInit.Up(default);
+			Console.WriteLine("full init done");
+			return;
+		}
+		var migrator = app.Services.GetRequiredService<MigrationRunner>();
+		await migrator.Up(default);
+		Console.WriteLine("migrate done");
+	}
+
+	/// 首次空庫部署時，遷移歷史表尚不存在。
+	/// 此時應先走 `FullInit`，不能直接查最後一條遷移記錄。
+	private static async Task<bool> HasSchemaHistoryTable(CT ct){
+		await using var conn = ServerDb.Inst.DataSource.CreateConnection();
+		await conn.OpenAsync(ct);
+		await using var cmd = conn.CreateCommand();
+		cmd.CommandText =
+			"""
+			SELECT EXISTS(
+				SELECT 1
+				FROM information_schema.tables
+				WHERE table_schema = 'public'
+				AND table_name = '__TsinswrengSchemaHistory'
+			)
+			""";
+		return (bool)(await cmd.ExecuteScalarAsync(ct) ?? false);
 	}
 	
 	public static WebApplication InitApp(str[] args){

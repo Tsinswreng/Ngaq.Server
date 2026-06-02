@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ngaq
+      POSTGRES_USER: ngaq
+      POSTGRES_PASSWORD: NgaqDb2026!
+    volumes:
+      - ngaq-postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - ngaq-redis-data:/data
+
+  web:
+    image: ngaq-server:aot-slim
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "2341:2341"
+    volumes:
+      - ../config/Ngaq.Server.cloud.docker.jsonc:/app/Ngaq.Server.cloud.docker.jsonc:ro
+    command:
+      - Ngaq.Server.cloud.docker.jsonc
+
+volumes:
+  ngaq-postgres-data:
+  ngaq-redis-data:

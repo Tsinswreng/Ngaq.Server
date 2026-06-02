@@ -5,13 +5,23 @@ using Tsinswreng.CsCfg;
 using Tsinswreng.CsCore;
 
 public static class CfgLoader{
+	public const str CmdMigrate = "migrate";
+
+	public static bool IsMigrateCmd(string[] args){
+		return args.Length > 0
+			&& str.Equals(args[0], CmdMigrate, StringComparison.OrdinalIgnoreCase);
+	}
 	
 	[Doc(@$"從{nameof(args)}[0] 讀 配置文件路徑;
 	未設置 則從默認路徑讀取
 	")]
 	public static str GetCfgFilePathFromCliArgs(string[] args){
 		var CfgFilePath = "";
-		if(args.Length > 0){
+		if(IsMigrateCmd(args)){
+			CfgFilePath = args.Length > 1
+				? args[1]
+				: "";
+		}else if(args.Length > 0){
 			CfgFilePath = args[0];
 		}else{
 	#if DEBUG

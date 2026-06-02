@@ -1,0 +1,31 @@
+{
+	"Port": 2341
+	,"Db":{
+		"Postgres":{
+			"ConnectionString": ""
+			,"Server":"postgres"
+			,"Port":5432
+			,"Database":"ngaq"
+			,"UserId":"ngaq"
+			,"Password":"NgaqDb2026!"
+		},
+		"Sqlite": {
+			"Path": "Ngaq_Server.sqlite"
+		},
+		"Redis": {
+			"Host": "redis"
+			,"Port": 6379
+			,"InstanceName": "CsNgaq"
+		}
+	},
+	"Auth":{
+		"JwtSecret": "TsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswrengTsinswreng"
+	},
+	"Debug":{
+		"Auth":{
+			"UserId": "1"
+			,"AllowedAccessToken": "TsinswrengAccessToken"
+			,"AllowedRefreshToken": "TsinswrengRefreshToken"
+		}
+	}
+}
